@@ -9,7 +9,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/su94-X/AI-Agent-Swarm/releases/tag/v1.4.5"><img alt="Release" src="https://img.shields.io/badge/release-v1.4.5-38BDF8"></a>
+  <a href="https://github.com/su94-X/AI-Agent-Swarm/releases/tag/v1.4.6"><img alt="Release" src="https://img.shields.io/badge/release-v1.4.6-38BDF8"></a>
   <a href="./LICENSE"><img alt="License" src="https://img.shields.io/badge/license-Apache--2.0-22C55E"></a>
   <img alt="Node" src="https://img.shields.io/badge/node-no%20npm%20deps-111827">
   <img alt="Codex Plugin" src="https://img.shields.io/badge/Codex-plugin-8B5CF6">
@@ -19,7 +19,7 @@
 
 AI Agent Swarm 是一个面向长期项目维护的本地 Codex 多模型编排插件。它的目标不是替换 Codex 主智能体，而是把外部模型能力纳入 Codex 可控的授权、审查、测试和记忆流程。
 
-V1.4.5 是当前正式稳定版本。它已经完成跨平台打包验证、Gemini header key 传递、workspace checksum 防覆盖、symlink 防逃逸、RAG 安全扫描、MCP 协议层模块拆分、MCP 可见进度/日志通知、workspace patch/edit 局部编辑模式、RAG 知识质量元数据与默认过滤、RAG 子模块独立自测和可见角色子智能体工作流。
+V1.4.6 是当前正式稳定版本。它在 V1.4.5 的跨平台打包、workspace 安全、RAG 质量层、MCP 可见日志、patch/edit 局部编辑和可见角色子智能体基础上，加入工程闸门：非简单任务正式编码前必须完成设计文档、开发计划和 Opus/Claude plan-review；高风险 diff 进入 diff-review；真实测试结果需要 command、exit code、stdout、stderr 证据。
 
 ## 核心定位
 
@@ -33,6 +33,18 @@ V1.4.5 是当前正式稳定版本。它已经完成跨平台打包验证、Gemi
 | Custom Role | 可选 OpenAI-compatible 外部模型角色 |
 
 外部模型不会直接获得无限仓库权限，也不会直接写入项目记忆库。所有真实文件修改、命令执行、测试结果判定和最终接受决定仍由 Codex 完成。
+
+## 工程闸门
+
+非简单任务默认启用工程闸门：
+
+1. Codex 先执行 Gate 0 预检，确认 MCP 工具、RAG、Coder、Tester 和必要 key 状态，不打印密钥。
+2. Codex 产出工程设计文档和开发计划，包含目标、非目标、读写边界、data flow、prompt injection surface、credential handling、外部网络范围、风险、回退和验证路径。
+3. 设计和计划交给 Opus/Claude 做 plan-review。只要有 blocking findings 或 must-fix items，Codex 必须先修文档和计划并复审。
+4. 进入开发后，Codex 按批准计划自动推进；高风险或非平凡 diff 进入 diff-review。
+5. 真实测试由 Codex/Test Runner 执行，并记录 command、exit code、stdout、stderr。测试证据交给 Gemini 做 test-review/failure analysis。
+
+详见 [docs/ENGINEERING_GATE.md](./docs/ENGINEERING_GATE.md)。
 
 ## 架构
 
@@ -58,7 +70,7 @@ flowchart TD
 
 ## 3 步快速开始
 
-1. 下载并解压 [ai-agent-swarm-1.4.5.zip](https://github.com/su94-X/AI-Agent-Swarm/releases/download/v1.4.5/ai-agent-swarm-1.4.5.zip)。
+1. 下载并解压 [ai-agent-swarm-1.4.6.zip](https://github.com/su94-X/AI-Agent-Swarm/releases/download/v1.4.6/ai-agent-swarm-1.4.6.zip)。
 2. 复制 `.env.example` 为 `.env`，只填写当前确实要用的外部模型 key。
 3. 在 Codex 中发送 `docs/PACKAGE_INSTALL_PROMPT.md` 做安装检查；新线程中发送 `docs/FIRST_INSTALL_PROMPT.md` 检查 skill 和 MCP tools 是否可见。
 
@@ -163,6 +175,7 @@ MMA_GEMINI_API_KEY_IN_HEADER=false
 | `docs/PACKAGE_INSTALL_PROMPT.md` | 从 zip 包安装时发送给 Codex 的中文提示词 |
 | `docs/FIRST_INSTALL_PROMPT.md` | 首次安装后检查 skill 和 MCP tools 是否可见 |
 | `docs/STARTUP_PROMPT.md` | 日常工作会话启动提示词 |
+| `docs/ENGINEERING_GATE.md` | 工程闸门：plan-review、diff-review、test-review 和阻塞报告规则 |
 | `docs/PROJECT_START_PROMPT.md` | 目标项目中开始编码任务的提示词 |
 | `docs/EXISTING_PROJECT_HANDOFF_PROMPT.md` | 已有项目首次接入时的项目分析和接手文档生成提示词 |
 | `docs/NEW_PROJECT_BOOTSTRAP_PROMPT.md` | 新项目启动时生成初始项目文档和记忆文档 |
@@ -212,7 +225,7 @@ node scripts/package-release.mjs C:\path\to\outputs
 - 变更记录：[CHANGELOG.md](./CHANGELOG.md)
 - 安全策略：[SECURITY.md](./SECURITY.md)
 - 贡献说明：[CONTRIBUTING.md](./CONTRIBUTING.md)
-- Release：[AI Agent Swarm V1.4.5](https://github.com/su94-X/AI-Agent-Swarm/releases/tag/v1.4.5)
+- Release：[AI Agent Swarm V1.4.6](https://github.com/su94-X/AI-Agent-Swarm/releases/tag/v1.4.6)
 
 ## 联系方式
 

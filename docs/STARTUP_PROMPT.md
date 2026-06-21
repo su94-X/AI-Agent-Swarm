@@ -13,6 +13,13 @@
 
 RAG 检索分两档：默认搜索只用于探索背景；凡是要进入 plan、constraints、known_test_commands、review context，或要传给 Opus/Gemini 的上下文，必须做严格检索，显式设置 scope，建议设置 min_confidence >= 0.9，并在知道来源时设置 verified_by。不要把低置信度、不同 scope、expired、deprecated 或 superseded 条目当成当前执行事实。
 
+工程闸门：
+1. 非简单任务正式编码前，先执行 Gate 0：调用 multi_model_config_status 和 multi_model_rag_status，确认角色配置和 RAG 状态，不打印 key。
+2. 输出工程设计和开发计划，包含 design_version、目标/非目标、读写边界、data flow、prompt injection surface、credential handling、external network scope、风险、回退和验证路径。
+3. 将设计和计划交给 Opus/Claude 做 plan-review。若存在 blocking findings 或 must-fix items，先修计划并复审，不得进入编码。
+4. 高风险或非平凡 diff 必须做 diff-review。
+5. 真实测试完成后，把 command、exit code、stdout、stderr 和变更摘要交给 Gemini 做 test-review/failure analysis。
+
 本次实现工作遵循以下强制流程：
 
 1. Codex 主智能体负责理解需求、制定方案、选择相关文件、授权读写边界，并做最终决策。

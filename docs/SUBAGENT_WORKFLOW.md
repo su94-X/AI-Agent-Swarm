@@ -16,11 +16,23 @@
 | RAG Curator Subagent | 无 | `multi_model_rag_note` / `multi_model_rag_ingest` 由主控调用 | 整理已验证知识候选条目。 |
 | Custom Subagent | custom provider | `multi_model_role_call` | 执行明确分配的自定义外部模型分析。 |
 
-## V1.4.5 实测准则
+## V1.4.5 起实测准则
 
 - Coder Subagent：小范围、明确目标、低歧义任务优先使用 `edits` 局部编辑。Main Orchestrator 审查时记录 `changed_files`、变更行数、无关 diff 噪声、`changed_file_details.mode` 和 `repairEvents`。
 - RAG：默认搜索只用于探索背景。进入 plan、constraints、known_test_commands、review context 或外部模型上下文前，必须用严格过滤：`scope`、建议 `min_confidence >= 0.9`，并在可用时设置 `verified_by`。
 - 子智能体：可见过程有价值，但每个角色只做自己的层。Coder 不做最终决策，Tester 不改代码，Reviewer 不运行测试或实现代码，Test Runner 不做测试策略，RAG Curator 不直接写入 trusted RAG。
+
+## V1.4.6 工程闸门
+
+非简单任务正式编码前必须先过设计闸门：
+
+1. Main Orchestrator 执行 Gate 0，确认 MCP 工具、RAG 和角色配置。
+2. Main Orchestrator 输出工程设计和开发计划。
+3. Opus/Claude 做 plan-review；发现阻断项或 must-fix items 时，先修计划并复审。
+4. plan-review 通过后，Coder Subagent 才能开始主要编码。
+5. 高风险或非平凡 diff 交给 Reviewer Subagent 做 diff-review，必要时再请求外部第二意见。
+6. Test Runner 运行真实命令并记录 command、exit code、stdout、stderr。
+7. Tester Subagent 把真实测试证据交给 Gemini 做 test-review/failure analysis。
 
 ## Main Orchestrator
 
@@ -49,6 +61,7 @@
 
 职责：
 - 接收 Codex 主控给出的 task、plan、workspace_root、allowed_read_paths、allowed_write_paths 和 constraints。
+- 确认 Main Orchestrator 已说明 plan-review 通过；未通过时不得开始编码。
 - 使用 multi_model_coder_workspace_edit 作为主要实现路径。
 - 把 Opus/Claude 当作主要代码作者。
 - 通过 MCP 工具返回严格 JSON 兼容的文件编辑。如果模型输出格式错误，MCP server 会自动做一次 JSON 修复重试。
@@ -109,6 +122,7 @@ Reviewer 是 Codex 内部审查，不是外部模型角色。小 diff 应由 Mai
 - 不要把低置信度、不同 scope、过期或 deprecated 的 RAG 结果当作当前测试事实。
 - 不要输出与当前变更无关的通用提醒。
 - 如果提供了失败日志，请分析可能原因和下一步调试建议。
+- test-review 时必须基于真实 command、exit code、stdout、stderr 和变更摘要。
 
 你负责设计和分析测试。Codex 或 Test Runner Subagent 负责真实执行命令。
 ```

@@ -26,6 +26,12 @@
 - Gemini 是测试策略和失败日志分析角色：使用 multi_model_tester_plan 获取测试建议、边界用例和失败分析。
 - Custom 是可选外部模型角色：只有我明确分配任务时才使用 multi_model_role_call。
 
+工程闸门：
+- 非简单任务正式编码前必须先输出工程设计和开发计划。
+- 计划必须交给 Opus/Claude 做 plan-review；有阻断项或必须修改项时，先修计划并复审。
+- 高风险或非平凡 diff 必须做 diff-review。
+- 真实测试必须记录 command、exit code、stdout、stderr，并交给 Gemini 做 test-review/failure analysis。
+
 默认必须使用的可见角色子智能体：
 - Coder Subagent 调用 multi_model_coder_workspace_edit，由 Opus/Claude 执行主要编码。
 - Reviewer Subagent 做 Codex 内部审查；小 diff 可以由主智能体直接审查。Reviewer 不要调用 mcp__codex，也不要生成嵌套智能体。

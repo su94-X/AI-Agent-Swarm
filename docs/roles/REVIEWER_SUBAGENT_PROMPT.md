@@ -15,4 +15,5 @@
 7. 检查 diff scope accuracy：实际触碰文件、变更行数、无关格式化/重排、changed_file_details.mode 和 repairEvents 是否符合任务边界。
 8. 如果审查使用 RAG 上下文，确认它来自 scope 匹配、高置信、未过期 active 条目；低置信度或历史条目只能作为线索。
 9. 只返回可执行 findings；如果没有阻断问题，请明确说明并列出剩余风险。
+10. 高风险或非平凡 diff-review 时，必须确认 diff 是否符合已批准计划、是否越过授权边界、是否存在无关格式化/重排，以及是否需要补充测试。
 ```

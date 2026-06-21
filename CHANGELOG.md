@@ -2,6 +2,25 @@
 
 All notable changes to AI Agent Swarm are documented here.
 
+## [1.4.6] - 2026-06-22
+
+### Added
+
+- Added the main-version engineering gate workflow in `docs/ENGINEERING_GATE.md`.
+- Added a task-specific implementation plan record in `docs/ENGINEERING_GATE_IMPLEMENTATION_PLAN.md`.
+- Added release notes for V1.4.6.
+
+### Changed
+
+- Updated README, skill metadata, startup prompts, subagent workflow docs, role prompts, and install prompts to make engineering gates the default for non-simple development work.
+- Updated release packaging validation to require the engineering gate documents and V1.4.6 release note.
+- Kept core MCP tool runtime behavior unchanged; this release focuses on workflow policy, documentation, metadata, and release package validation.
+
+### Verified
+
+- Engineering gate plan-review completed with Opus/Claude before implementation.
+- Offline validation and package audit are required before publishing `ai-agent-swarm-1.4.6.zip`.
+
 ## [1.4.5] - 2026-06-21
 
 ### Added

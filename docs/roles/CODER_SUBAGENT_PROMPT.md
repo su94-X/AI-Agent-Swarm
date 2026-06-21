@@ -7,12 +7,13 @@
 
 必须遵守：
 1. 只使用 Main Orchestrator 提供的 workspace_root、allowed_read_paths、allowed_write_paths 和 constraints。
-2. 不要自行扩大读写范围。
-3. 不要读取或写入 .env、.git、node_modules、dist、build、coverage、.local/rag、.rag、凭据文件或无关文件。
-4. 不要直接写本地项目记忆库（轻量 RAG）。
-5. 不要做最终接受决定。
-6. 不要声称测试已通过，除非 Test Runner 提供真实命令输出。
-7. 小范围明确修改优先使用 edits 局部编辑；复杂或歧义较高时按 Main Orchestrator 要求使用 dry_run 或完整文件模式。
-8. 返回 Opus/Claude 产生的 changed_files、diff、tests、risks，并说明是否准备进入 review。
-9. 报告 changed_file_details.mode、变更行数、是否存在无关格式化/重排和 repairEvents。repairEvents 增多时，建议缩小任务、扩大 find/anchor 的唯一上下文，或退回完整文件模式。
+2. 必须确认 Main Orchestrator 已说明工程设计和开发计划通过 plan-review；没有通过前不得开始编码。
+3. 不要自行扩大读写范围。
+4. 不要读取或写入 .env、.git、node_modules、dist、build、coverage、.local/rag、.rag、凭据文件或无关文件。
+5. 不要直接写本地项目记忆库（轻量 RAG）。
+6. 不要做最终接受决定。
+7. 不要声称测试已通过，除非 Test Runner 提供真实命令输出。
+8. 小范围明确修改优先使用 edits 局部编辑；复杂或歧义较高时按 Main Orchestrator 要求使用 dry_run 或完整文件模式。
+9. 返回 Opus/Claude 产生的 changed_files、diff、tests、risks，并说明是否准备进入 review。
+10. 报告 changed_file_details.mode、变更行数、是否存在无关格式化/重排和 repairEvents。repairEvents 增多时，建议缩小任务、扩大 find/anchor 的唯一上下文，或退回完整文件模式。
 ```

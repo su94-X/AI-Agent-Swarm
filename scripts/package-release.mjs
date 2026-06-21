@@ -8,6 +8,7 @@ const pluginRoot = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const outputDir = resolve(process.argv[2] || join(pluginRoot, "..", "..", "outputs"));
 const manifest = readManifest();
 const version = manifest.version;
+const releaseNotePath = `docs/GITHUB_RELEASE_V${version}.md`;
 const zipPath = join(outputDir, `ai-agent-swarm-${version}.zip`);
 const stageRoot = join(outputDir, `.ai-agent-swarm-${version}-stage`);
 
@@ -113,11 +114,24 @@ function validateStage() {
     "NOTICE",
     "SECURITY.md",
     "docs/PACKAGE_INSTALL_PROMPT.md",
+    "docs/FIRST_INSTALL_PROMPT.md",
+    "docs/STARTUP_PROMPT.md",
+    "docs/PROJECT_START_PROMPT.md",
     "docs/EXISTING_PROJECT_HANDOFF_PROMPT.md",
     "docs/NEW_PROJECT_BOOTSTRAP_PROMPT.md",
+    "docs/ENVIRONMENT.md",
+    "docs/ENGINEERING_GATE.md",
+    "docs/ENGINEERING_GATE_IMPLEMENTATION_PLAN.md",
+    releaseNotePath,
     "docs/RAG.md",
     "docs/ROADMAP.md",
+    "docs/SUBAGENT_START_PROMPT.md",
+    "docs/SUBAGENT_WORKFLOW.md",
     "docs/roles/CODER_SUBAGENT_PROMPT.md",
+    "docs/roles/TESTER_SUBAGENT_PROMPT.md",
+    "docs/roles/REVIEWER_SUBAGENT_PROMPT.md",
+    "docs/roles/TEST_RUNNER_SUBAGENT_PROMPT.md",
+    "docs/roles/RAG_CURATOR_SUBAGENT_PROMPT.md",
     "lib/mcp.mjs",
     "lib/model.mjs",
     "lib/rag-metadata.mjs",
@@ -133,7 +147,9 @@ function validateStage() {
     "scripts/rag-security-self-test.mjs",
     "scripts/rag-text-self-test.mjs",
     "scripts/http-retry-self-test.mjs",
+    "scripts/workspace-edit-json-self-test.mjs",
     "scripts/workspace-edit-repair-self-test.mjs",
+    "scripts/tester-prompt-self-test.mjs",
     "scripts/package-release.mjs",
     "skills/multi-model-agents/SKILL.md",
   ];

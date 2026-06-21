@@ -33,6 +33,13 @@
 - RAG Curator Subagent：可见 Codex 子智能体，整理已验证的 bug、命令、决策、约定和风险候选条目；最终写入仍由 Main Orchestrator 调用 multi_model_rag_note 或 multi_model_rag_ingest。
 - Custom Subagent：可见 Codex 子智能体，仅在我明确分配任务时调用 multi_model_role_call。
 
+工程闸门默认启用：
+- Main Orchestrator 先执行 Gate 0。
+- Coder Subagent 只有在 plan-review 通过后才能开始编码。
+- Reviewer Subagent 负责高风险或非平凡 diff-review。
+- Tester Subagent 负责 Gemini test-review/failure analysis。
+- Test Runner Subagent 必须保留 command、exit code、stdout、stderr。
+
 每个任务按这个流程执行：
 1. Main Orchestrator 阅读足够项目上下文，提出方案和路径边界。
 2. Main Orchestrator 先用 multi_model_rag_search 检索相关项目约定、历史 bug、真实测试命令和架构决策，并只选择必要片段进入 plan。默认搜索只用于探索背景；凡是要进入 plan、constraints、known_test_commands、review context 或外部模型上下文的 RAG 片段，必须显式设置 scope，建议 min_confidence >= 0.9，并在知道来源时设置 verified_by。

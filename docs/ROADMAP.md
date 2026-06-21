@@ -1,6 +1,22 @@
 # 后续路线图
 
-本文档记录 AI Agent Swarm 在 V1.4.5 正式版之后的工程改进方向，以及 V1.4.5 已完成的工程化事项。这里的未完成内容不是当前版本承诺，而是后续小版本或中版本的设计入口。
+本文档记录 AI Agent Swarm 在 V1.4.6 正式版之后的工程改进方向，以及 V1.4.5/V1.4.6 已完成的工程化事项。这里的未完成内容不是当前版本承诺，而是后续小版本或中版本的设计入口。
+
+## 工程闸门
+
+V1.4.6 已把非简单开发任务的工程闸门写入默认工作流：
+
+- 正式编码前需要 Gate 0 预检、工程设计文档和开发计划。
+- 设计和计划必须交给 Opus/Claude 做 plan-review；存在 blocking findings 或 must-fix items 时先修订再复审。
+- 开发阶段按批准计划推进，高风险或非平凡 diff 进入 diff-review。
+- 真实测试必须记录 command、exit code、stdout、stderr 和变更摘要，再交给 Gemini 做 test-review 或失败日志分析。
+- 只有缺少 key、权限不足、破坏性风险、需求冲突、外部服务不可用或连续失败无法自愈时，才输出阻塞报告。
+
+后续可选增强方向：
+
+- 在 MCP server 内增加可选 gate state machine，让工具调用可以绑定 approved design version、allowed write set 和 test evidence。
+- 给 RAG 写入工程闸门结果的模板，沉淀 approved plan、测试命令和阻塞报告。
+- 增加 gate audit self-test，检查提示词、skill 和 release package 是否都包含工程闸门入口。
 
 ## MCP server 模块拆分
 

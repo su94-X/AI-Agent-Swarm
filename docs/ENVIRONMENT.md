@@ -125,21 +125,57 @@ node scripts/rag-self-test.mjs
 
 应包含：
 
+- `.codex-plugin/`
 - `.env.example`
+- `.mcp.json`
+- `README.md`
+- `CHANGELOG.md`
+- `CONTRIBUTING.md`
+- `LICENSE`
+- `NOTICE`
+- `SECURITY.md`
+- `assets/`
+- `docs/`
+- `lib/`
+- `scripts/`
+- `skills/`
+
+关键必需文件至少包括：
+
 - `docs/ENVIRONMENT.md`
 - `docs/FIRST_INSTALL_PROMPT.md`
 - `docs/STARTUP_PROMPT.md`
 - `docs/PACKAGE_INSTALL_PROMPT.md`
 - `docs/PROJECT_START_PROMPT.md`
+- `docs/EXISTING_PROJECT_HANDOFF_PROMPT.md`
+- `docs/NEW_PROJECT_BOOTSTRAP_PROMPT.md`
+- `docs/ENGINEERING_GATE.md`
+- `docs/ENGINEERING_GATE_IMPLEMENTATION_PLAN.md`
+- `docs/GITHUB_RELEASE_V1.4.6.md`
 - `docs/SUBAGENT_START_PROMPT.md`
+- `docs/SUBAGENT_WORKFLOW.md`
 - `docs/RAG.md`
+- `docs/ROADMAP.md`
 - `docs/roles/`
 - `lib/mcp.mjs`
 - `lib/model.mjs`
 - `lib/workspace.mjs`
+- `lib/workspace-edit-flow.mjs`
 - `lib/rag.mjs`
+- `lib/rag-metadata.mjs`
+- `lib/rag-security.mjs`
+- `lib/rag-text.mjs`
+- `scripts/multi-model-agents-mcp.mjs`
+- `scripts/mcp-smoke-test.mjs`
+- `scripts/http-retry-self-test.mjs`
+- `scripts/rag-self-test.mjs`
+- `scripts/rag-metadata-self-test.mjs`
+- `scripts/rag-security-self-test.mjs`
+- `scripts/rag-text-self-test.mjs`
+- `scripts/workspace-edit-json-self-test.mjs`
 - `scripts/package-release.mjs`
 - `scripts/workspace-edit-repair-self-test.mjs`
+- `scripts/tester-prompt-self-test.mjs`
 
 必须排除：
 
