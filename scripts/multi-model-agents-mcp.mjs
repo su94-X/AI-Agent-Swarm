@@ -47,16 +47,10 @@ const defaultConfig = {
     baseUrl: env("MMA_CODER_BASE_URL", "https://api.anthropic.com"),
   },
   reviewer: {
-    provider: env("MMA_REVIEWER_PROVIDER", "codex-internal"),
-    model: env("MMA_REVIEWER_MODEL", "gpt-5.5"),
-    apiKeyEnv: env("MMA_REVIEWER_API_KEY_ENV", ""),
-    baseUrl: env("MMA_REVIEWER_BASE_URL", ""),
-  },
-  tester: {
-    provider: env("MMA_TESTER_PROVIDER", "gemini"),
-    model: env("MMA_TESTER_MODEL", "gemini-3.5-flash"),
-    apiKeyEnv: env("MMA_TESTER_API_KEY_ENV", "GEMINI_API_KEY"),
-    baseUrl: env("MMA_TESTER_BASE_URL", "https://generativelanguage.googleapis.com"),
+    provider: env("MMA_REVIEWER_PROVIDER", "anthropic"),
+    model: env("MMA_REVIEWER_MODEL", "claude-opus-4-8"),
+    apiKeyEnv: env("MMA_REVIEWER_API_KEY_ENV", "ANTHROPIC_API_KEY"),
+    baseUrl: env("MMA_REVIEWER_BASE_URL", "https://api.anthropic.com"),
   },
   custom: {
     provider: env("MMA_CUSTOM_PROVIDER", "openai-compatible"),
@@ -117,7 +111,7 @@ const tools = [
   {
     name: "multi_model_reviewer_findings",
     description:
-      "Ask the configured reviewer model to review a plan and diff. The tool returns findings only and never edits files.",
+      "Ask the configured reviewer model, usually Opus/Claude in Lite mode, to review a plan and diff. The tool returns findings only and never edits files.",
     inputSchema: objectSchema(
       {
         task: stringSchema("Original task."),
@@ -135,17 +129,19 @@ const tools = [
     ),
   },
   {
-    name: "multi_model_tester_plan",
+    name: "multi_model_reviewer_score",
     description:
-      "Ask the configured tester model for concrete test commands, cases, and failure-analysis guidance. The tool does not run tests.",
+      "Ask the configured reviewer model, usually Opus/Claude in Lite mode, to score a plan or diff and return evidence-bound review findings.",
     inputSchema: objectSchema(
       {
         task: stringSchema("Original task."),
         plan: stringSchema("Implementation plan or context."),
         diff: stringSchema("Unified diff or patch summary."),
         changed_files: arraySchema(stringSchema("Changed file path."), "Changed files."),
-        known_test_commands: arraySchema(stringSchema("Known project test command."), "Existing test commands."),
-        test_logs: stringSchema("Optional real test output to analyze."),
+        rubric: arraySchema(
+          enumSchema(["correctness", "security", "regression", "maintainability", "scope_control", "tests"]),
+          "Scoring rubric dimensions."
+        ),
         max_output_tokens: integerSchema("Maximum model output tokens."),
       },
       ["task"]
@@ -157,7 +153,7 @@ const tools = [
       "Call a configured or explicit external model role with a structured prompt. Use this for nonstandard roles or troubleshooting.",
     inputSchema: objectSchema(
       {
-        role: enumSchema(["coder", "reviewer", "tester", "custom"]),
+        role: enumSchema(["coder", "reviewer", "custom"]),
         task: stringSchema("Task for the external model role."),
         context: stringSchema("Relevant context to provide to the role."),
         provider: enumSchema(["openai", "anthropic", "gemini", "openai-compatible"]),
@@ -296,21 +292,11 @@ async function callTool(params, mcpContext = {}) {
         break;
 
       case "multi_model_reviewer_findings":
-        if (normalizeProvider(resolveRoleConfig("reviewer", args).provider) === "codex-internal") {
-          result = textResult(
-            [
-              "Reviewer is configured as codex-internal.",
-              "Do not call an external reviewer model for this role. Have the Codex orchestrator or a Codex subagent review the diff directly.",
-              "If you want an external reviewer second opinion, set MMA_REVIEWER_PROVIDER=openai or openai-compatible and configure the reviewer API key/base URL.",
-            ].join("\n")
-          );
-          break;
-        }
         result = await modelTextResult("reviewer", buildReviewerPrompt(args), args, progress);
         break;
 
-      case "multi_model_tester_plan":
-        result = await modelTextResult("tester", buildTesterPrompt(args), args, progress);
+      case "multi_model_reviewer_score":
+        result = await modelTextResult("reviewer", buildReviewerScorePrompt(args), args, progress);
         break;
 
       case "multi_model_role_call": {
@@ -457,14 +443,13 @@ function buildReviewerPrompt(args) {
   return { systemPrompt, userPrompt };
 }
 
-function buildTesterPrompt(args) {
+function buildReviewerScorePrompt(args) {
   const systemPrompt = [
-    "You are the tester role in a Codex-orchestrated multi-model workflow.",
-    "Design tests and analyze real test logs. Do not claim tests passed unless the provided logs prove it.",
-    "Separate executable commands from advisory checks and risk notes.",
-    "Do not invent project-specific CLI commands unless the command is directly supported by provided context.",
-    "Every risk note must cite evidence from the task, plan, diff, changed_files, known_test_commands, or test_logs.",
-    "Avoid generic reminders that are not tied to the current change.",
+    "You are the external Opus/Claude review-and-scoring role in a Codex-orchestrated Lite workflow.",
+    "Codex remains the orchestrator and final decision maker.",
+    "Score the provided plan or diff using only the supplied evidence.",
+    "Do not claim that you edited files or ran tests.",
+    "Avoid generic advice that is not tied to the current task, plan, diff, or changed files.",
   ].join(" ");
 
   const userPrompt = [
@@ -472,18 +457,16 @@ function buildTesterPrompt(args) {
     args.plan ? `Plan:\n${args.plan}` : "",
     args.diff ? `Diff:\n${args.diff}` : "",
     args.changed_files?.length ? `Changed files:\n${args.changed_files.map((path) => `- ${path}`).join("\n")}` : "",
-    args.known_test_commands?.length
-      ? `Known test commands:\n${args.known_test_commands.map((command) => `- ${command}`).join("\n")}`
-      : "",
-    args.test_logs ? `Real test logs to analyze:\n${args.test_logs}` : "",
+    args.rubric?.length ? `Rubric:\n${args.rubric.map((item) => `- ${item}`).join("\n")}` : "",
     [
       "Output:",
-      "1. verified_commands: commands that are known to be real for this project. Use only commands provided in known_test_commands or commands directly evidenced by the supplied context. If none are known, write none.",
-      "2. suggested_commands: commands that may be useful but are not proven real. Mark each with why it is only a suggestion.",
-      "3. cases_to_inspect: concrete cases, files, flags, or behavior to inspect. These are not shell commands.",
-      "4. failure_analysis: only if real test_logs were provided. Cite the exact log evidence.",
-      "5. evidence_bound_risks: residual risks tied to specific evidence. Format each as evidence -> risk -> mitigation. Do not include generic best-practice reminders.",
-      "6. not_claimed: explicitly state that Gemini did not run tests and Codex/Test Runner must execute real commands locally.",
+      "1. overall_score: integer 0-100.",
+      "2. dimension_scores: correctness, security, regression, maintainability, scope_control, tests; use null when evidence is missing.",
+      "3. blocking_findings: only concrete issues that should block acceptance.",
+      "4. non_blocking_findings: useful issues that do not block acceptance.",
+      "5. evidence: cite the exact supplied evidence behind each score or finding.",
+      "6. recommended_codex_actions: what Codex should inspect, test, or decide next.",
+      "7. not_claimed: explicitly state that Opus/Claude did not run tests and did not edit files.",
     ].join("\n"),
   ]
     .filter(Boolean)
@@ -495,6 +478,11 @@ function buildTesterPrompt(args) {
 function resolveRoleConfig(role, args) {
   const base = defaultConfig[role] ?? {};
   const provider = args.provider || base.provider;
+  if (role === "reviewer" && normalizeProvider(provider) === "codex-internal") {
+    throw new Error(
+      "AI Agent Swarm Lite requires an external reviewer/scorer. Set MMA_REVIEWER_PROVIDER=anthropic, MMA_REVIEWER_MODEL=claude-opus-4-8, and MMA_REVIEWER_API_KEY_ENV=ANTHROPIC_API_KEY."
+    );
+  }
   return {
     provider,
     model: args.model || base.model || defaultModelForProvider(provider),
@@ -521,8 +509,9 @@ function configStatus() {
     roles,
     notes: [
       "模型角色通过 MMA_* 环境变量配置，也可以由插件根目录 .env 自动加载。",
-      "multi_model_coder_workspace_edit 只能读取和写入 Codex 当前任务授权的 workspace 路径。",
-      "外部模型输出和 workspace 写入结果必须经过 Codex 审查和真实本地测试后才能接受。",
+      "Lite 默认使用外部 Opus/Claude reviewer/scorer；如果沿用完整版 .env，请确认 MMA_REVIEWER_PROVIDER 不是 codex-internal。",
+      "multi_model_coder_workspace_edit 只是显式授权的兼容能力，只能读取和写入 Codex 当前任务授权的 workspace 路径。",
+      "外部模型输出、评分和 workspace 写入结果必须经过 Codex 审查和真实本地测试后才能接受。",
     ],
   };
 }
@@ -532,10 +521,7 @@ function defaultSystemPrompt(role) {
     return "You are a bounded coding assistant. Return concrete patches or implementation guidance, and never claim to have edited files.";
   }
   if (role === "reviewer") {
-    return "You are a strict code reviewer. Return actionable findings grounded in provided evidence.";
-  }
-  if (role === "tester") {
-    return "You are a testing assistant. Return concrete test commands, cases, and log analysis. Do not claim unrun tests passed.";
+    return "You are an external Opus/Claude review-and-scoring assistant. Return evidence-bound findings and a 0-100 score; do not edit files or claim tests ran.";
   }
   return "You are an external model role in a Codex-orchestrated workflow. Be concise, structured, and evidence-driven.";
 }

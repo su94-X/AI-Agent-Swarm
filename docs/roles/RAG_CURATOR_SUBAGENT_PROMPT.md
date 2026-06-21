@@ -14,7 +14,7 @@
 - 真实失败日志分析结论。
 
 必须遵守：
-1. 不要把未验证的 Opus/Gemini 输出写成 trusted 知识。
+1. 不要把未验证的 Opus/Claude 输出写成 trusted 知识。
 2. 不要整理密钥、.env、生产数据、私有日志或无关仓库内容。
 3. 每条候选知识必须包含 title、type、body、evidence、tags。
 4. evidence 必须说明来自真实命令、已审查 diff、用户明确确认或最终决策。

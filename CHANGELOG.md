@@ -1,6 +1,26 @@
 # Changelog
 
-All notable changes to AI Agent Swarm are documented here.
+All notable changes to AI Agent Swarm and its Lite branch are documented here.
+
+## [1.4.5-lite.1] - 2026-06-22
+
+### Added
+
+- Added AI Agent Swarm Lite branch identity and release packaging.
+- Added `multi_model_reviewer_score` for Opus/Claude external review, risk analysis, and 0-100 scoring.
+- Added Lite-specific README, install prompts, startup prompts, role prompts, and release notes.
+
+### Changed
+
+- Changed the default workflow to Codex main control plus Opus/Claude reviewer/scorer.
+- Removed the Gemini tester workflow from the Lite MCP tool surface.
+- Updated CI and package validation to use `scripts/reviewer-score-self-test.mjs`.
+- Kept RAG, workspace safety, package validation, and no-npm-dependency architecture from the full V1.4.5 line.
+
+### Verified
+
+- Offline MCP smoke test should confirm `multi_model_reviewer_score` exists and `multi_model_tester_plan` is not exposed.
+- Real API smoke test is optional and should be run only with intentionally configured local keys.
 
 ## [1.4.5] - 2026-06-21
 

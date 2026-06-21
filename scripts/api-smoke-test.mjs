@@ -90,12 +90,12 @@ try {
       },
     },
     {
-      label: "tester",
+      label: "reviewer",
       tool: "multi_model_role_call",
       arguments: {
-        role: "tester",
-        task: "Reply with exactly: tester-ok",
-        context: "This is a connectivity smoke test. No tests were run.",
+        role: "reviewer",
+        task: "Reply with exactly: reviewer-ok",
+        context: "This is a connectivity smoke test. No files were reviewed.",
         max_output_tokens: 32,
       },
     },

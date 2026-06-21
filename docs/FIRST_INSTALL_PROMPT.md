@@ -1,40 +1,27 @@
-# 首次安装检查提示词
-
-第一次在新的 Codex 环境中安装或注册 AI Agent Swarm 插件后，把下面这段提示词发送给一个新 Codex 线程。它只检查插件、skill 和 MCP tools 是否可见，不会要求你在对话里提供密钥。
-
-## 提示词
+# AI Agent Swarm Lite 首次安装检查提示词
 
 ```text
-请使用 multi-model-agents 插件做一次首次安装检查。
+请检查 AI Agent Swarm Lite 是否在当前 Codex 线程中可用。
 
-我刚安装 AI Agent Swarm Codex 插件。请在正式使用前确认它已经正确加载。
-
-请检查：
-1. 确认 multi-model-agents skill 当前可见。
-2. 确认以下 MCP 工具当前可用：
-   - multi_model_coder_patch
-   - multi_model_coder_workspace_edit
-   - multi_model_reviewer_findings
-   - multi_model_tester_plan
-   - multi_model_role_call
+需要确认：
+1. multi-model-agents skill 可见。
+2. MCP 工具可见：
    - multi_model_config_status
-3. 调用 multi_model_config_status。
-4. 按 coder、reviewer、tester、custom 四个角色汇总 provider、model、apiKeyEnv、apiKeySource、hasApiKey。
-5. 不要打印任何 API key 值。
-6. 如果某个角色缺少 key，只告诉我应该配置哪个环境变量名，不要要求我把 key 粘贴到聊天里。
-7. 提醒我把 .env.example 复制为 .env，并且真实 key 只保存在本地 .env 中。
-8. 提醒我 .env 不能提交、不能打包、不能发送到对话里。
-9. 本次检查不要调用任何真实外部模型 API。
+   - multi_model_reviewer_findings
+   - multi_model_reviewer_score
+   - multi_model_role_call
+   - multi_model_rag_status
+   - multi_model_rag_search
+   - multi_model_rag_get
+   - multi_model_rag_note
+   - multi_model_rag_ingest
+3. multi_model_tester_plan 不应作为 Lite 工作流依赖。
+4. 调用 multi_model_config_status，只汇总 provider、model、apiKeyEnv、apiKeySource、hasApiKey，不打印 key。
+5. 调用 multi_model_rag_status，确认本地项目记忆库状态。
+6. 如果 reviewer provider 显示为 codex-internal，说明沿用了完整版旧 .env；Lite 版应改为 MMA_REVIEWER_PROVIDER=anthropic。
+
+结论请说明：
+- Lite 插件是否加载成功。
+- Opus/Claude reviewer/scorer 是否具备 API key。
+- RAG 是否可写。
 ```
-
-## 预期结果
-
-Codex 应报告 skill 和 MCP tools 是否可见，并安全展示 `multi_model_config_status` 的角色配置摘要。
-
-默认 reviewer 是 `codex-internal`，因此 reviewer 的 `apiKeyEnv` 为空、`hasApiKey` 为 false 是正常情况。
-
-`multi_model_coder_workspace_edit` 是 Opus/Claude 主编码工具。只有当 Codex 明确授权 `workspace_root`、`allowed_read_paths` 和 `allowed_write_paths` 后，才应该使用它写文件。
-
-## 下一步
-
-首次检查通过后，普通工作会话使用 `docs/STARTUP_PROMPT.md`。该启动提示词已经默认强制使用可见角色子智能体工作流，不需要再单独发送 `docs/SUBAGENT_START_PROMPT.md`。`docs/SUBAGENT_START_PROMPT.md` 只作为角色工作流的详细说明或排障备用提示词。

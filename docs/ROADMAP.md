@@ -1,6 +1,6 @@
-# 后续路线图
+# AI Agent Swarm Lite 后续路线图
 
-本文档记录 AI Agent Swarm 在 V1.4.5 正式版之后的工程改进方向，以及 V1.4.5 已完成的工程化事项。这里的未完成内容不是当前版本承诺，而是后续小版本或中版本的设计入口。
+本文档记录 AI Agent Swarm Lite 在 `1.4.5-lite.1` 之后的工程改进方向，以及从完整版继承下来的已完成工程化事项。这里的未完成内容不是当前版本承诺，而是后续小版本或中版本的设计入口。
 
 ## MCP server 模块拆分
 
@@ -10,7 +10,7 @@
 
 后续建议拆分为：
 
-- `lib/model.mjs`：provider 配置、HTTP client、OpenAI-compatible、Anthropic、Gemini 调用。（已完成）
+- `lib/model.mjs`：provider 配置、HTTP client、OpenAI-compatible、Anthropic 和兼容 provider 调用。（已完成）
 - `lib/workspace.mjs`：workspace path validation、symlink 防逃逸、授权读写、diff 生成、patch/edit 应用和 checksum 校验。（已完成）
 - `lib/workspace-edit-flow.mjs`：workspace edit prompt、JSON repair 和 apply repair flow。（已完成）
 - `lib/rag.mjs`：本地项目记忆库工具编排、JSONL 存储、ingest、note、search、get。（已完成）
@@ -28,12 +28,12 @@
 
 ## 外部模型流式响应
 
-当前外部模型调用默认仍使用非流式 HTTP JSON 请求。V1.4.5 已增加模型层内部 SSE 聚合模式，可通过 `MMA_MODEL_STREAMING=true` 启用：OpenAI-compatible 走 chat completions stream，Anthropic 走 messages stream，Gemini 走 streamGenerateContent。该模式仍会聚合为完整文本后返回给 MCP tool，不改变工具协议，也不会边流边写文件。
+当前外部模型调用默认仍使用非流式 HTTP JSON 请求。继承自 V1.4.5 的模型层内部 SSE 聚合模式可通过 `MMA_MODEL_STREAMING=true` 启用：OpenAI-compatible 走 chat completions stream，Anthropic 走 messages stream，兼容 provider 按各自实现聚合。该模式仍会聚合为完整文本后返回给 MCP tool，不改变工具协议，也不会边流边写文件。
 
 V1.4.5 已增加 Codex 客户端可见的 MCP 进度/日志通知：
 
 - `lib/mcp.mjs` 通过 `notifications/message` 发送工具开始、模型调用、流式片段、JSON 校验、应用 diff、完成和失败提示。
-- `multi_model_role_call`、`multi_model_tester_plan`、`multi_model_reviewer_findings`、`multi_model_coder_patch` 和 `multi_model_coder_workspace_edit` 都能产生可见进度/日志。
+- `multi_model_role_call`、`multi_model_reviewer_findings`、`multi_model_reviewer_score`、`multi_model_coder_patch` 和 `multi_model_coder_workspace_edit` 都能产生可见进度/日志。
 - 当前实现是 MCP `notifications/message` 日志通知，不是带 progress token 的标准进度条。
 - `multi_model_coder_workspace_edit` 默认仍只返回最终完整 JSON edit、diff 和结构化结果。
 
@@ -67,7 +67,7 @@ V1.4.5 已完成本地知识质量层：
 
 - embedding 不应默认启用。
 - 不向外部 embedding provider 发送 `.env`、凭据、生产数据、私有日志或未授权文件。
-- 检索结果仍由 Codex 主控筛选后，才允许传给 Opus/Gemini。
+- 检索结果仍由 Codex 主控筛选后，才允许传给 Opus/Claude reviewer/scorer。
 
 ## Patch/Edit 操作模式
 

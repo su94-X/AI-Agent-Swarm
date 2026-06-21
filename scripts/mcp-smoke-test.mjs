@@ -81,7 +81,7 @@ try {
     "multi_model_coder_patch",
     "multi_model_coder_workspace_edit",
     "multi_model_reviewer_findings",
-    "multi_model_tester_plan",
+    "multi_model_reviewer_score",
     "multi_model_role_call",
     "multi_model_config_status",
     "multi_model_rag_status",
@@ -93,6 +93,9 @@ try {
     if (!toolNames.includes(expected)) {
       throw new Error(`Missing tool ${expected}`);
     }
+  }
+  if (toolNames.includes("multi_model_tester_plan")) {
+    throw new Error("Lite branch must not expose multi_model_tester_plan.");
   }
 
   send(3, "tools/call", {

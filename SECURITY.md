@@ -1,6 +1,6 @@
 # Security Policy
 
-AI Agent Swarm is designed to keep Codex as the final authority for file writes, tests, review, and RAG writes. External models should receive only the narrow context explicitly authorized for a task.
+AI Agent Swarm Lite is designed to keep Codex as the final authority for file writes, tests, review acceptance, and RAG writes. External models should receive only the narrow context explicitly authorized for a task.
 
 ## Supported Versions
 
@@ -28,6 +28,6 @@ If private reporting is not available, open a GitHub issue with a high-level des
 ## Safety Boundaries
 
 - `multi_model_coder_workspace_edit` must receive narrow `allowed_read_paths` and `allowed_write_paths`.
-- External coder output must be reviewed by Codex before acceptance.
-- Gemini tester output is a test plan or failure analysis, not proof that tests passed.
+- External reviewer/scorer output is advisory. It is not proof that a change is correct, safe, or tested.
+- Lite does not include the Gemini tester workflow. Real test execution and test-result judgment remain Codex responsibilities.
 - RAG entries should be written only after Codex verification.

@@ -8,7 +8,7 @@
 - [ ] `node scripts/mcp-smoke-test.mjs`
 - [ ] `node scripts/rag-self-test.mjs`
 - [ ] `node scripts/workspace-edit-json-self-test.mjs`
-- [ ] `node scripts/tester-prompt-self-test.mjs`
+- [ ] `node scripts/reviewer-score-self-test.mjs`
 - [ ] Release package validation, if packaging changed
 
 ## Security Checklist

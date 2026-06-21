@@ -1,11 +1,11 @@
 # 已有项目接手分析提示词
 
-当一个已有开发项目第一次使用 multi-model-agents 插件时，先把下面这段提示词发送给 Codex。目标是让 Codex 读取和分析当前项目，输出一组接手开发所需的总结文档，并把确认后的关键信息写入本地 RAG。
+当一个已有开发项目第一次使用 AI Agent Swarm Lite 插件时，先把下面这段提示词发送给 Codex。目标是让 Codex 读取和分析当前项目，输出一组接手开发所需的总结文档，并把确认后的关键信息写入本地项目记忆库。
 
 ## 提示词
 
 ```text
-请使用 multi-model-agents 插件接手分析这个已有开发项目。
+请使用 AI Agent Swarm Lite 插件接手分析这个已有开发项目。
 
 目标：
 1. 读取项目结构和关键文件，形成可供后续开发使用的项目总结文档。
@@ -26,8 +26,8 @@
 - 代码风格、约定和命名习惯。
 - 现有测试覆盖和测试缺口。
 - 已知风险、易踩坑点和可疑技术债。
-- 后续使用 Opus/Claude 编码时应授权的典型读写边界。
-- 后续使用 Gemini 做测试分析时应提供的 known_test_commands。
+- 后续使用 Opus/Claude 做外部审查和评分时应提供的典型上下文边界。
+- 后续 Codex 本地测试时应优先确认的 known_test_commands。
 
 请在项目中输出或更新这些文档：
 - docs/PROJECT_OVERVIEW.md：项目整体说明、技术栈、入口、模块地图。
@@ -35,7 +35,7 @@
 - docs/ARCHITECTURE_NOTES.md：架构约定、关键数据流、重要设计决策。
 - docs/TESTING_GUIDE.md：已验证测试命令、测试策略、测试缺口。
 - docs/KNOWN_ISSUES.md：已知问题、风险、技术债、踩坑记录。
-- docs/AGENT_MEMORY.md：给 Codex/Opus/Gemini 后续使用的精简项目记忆。
+- docs/AGENT_MEMORY.md：给 Codex 和 Opus/Claude 外部审查后续使用的精简项目记忆。
 
 写文档前请先说明计划和拟写入文件路径。不要覆盖已有重要文档；如果文件已存在，请在保留原内容的前提下增量整理，或先说明合并策略。
 
@@ -48,8 +48,8 @@ RAG 写入规则：
 角色使用建议：
 - Main Orchestrator 负责项目读取、判断和最终文档输出。
 - 可以使用 RAG Curator Subagent 整理候选 RAG 条目。
-- 只有需要复杂代码理解时，才让 Coder Subagent 调用 Opus/Claude 做有限范围分析；不要让 Opus 修改文件。
-- 只有需要测试策略或失败日志分析时，才让 Tester Subagent 调用 Gemini。
+- 只有需要外部第二意见时，才调用 Reviewer / Scorer，让 Opus/Claude 对项目分析、方案或风险给出证据绑定评分。
+- 不使用 Gemini tester 环节；测试命令、失败日志归因和最终判断由 Codex 根据真实输出完成。
 
 最终请输出：
 1. 已生成/更新的文档列表。

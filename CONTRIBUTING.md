@@ -1,6 +1,6 @@
 # Contributing
 
-Thanks for helping improve AI Agent Swarm.
+Thanks for helping improve AI Agent Swarm Lite.
 
 ## Development Rules
 
@@ -9,7 +9,7 @@ Thanks for helping improve AI Agent Swarm.
 - Keep `.env.example` as a template only.
 - Keep `.codex-plugin/plugin.json` valid JSON and ASCII-only.
 - Keep `.mcp.json` portable. It must use `./scripts/multi-model-agents-mcp.mjs`, not a user-specific absolute path.
-- Preserve the role boundary: Codex orchestrates and decides; Opus/Claude codes in authorized paths; Gemini plans tests and analyzes failures; Codex internal reviewer reviews by default.
+- Preserve the Lite role boundary: Codex orchestrates, edits, tests, and decides; Opus/Claude provides external review, risk analysis, and scoring; the Gemini tester workflow is not part of this branch.
 
 ## Local Validation
 
@@ -25,7 +25,7 @@ node scripts/rag-security-self-test.mjs
 node scripts/rag-text-self-test.mjs
 node scripts/workspace-edit-json-self-test.mjs
 node scripts/workspace-edit-repair-self-test.mjs
-node scripts/tester-prompt-self-test.mjs
+node scripts/reviewer-score-self-test.mjs
 node scripts/package-release.mjs C:\path\to\outputs
 ```
 

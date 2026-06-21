@@ -8,8 +8,9 @@ const pluginRoot = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const outputDir = resolve(process.argv[2] || join(pluginRoot, "..", "..", "outputs"));
 const manifest = readManifest();
 const version = manifest.version;
-const zipPath = join(outputDir, `ai-agent-swarm-${version}.zip`);
-const stageRoot = join(outputDir, `.ai-agent-swarm-${version}-stage`);
+const packageName = "ai-agent-swarm-lite";
+const zipPath = join(outputDir, `${packageName}-${version}.zip`);
+const stageRoot = join(outputDir, `.${packageName}-${version}-stage`);
 
 const includeRoots = [
   ".codex-plugin",
@@ -114,10 +115,13 @@ function validateStage() {
     "SECURITY.md",
     "docs/PACKAGE_INSTALL_PROMPT.md",
     "docs/EXISTING_PROJECT_HANDOFF_PROMPT.md",
+    "docs/GITHUB_RELEASE_LITE_1.4.5-lite.1.md",
     "docs/NEW_PROJECT_BOOTSTRAP_PROMPT.md",
     "docs/RAG.md",
     "docs/ROADMAP.md",
     "docs/roles/CODER_SUBAGENT_PROMPT.md",
+    "docs/roles/REVIEWER_SUBAGENT_PROMPT.md",
+    "docs/roles/RAG_CURATOR_SUBAGENT_PROMPT.md",
     "lib/mcp.mjs",
     "lib/model.mjs",
     "lib/rag-metadata.mjs",
@@ -133,6 +137,7 @@ function validateStage() {
     "scripts/rag-security-self-test.mjs",
     "scripts/rag-text-self-test.mjs",
     "scripts/http-retry-self-test.mjs",
+    "scripts/reviewer-score-self-test.mjs",
     "scripts/workspace-edit-repair-self-test.mjs",
     "scripts/package-release.mjs",
     "skills/multi-model-agents/SKILL.md",

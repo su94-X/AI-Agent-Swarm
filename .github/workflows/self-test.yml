@@ -37,7 +37,7 @@ jobs:
           node scripts/rag-text-self-test.mjs
           node scripts/workspace-edit-json-self-test.mjs
           node scripts/workspace-edit-repair-self-test.mjs
-          node scripts/tester-prompt-self-test.mjs
+          node scripts/reviewer-score-self-test.mjs
 
       - name: Release package validation
         run: |
