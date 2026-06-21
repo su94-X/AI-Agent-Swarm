@@ -1,7 +1,7 @@
 {
   "name": "multi-model-agents",
-  "version": "1.4.5-lite.1",
-  "description": "AI Agent Swarm Lite: Codex remains the orchestrator; Opus/Claude provides external review, risk analysis, and 0-100 scoring; Gemini tester workflow is removed.",
+  "version": "1.4.5-lite.2",
+  "description": "AI Agent Swarm Lite: Codex remains the orchestrator; Opus/Claude provides engineering gate review, risk analysis, and 0-100 scoring; Gemini tester workflow is removed.",
   "author": {
     "name": "Su94"
   },
@@ -24,19 +24,19 @@
   "skills": "./skills/",
   "interface": {
     "displayName": "AI Agent Swarm Lite",
-    "shortDescription": "AI Agent Swarm Lite: Codex main control, Opus/Claude external review and scoring, no Gemini tester workflow.",
-    "longDescription": "AI Agent Swarm Lite is the simplified branch of AI Agent Swarm. Codex keeps planning, authorization, real file changes, real command execution, local project memory, and final decisions. Opus/Claude acts as an external reviewer/scorer and returns evidence-bound findings, risks, scores, and recommended Codex actions. The Gemini tester workflow is intentionally removed.",
+    "shortDescription": "AI Agent Swarm Lite: Codex main control, Opus/Claude engineering gate review and scoring, no Gemini tester workflow.",
+    "longDescription": "AI Agent Swarm Lite is the simplified branch of AI Agent Swarm. Codex keeps planning, authorization, real file changes, real command execution, local project memory, and final decisions. Opus/Claude acts as an external reviewer/scorer for plan-review, diff-review, test-review, and final-review, returning evidence-bound findings, risks, scores, must-fix items, and recommended Codex actions. The Gemini tester workflow is intentionally removed.",
     "developerName": "Su94",
     "category": "Productivity",
     "capabilities": [
       "MCP tools",
-      "external review scoring",
+      "engineering gate review",
       "code review",
       "local project memory",
       "visible subagent workflow"
     ],
     "defaultPrompt": [
-      "Use AI Agent Swarm Lite for this task: Codex remains the orchestrator and final decision maker; Opus/Claude may be used only for external review and scoring."
+      "Use AI Agent Swarm Lite for this task: Codex remains the orchestrator and final decision maker; Opus/Claude may be used for engineering gate review and scoring."
     ],
     "brandColor": "#38BDF8",
     "composerIcon": "./assets/ai-agent-swarm-icon.png",

@@ -8,17 +8,18 @@
 插件预期：
 - 展示名：AI Agent Swarm Lite
 - 内部插件名：multi-model-agents
-- 版本：1.4.5-lite.1
+- 版本：1.4.5-lite.2
 - 工作流：Codex 主控，Opus/Claude 外部审查与评分，不使用 Gemini tester。
 - .mcp.json 必须使用 ./scripts/multi-model-agents-mcp.mjs。
 
 请检查：
-1. .codex-plugin/plugin.json 可解析，version 为 1.4.5-lite.1。
+1. .codex-plugin/plugin.json 可解析，version 为 1.4.5-lite.2。
 2. 包内包含 .env.example、README.md、docs/、skills/、scripts/、lib/、LICENSE、NOTICE。
 3. 包内没有真实 .env，没有 .local/rag、.rag 或任何 RAG 数据。
 4. MCP tools 包含 multi_model_reviewer_score，不依赖 multi_model_tester_plan。
 5. 如果存在本地 .env，确认 MMA_REVIEWER_PROVIDER 不是 codex-internal；Lite 版 reviewer/scorer 应使用外部 Opus/Claude。
-6. 运行离线自检：
+6. 包内包含 docs/ENGINEERING_GATE.md。
+7. 运行离线自检：
    - node scripts/mcp-smoke-test.mjs
    - node scripts/http-retry-self-test.mjs
    - node scripts/rag-self-test.mjs

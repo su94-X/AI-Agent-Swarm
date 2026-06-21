@@ -10,7 +10,7 @@
 
 <p align="center">
   <img alt="Branch" src="https://img.shields.io/badge/branch-lite--opus--review-38BDF8">
-  <img alt="Version" src="https://img.shields.io/badge/version-1.4.5--lite.1-22C55E">
+  <img alt="Version" src="https://img.shields.io/badge/version-1.4.5--lite.2-22C55E">
   <a href="./LICENSE"><img alt="License" src="https://img.shields.io/badge/license-Apache--2.0-22C55E"></a>
   <img alt="Node" src="https://img.shields.io/badge/node-no%20npm%20deps-111827">
 </p>
@@ -28,6 +28,12 @@ Lite 版只保留三个核心：
 | Local RAG Memory | 沉淀已验证的项目约定、历史 bug、命令、决策和风险 |
 
 默认 Opus/Claude Reviewer & Scorer 不直接写文件、不运行测试、不做最终决定。它只提供审查意见和评分，Codex 决定是否接受。保留的 coder 工具只作为显式授权的兼容能力，不属于 Lite 默认流程。
+
+## 工程闸门
+
+Lite 版从 `1.4.5-lite.2` 开始默认启用工程闸门。非简单任务在正式编码前必须先产出工程设计文档和开发计划，并调用 Opus/Claude 做 `plan-review`。只要返回 blocking findings、must-fix items、`approved_to_continue: false`，或计划分低于 80 且没有充分解释，Codex 必须先修正文档和计划，再次审查。
+
+进入开发后，Codex 按批准计划自动推进。重要实现步骤后做 diff 检查；高风险或非平凡改动调用 `diff-review`。真实测试完成后，把 command、exit code、stdout、stderr 和变更摘要交给 Opus/Claude 做 `test-review`。详见 [docs/ENGINEERING_GATE.md](./docs/ENGINEERING_GATE.md)。
 
 ## 为什么做 Lite 版
 
@@ -62,7 +68,7 @@ flowchart TD
 | `multi_model_coder_patch` | 可选：让外部 coder 给出补丁建议，不直接写文件 |
 | `multi_model_coder_workspace_edit` | 可选：仍保留受控 workspace edit 能力，但 Lite 默认不作为主流程 |
 | `multi_model_reviewer_findings` | 让 Opus/Claude 返回审查 findings |
-| `multi_model_reviewer_score` | 让 Opus/Claude 对方案或 diff 给出 0-100 评分和证据绑定建议 |
+| `multi_model_reviewer_score` | 让 Opus/Claude 对 plan/diff/test/final gate 给出 0-100 评分、must-fix items 和继续建议 |
 | `multi_model_role_call` | 调用 custom 或指定外部模型角色 |
 | `multi_model_config_status` | 查看角色 provider/model/baseUrl/apiKeyEnv/hasApiKey 状态，不打印 key |
 | `multi_model_rag_status` | 查看本地项目记忆库状态 |
@@ -86,10 +92,11 @@ Lite 版不暴露 `multi_model_tester_plan`，默认不使用 Gemini。
 1. Codex 读取需求，制定方案。
 2. Codex 检索本地 RAG，只选择必要片段进入上下文。
 3. Codex 自己修改文件或运行命令。
-4. 需要外部第二意见时，调用 `multi_model_reviewer_findings` 或 `multi_model_reviewer_score`。
-5. Opus/Claude 只返回 findings、score、evidence、recommended_codex_actions。
-6. Codex 审查外部意见，运行真实测试，做最终决定。
-7. 任务结束后，Codex 将已验证的 bug、命令、决策或风险写入 RAG。
+4. 非简单任务正式编码前调用 `multi_model_reviewer_score` 做 `plan-review`。
+5. 高风险或非平凡 diff 调用 `diff-review`。
+6. 真实测试完成后调用 `test-review`。
+7. Codex 审查外部意见，运行真实测试，做最终决定。
+8. 任务结束后，Codex 将已验证的 bug、命令、决策或风险写入 RAG。
 
 ## 配置
 

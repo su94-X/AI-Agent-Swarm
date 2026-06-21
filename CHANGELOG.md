@@ -2,6 +2,24 @@
 
 All notable changes to AI Agent Swarm and its Lite branch are documented here.
 
+## [1.4.5-lite.2] - 2026-06-22
+
+### Added
+
+- Added Lite engineering gate documentation in `docs/ENGINEERING_GATE.md`.
+- Extended `multi_model_reviewer_score` with `review_stage` and `test_evidence` support for plan-review, diff-review, test-review, and final-review.
+- Added reviewer prompt requirements for `must_fix_items`, `approved_to_continue`, and `stage_specific_review`.
+
+### Changed
+
+- Updated Lite startup, project, role, README, skill, release, and packaging docs to require design gate review before non-trivial coding.
+- Strengthened reviewer-score self-test to guard engineering gate prompt fields.
+
+### Verified
+
+- Lite plan-review was performed with Opus/Claude before implementation.
+- Core syntax, MCP smoke, and reviewer-score self-test passed during implementation.
+
 ## [1.4.5-lite.1] - 2026-06-22
 
 ### Added

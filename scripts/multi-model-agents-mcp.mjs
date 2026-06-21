@@ -131,13 +131,24 @@ const tools = [
   {
     name: "multi_model_reviewer_score",
     description:
-      "Ask the configured reviewer model, usually Opus/Claude in Lite mode, to score a plan or diff and return evidence-bound review findings.",
+      "Ask the configured reviewer model, usually Opus/Claude in Lite mode, to score a plan, diff, test evidence, or final decision gate.",
     inputSchema: objectSchema(
       {
+        review_stage: enumSchema(["plan", "diff", "test", "final"]),
         task: stringSchema("Original task."),
         plan: stringSchema("Implementation plan or context."),
         diff: stringSchema("Unified diff or patch summary."),
         changed_files: arraySchema(stringSchema("Changed file path."), "Changed files."),
+        test_evidence: objectSchema(
+          {
+            command: stringSchema("Command that Codex actually ran."),
+            exit_code: nonNegativeIntegerSchema("Process exit code reported by Codex. Zero means success."),
+            stdout: stringSchema("Captured stdout."),
+            stderr: stringSchema("Captured stderr."),
+            summary: stringSchema("Codex summary of what changed and what the command proves."),
+          },
+          []
+        ),
         rubric: arraySchema(
           enumSchema(["correctness", "security", "regression", "maintainability", "scope_control", "tests"]),
           "Scoring rubric dimensions."
@@ -444,19 +455,26 @@ function buildReviewerPrompt(args) {
 }
 
 function buildReviewerScorePrompt(args) {
+  const reviewStage = args.review_stage || "final";
+  if (reviewStage === "test" && !hasTestEvidence(args.test_evidence)) {
+    throw new Error("test-review requires test_evidence with command, exit_code, stdout/stderr, or summary.");
+  }
   const systemPrompt = [
     "You are the external Opus/Claude review-and-scoring role in a Codex-orchestrated Lite workflow.",
     "Codex remains the orchestrator and final decision maker.",
-    "Score the provided plan or diff using only the supplied evidence.",
+    "Score the provided plan, diff, test evidence, or final decision gate using only the supplied evidence.",
+    "Valid review_stage values are plan, diff, test, and final. They correspond to plan-review, diff-review, test-review, and final-review.",
     "Do not claim that you edited files or ran tests.",
     "Avoid generic advice that is not tied to the current task, plan, diff, or changed files.",
   ].join(" ");
 
   const userPrompt = [
+    `Review stage:\n${reviewStage}`,
     `Task:\n${requiredString(args.task, "task")}`,
     args.plan ? `Plan:\n${args.plan}` : "",
     args.diff ? `Diff:\n${args.diff}` : "",
     args.changed_files?.length ? `Changed files:\n${args.changed_files.map((path) => `- ${path}`).join("\n")}` : "",
+    testEvidenceBlock(args.test_evidence),
     args.rubric?.length ? `Rubric:\n${args.rubric.map((item) => `- ${item}`).join("\n")}` : "",
     [
       "Output:",
@@ -464,15 +482,54 @@ function buildReviewerScorePrompt(args) {
       "2. dimension_scores: correctness, security, regression, maintainability, scope_control, tests; use null when evidence is missing.",
       "3. blocking_findings: only concrete issues that should block acceptance.",
       "4. non_blocking_findings: useful issues that do not block acceptance.",
-      "5. evidence: cite the exact supplied evidence behind each score or finding.",
-      "6. recommended_codex_actions: what Codex should inspect, test, or decide next.",
-      "7. not_claimed: explicitly state that Opus/Claude did not run tests and did not edit files.",
+      "5. must_fix_items: required changes before Codex may continue; empty array when none.",
+      "6. approved_to_continue: boolean. Use false for blocking findings, must-fix items, missing critical evidence, or unsafe scope.",
+      "7. evidence: cite the exact supplied evidence behind each score or finding.",
+      "8. recommended_codex_actions: what Codex should inspect, test, or decide next.",
+      "9. stage_specific_review:",
+      "   - plan-review: confirm design completeness, step size, scope boundaries, fallback behavior, and validation path.",
+      "   - diff-review: confirm diff matches approved plan, no unrelated changes, no boundary expansion, and tests are adequate.",
+      "   - test-review: review command, exit code, stdout, stderr, and change summary; do not claim you ran tests.",
+      "   - final-review: confirm unresolved risk and whether Codex has enough evidence to accept.",
+      "10. not_claimed: explicitly state that Opus/Claude did not run tests and did not edit files.",
+      "If overall_score is below 80, default approved_to_continue to false unless you clearly explain why no blocking or must-fix issue exists.",
     ].join("\n"),
   ]
     .filter(Boolean)
     .join("\n\n");
 
   return { systemPrompt, userPrompt };
+}
+
+function nonNegativeIntegerSchema(description) {
+  return {
+    type: "integer",
+    description,
+    minimum: 0,
+  };
+}
+
+function testEvidenceBlock(testEvidence) {
+  if (!testEvidence || typeof testEvidence !== "object") {
+    return "";
+  }
+  return [
+    "Test evidence from Codex:",
+    testEvidence.command ? `Command: ${testEvidence.command}` : "",
+    testEvidence.exit_code !== undefined ? `Exit code: ${testEvidence.exit_code}` : "",
+    testEvidence.stdout ? `Stdout:\n${testEvidence.stdout}` : "",
+    testEvidence.stderr ? `Stderr:\n${testEvidence.stderr}` : "",
+    testEvidence.summary ? `Change/test summary:\n${testEvidence.summary}` : "",
+  ]
+    .filter(Boolean)
+    .join("\n");
+}
+
+function hasTestEvidence(testEvidence) {
+  if (!testEvidence || typeof testEvidence !== "object") {
+    return false;
+  }
+  return ["command", "exit_code", "stdout", "stderr", "summary"].some((key) => testEvidence[key] !== undefined && testEvidence[key] !== "");
 }
 
 function resolveRoleConfig(role, args) {

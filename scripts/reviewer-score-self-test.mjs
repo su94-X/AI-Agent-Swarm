@@ -10,6 +10,17 @@ for (const required of [
   "dimension_scores",
   "blocking_findings",
   "non_blocking_findings",
+  "review_stage",
+  "plan-review",
+  "diff-review",
+  "test-review",
+  "final-review",
+  "must_fix_items",
+  "approved_to_continue",
+  "test_evidence",
+  "Test evidence from Codex",
+  "test-review requires test_evidence",
+  "hasTestEvidence",
   "Opus/Claude did not run tests and did not edit files",
 ]) {
   if (!serverText.includes(required)) {
