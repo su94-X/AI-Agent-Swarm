@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "multi-model-agents": {
+      "type": "stdio",
+      "command": "node",
+      "args": [
+        "./scripts/multi-model-agents-mcp.mjs"
+      ]
+    }
+  }
+}

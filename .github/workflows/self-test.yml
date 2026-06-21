@@ -1,0 +1,44 @@
+name: self-test
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  offline-self-test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        node-version: [20.x, 22.x]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Syntax check
+        shell: bash
+        run: |
+          find . -name '*.mjs' -print0 | xargs -0 -n1 node --check
+
+      - name: Offline self-tests
+        run: |
+          node scripts/mcp-smoke-test.mjs
+          node scripts/http-retry-self-test.mjs
+          node scripts/rag-self-test.mjs
+          node scripts/rag-metadata-self-test.mjs
+          node scripts/rag-security-self-test.mjs
+          node scripts/rag-text-self-test.mjs
+          node scripts/workspace-edit-json-self-test.mjs
+          node scripts/workspace-edit-repair-self-test.mjs
+          node scripts/tester-prompt-self-test.mjs
+
+      - name: Release package validation
+        run: |
+          node scripts/package-release.mjs ./outputs

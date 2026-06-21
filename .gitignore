@@ -1,0 +1,47 @@
+# Local secrets and environment
+.env
+.env.*
+!.env.example
+
+# Local RAG / memory data
+.local/
+.local/**
+.rag/
+.rag/**
+rag/
+
+# Release and temporary output
+outputs/
+*.zip
+*.tgz
+*.tar.gz
+*.log
+*.tmp
+.ai-agent-swarm-*-stage/
+
+# Dependencies and generated artifacts
+node_modules/
+dist/
+build/
+coverage/
+
+# Credential-like files
+*.pem
+*.key
+*.p12
+*.pfx
+*.crt
+*.cer
+*.sqlite
+*.db
+*.kdbx
+credentials*
+secrets*
+id_rsa*
+
+# OS / editor noise
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/
+.idea/
