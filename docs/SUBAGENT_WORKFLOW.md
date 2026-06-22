@@ -1,6 +1,16 @@
 # 子智能体工作流
 
-当你希望每个角色的工作都显示为独立 Codex 子智能体活动记录时，使用本工作流。
+本工作流是 AI Agent Swarm 处理非简单任务的默认强制流程。除简单问答、纯解释、单条命令查询，或当前线程明确没有子智能体工具外，非简单任务必须创建可见 Codex 子智能体活动记录。
+
+## 强制创建规则
+
+- 非简单任务默认必须使用可见角色子智能体。只要当前线程暴露 `multi_agent_v1.spawn_agent`、`wait_agent`、`send_input`、`close_agent` 或等价的可见子智能体工具，Main Orchestrator 就必须先创建或复用角色子智能体，再进入工程计划、编码或测试执行。
+- Main Orchestrator 不得仅在主线程中直接调用 `multi_model_coder_workspace_edit`、`multi_model_tester_plan` 或内部 reviewer 来替代应出现的 Coder、Tester、Test Runner、Reviewer 或 RAG Curator 子智能体。
+- 非简单实现任务必须创建 Coder Subagent；涉及测试策略、测试选择或失败日志分析时创建 Tester Subagent；需要运行真实本地命令、发布、安装验证或测试执行时创建 Test Runner Subagent；高风险、非平凡、较大 diff，或触碰安全/RAG/MCP/发布逻辑时创建 Reviewer Subagent；需要整理可写入 RAG 的候选知识、项目接手、新项目初始化或长期记忆沉淀时创建 RAG Curator Subagent。
+- Coder/Tester 即使通过 MCP 调用 Opus/Gemini，也必须以可见 Codex 子智能体壳子的形式执行对应角色工作。外部模型不是 Codex 子智能体底层模型。
+- 只有简单问答、纯解释、单条命令查询，或当前线程没有子智能体工具时，才允许不创建子智能体。
+- 如果当前线程没有子智能体工具，必须在任务开头明确写出：“当前线程没有可见子智能体工具，降级为 Main Orchestrator 直接调用 MCP 工具。”不得静默降级。
+- 有子智能体工具可用时，不得由 Main Orchestrator 静默独自完成非简单任务。
 
 ## 模型关系
 

@@ -1,7 +1,7 @@
 {
   "name": "multi-model-agents",
-  "version": "1.4.7",
-  "description": "AI Agent Swarm V1.4.7 simplifies the user prompt experience into three universal docs: install, start, and release, while preserving Codex-led engineering gates.",
+  "version": "1.4.8",
+  "description": "AI Agent Swarm V1.4.8 strengthens the default visible subagent startup contract for non-simple Codex-led multi-model work.",
   "author": {
     "name": "Su94"
   },
@@ -23,8 +23,8 @@
   "skills": "./skills/",
   "interface": {
     "displayName": "AI Agent Swarm",
-    "shortDescription": "AI Agent Swarm V1.4.7: Codex main control, Opus/Claude coding, Gemini test analysis, engineering gates, and simpler prompts.",
-    "longDescription": "AI Agent Swarm V1.4.7 is a local Codex multi-model orchestration plugin for long-running development. Codex keeps planning, authorization, real tests, review integration, RAG writes, and final decisions. Opus/Claude performs primary coding inside authorized workspace boundaries after design plan-review. Gemini provides test strategy and failure-log analysis. V1.4.7 simplifies user-facing docs into INSTALL_PROMPT, START_PROMPT, and RELEASE_PROMPT while keeping advanced engineering gate, RAG, and subagent references available.",
+    "shortDescription": "AI Agent Swarm V1.4.8: Codex main control, Opus/Claude coding, Gemini test analysis, engineering gates, and required visible subagents.",
+    "longDescription": "AI Agent Swarm V1.4.8 is a local Codex multi-model orchestration plugin for long-running development. Codex keeps planning, authorization, real tests, review integration, RAG writes, and final decisions. Opus/Claude performs primary coding inside authorized workspace boundaries after design plan-review. Gemini provides test strategy and failure-log analysis. V1.4.8 strengthens the START_PROMPT and skill policy so non-simple tasks must create visible role subagents when the Codex thread exposes subagent tools, or explicitly report a fallback when those tools are unavailable.",
     "developerName": "Su94",
     "category": "Productivity",
     "capabilities": [

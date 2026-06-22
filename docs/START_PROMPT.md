@@ -12,6 +12,13 @@
 2. 调用 multi_model_rag_status。不要输出知识库正文。
 3. 对非简单任务，先用 multi_model_rag_search 检索项目约定、历史 bug、真实测试命令和架构决策。只有 scope 匹配、高置信、未过期、active 的结果才能进入 plan、constraints、known_test_commands 或外部模型上下文。
 
+可见子智能体强制规则：
+- 除简单问答、纯解释、单条命令查询，或当前线程明确没有子智能体工具外，所有非简单任务必须先创建可见 Codex 子智能体活动记录。子智能体工具包括 `multi_agent_v1.spawn_agent`、`wait_agent`、`send_input`、`close_agent` 或 Codex 客户端提供的等价可见子智能体能力。
+- 有子智能体工具可用时，不得仅在 Main Orchestrator 主线程中直接调用 multi_model_coder_workspace_edit、multi_model_tester_plan 或内部 reviewer 来替代对应子智能体。
+- 非简单实现任务必须至少创建 Coder Subagent；涉及测试策略或失败日志时创建 Tester Subagent；需要真实命令执行、发布或验证时创建 Test Runner Subagent；高风险、非平凡、较大 diff，或触碰安全/RAG/MCP/发布逻辑时创建 Reviewer Subagent；需要整理记忆候选、项目接手或长期记忆沉淀时创建 RAG Curator Subagent。
+- Coder/Tester 即使通过 MCP 调用 Opus/Gemini，也必须以可见 Codex 子智能体壳子的形式执行对应角色工作。
+- 如果当前线程没有子智能体工具，必须在任务开头明确写出：“当前线程没有可见子智能体工具，降级为 Main Orchestrator 直接调用 MCP 工具。”然后再继续保留角色边界。
+
 自动判断任务类型：
 - 简单问答、纯解释、单条命令查询：轻量回答即可，不创建子智能体，不走完整工程闸门。
 - 新项目：先生成最小项目文档、约定、验证命令和可写入 RAG 的候选记忆，再开始开发。

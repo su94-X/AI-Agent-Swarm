@@ -159,8 +159,12 @@ function validateStage() {
     "scripts/workspace-edit-json-self-test.mjs",
     "scripts/workspace-edit-repair-self-test.mjs",
     "scripts/tester-prompt-self-test.mjs",
+    "scripts/subagent-prompt-self-test.mjs",
     "scripts/package-release.mjs",
     "skills/multi-model-agents/SKILL.md",
+    "skills/multi-model-agents/agents/openai.yaml",
+    "assets/ai-agent-swarm-icon.png",
+    "skills/multi-model-agents/assets/ai-agent-swarm-icon.png",
   ];
   for (const rel of required) {
     if (!existsSync(join(stageRoot, ...rel.split("/")))) {

@@ -2,6 +2,19 @@
 
 All notable changes to AI Agent Swarm are documented here.
 
+## [1.4.8] - 2026-06-22
+
+### Changed
+
+- Strengthened `docs/START_PROMPT.md` so non-simple tasks must create visible Codex role subagents when subagent tools are available.
+- Updated `skills/multi-model-agents/SKILL.md` and `docs/SUBAGENT_WORKFLOW.md` to forbid silent fallback to Main Orchestrator-only execution when visible subagent tools are exposed.
+- Added `scripts/subagent-prompt-self-test.mjs` to guard the visible subagent startup contract.
+- Updated README, plugin metadata, skill UI metadata, roadmap, and release notes for V1.4.8.
+
+### Notes
+
+- Core MCP runtime behavior is unchanged. This release tightens workflow policy so users can see Coder, Reviewer, Tester, Test Runner, and RAG Curator activity in Codex when the current thread supports visible subagents.
+
 ## [1.4.7] - 2026-06-22
 
 ### Added

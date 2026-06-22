@@ -18,7 +18,8 @@
 8. 创建或更新 GitHub Release。
 9. 上传对应 zip asset。
 10. 用公开 GitHub API 或网页反查 Release 页面，确认 tag、release name、zip asset 和 latest 状态正确。
-11. 如果有 Lite 分支或其他发布分支，也要同步完成 branch、tag、GitHub Release 和 zip asset。
+11. 在新的 Codex 线程中发送 docs/START_PROMPT.md 做一次启动验收：非简单任务必须先出现可见 Coder/Reviewer/Tester 子智能体；如果该线程没有子智能体工具，必须明确输出降级说明。
+12. 如果有 Lite 分支或其他发布分支，也要同步完成 branch、tag、GitHub Release 和 zip asset。
 
 安全规则：
 - 不要打印、提交或上传 .env、API key、token、RAG 数据或本地缓存。

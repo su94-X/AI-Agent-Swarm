@@ -115,11 +115,12 @@ V1.4.5 起，RAG 条目可携带 `confidence`、`verified_by`、`expires_at`、`
 node scripts/mcp-smoke-test.mjs
 node scripts/http-retry-self-test.mjs
 node scripts/workspace-edit-repair-self-test.mjs
+node scripts/subagent-prompt-self-test.mjs
 node scripts/api-smoke-test.mjs
 node scripts/rag-self-test.mjs
 ```
 
-`mcp-smoke-test.mjs`、`http-retry-self-test.mjs`、`workspace-edit-repair-self-test.mjs` 和 `rag-self-test.mjs` 不调用外部模型。`http-retry-self-test.mjs` 和 `workspace-edit-repair-self-test.mjs` 只启动本地临时 HTTP server 验证重试或修复逻辑。`api-smoke-test.mjs` 会调用已配置的 coder、tester 和 custom 角色，只应在本地 key 配好后运行。
+`mcp-smoke-test.mjs`、`http-retry-self-test.mjs`、`workspace-edit-repair-self-test.mjs`、`subagent-prompt-self-test.mjs` 和 `rag-self-test.mjs` 不调用外部模型。`http-retry-self-test.mjs` 和 `workspace-edit-repair-self-test.mjs` 只启动本地临时 HTTP server 验证重试或修复逻辑。`api-smoke-test.mjs` 会调用已配置的 coder、tester 和 custom 角色，只应在本地 key 配好后运行。
 
 ## 打包规则
 
@@ -172,6 +173,10 @@ node scripts/rag-self-test.mjs
 - `scripts/package-release.mjs`
 - `scripts/workspace-edit-repair-self-test.mjs`
 - `scripts/tester-prompt-self-test.mjs`
+- `scripts/subagent-prompt-self-test.mjs`
+- `skills/multi-model-agents/agents/openai.yaml`
+- `assets/ai-agent-swarm-icon.png`
+- `skills/multi-model-agents/assets/ai-agent-swarm-icon.png`
 
 `PACKAGE_INSTALL_PROMPT.md`、`FIRST_INSTALL_PROMPT.md`、`STARTUP_PROMPT.md`、`PROJECT_START_PROMPT.md`、`SUBAGENT_START_PROMPT.md`、`EXISTING_PROJECT_HANDOFF_PROMPT.md` 和 `NEW_PROJECT_BOOTSTRAP_PROMPT.md` 只是兼容旧链接的短 wrapper。普通用户入口是 `INSTALL_PROMPT.md`、`START_PROMPT.md` 和 `RELEASE_PROMPT.md`。
 

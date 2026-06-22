@@ -9,7 +9,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/su94-X/AI-Agent-Swarm/releases/tag/v1.4.7"><img alt="Release" src="https://img.shields.io/badge/release-v1.4.7-38BDF8"></a>
+  <a href="https://github.com/su94-X/AI-Agent-Swarm/releases/tag/v1.4.8"><img alt="Release" src="https://img.shields.io/badge/release-v1.4.8-38BDF8"></a>
   <a href="./LICENSE"><img alt="License" src="https://img.shields.io/badge/license-Apache--2.0-22C55E"></a>
   <img alt="Node" src="https://img.shields.io/badge/node-no%20npm%20deps-111827">
   <img alt="Codex Plugin" src="https://img.shields.io/badge/Codex-plugin-8B5CF6">
@@ -19,7 +19,7 @@
 
 AI Agent Swarm 是一个面向长期项目维护的本地 Codex 多模型编排插件。它的目标不是替换 Codex 主智能体，而是把外部模型能力纳入 Codex 可控的授权、审查、测试和记忆流程。
 
-V1.4.7 是当前正式稳定版本。它保留 V1.4.6 的工程闸门、workspace 安全、RAG 质量层、MCP 可见日志、patch/edit 局部编辑和可见角色子智能体，同时把用户提示词入口简化为三份通用文档：安装检查、日常启动、维护发布。
+V1.4.8 是当前正式稳定版本。它保留 V1.4.7 的三段式通用提示词、工程闸门、workspace 安全、RAG 质量层、MCP 可见日志和 patch/edit 局部编辑，并强化默认可见角色子智能体契约：非简单任务在当前线程暴露子智能体工具时，必须先创建角色子智能体，否则要明确说明降级原因。
 
 ## 核心定位
 
@@ -70,7 +70,7 @@ flowchart TD
 
 ## 3 步快速开始
 
-1. 下载并解压 [ai-agent-swarm-1.4.7.zip](https://github.com/su94-X/AI-Agent-Swarm/releases/download/v1.4.7/ai-agent-swarm-1.4.7.zip)。
+1. 下载并解压 [ai-agent-swarm-1.4.8.zip](https://github.com/su94-X/AI-Agent-Swarm/releases/download/v1.4.8/ai-agent-swarm-1.4.8.zip)。
 2. 复制 `.env.example` 为 `.env`，只填写当前确实要用的外部模型 key。
 3. 在 Codex 中发送 `docs/INSTALL_PROMPT.md` 做安装检查；日常开发发送 `docs/START_PROMPT.md`。
 
@@ -89,6 +89,7 @@ docs/RELEASE_PROMPT.md
 - **Codex 内部审查**：默认 reviewer 为 `codex-internal`，避免重复消耗外部 GPT API。
 - **本地项目记忆库**：JSONL + 词法检索，支持 `confidence`、`verified_by`、`expires_at`、`scope`、`aliases`、`status`。
 - **可见角色子智能体**：Coder、Tester、Reviewer、Test Runner、RAG Curator 都可以在 Codex 中保留可见过程。
+- **强制可见子智能体契约**：非简单任务若有 Codex 子智能体工具可用，必须先创建或复用角色子智能体；没有工具时必须明示降级。
 - **无 npm 依赖**：MCP server、打包、zip 校验和自测均使用 Node 内置模块。
 - **跨平台发布包**：`scripts/package-release.mjs` 统一生成 zip，并校验无 `.env`、无 RAG 数据、无反斜杠路径。
 
@@ -183,6 +184,7 @@ node scripts/rag-text-self-test.mjs
 node scripts/workspace-edit-json-self-test.mjs
 node scripts/workspace-edit-repair-self-test.mjs
 node scripts/tester-prompt-self-test.mjs
+node scripts/subagent-prompt-self-test.mjs
 ```
 
 这些离线自检不调用真实外部模型 API。真实连通性测试使用：
@@ -212,7 +214,7 @@ node scripts/package-release.mjs C:\path\to\outputs
 - 变更记录：[CHANGELOG.md](./CHANGELOG.md)
 - 安全策略：[SECURITY.md](./SECURITY.md)
 - 贡献说明：[CONTRIBUTING.md](./CONTRIBUTING.md)
-- Release：[AI Agent Swarm V1.4.7](https://github.com/su94-X/AI-Agent-Swarm/releases/tag/v1.4.7)
+- Release：[AI Agent Swarm V1.4.8](https://github.com/su94-X/AI-Agent-Swarm/releases/tag/v1.4.8)
 
 ## 联系方式
 
