@@ -1,7 +1,7 @@
 {
   "name": "multi-model-agents",
-  "version": "1.5.1",
-  "description": "AI Agent Swarm V1.5.1 refreshes the GitHub README for Custom Agents, usage flow, Lite comparison, safety boundaries, and release guidance.",
+  "version": "1.5.2",
+  "description": "AI Agent Swarm V1.5.2 strengthens Custom Agent spawn contracts so primary-coder must call Opus/Claude MCP tools and tester must call Gemini MCP tools instead of self-executing those roles.",
   "author": {
     "name": "Su94"
   },
@@ -23,8 +23,8 @@
   "skills": "./skills/",
   "interface": {
     "displayName": "AI Agent Swarm",
-    "shortDescription": "AI Agent Swarm V1.5.1: clearer GitHub README, official Custom Agents, Codex main control, Opus/Claude coding, Gemini test analysis, and RAG.",
-    "longDescription": "AI Agent Swarm V1.5.1 is a local Codex multi-model orchestration plugin for long-running development. Codex keeps planning, authorization, real tests, review integration, RAG writes, and final decisions. Opus/Claude performs primary coding inside authorized workspace boundaries after design plan-review. Gemini provides test strategy and failure-log analysis. This release refreshes the GitHub README around Custom Agents, Lite comparison, safety boundaries, usage flow, and release guidance.",
+    "shortDescription": "AI Agent Swarm V1.5.2: Custom Agent spawn contracts for Opus/Claude coding and Gemini test analysis.",
+    "longDescription": "AI Agent Swarm V1.5.2 is a local Codex multi-model orchestration plugin for long-running development. Codex keeps planning, authorization, real tests, review integration, RAG writes, and final decisions. Opus/Claude performs primary coding through the primary-coder Custom Agent calling multi_model_coder_workspace_edit. Gemini provides test strategy and failure-log analysis through the tester Custom Agent calling multi_model_tester_plan. This release strengthens the Custom Agent prompts and startup workflow so visible role subagents cannot silently substitute their own Codex reasoning for the configured external model role.",
     "developerName": "Su94",
     "category": "Productivity",
     "capabilities": [

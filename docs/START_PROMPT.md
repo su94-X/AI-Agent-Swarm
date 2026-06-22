@@ -20,6 +20,8 @@
 - 非简单实现任务必须至少创建 Coder / primary-coder Subagent；涉及测试策略或失败日志时创建 Tester Subagent；需要真实命令执行、发布或验证时创建 Test Runner Subagent；高风险、非平凡、较大 diff，或触碰安全/RAG/MCP/发布逻辑时创建 Reviewer Subagent；触碰密钥、发布包、路径授权或 prompt injection surface 时创建 Security Auditor Subagent；需要整理记忆候选、项目接手或长期记忆沉淀时创建 RAG Curator Subagent。
 - Coder/Tester 即使通过 MCP 调用 Opus/Gemini，也必须以可见 Codex 子智能体壳子的形式执行对应角色工作。
 - Custom Agent 模板只定义可被 Codex spawn 的角色配置；Skill 负责工作流，MCP 负责外部模型/RAG/workspace 工具，Plugin 负责打包分发。不要把 Skill 当作子智能体创建机制。
+- 创建 Coder / primary-coder Subagent 时，spawn message 必须明确写入：你是 Codex 可见壳子，不是 Opus/Claude 本体；必须调用 `multi_model_coder_workspace_edit` 执行主要编码；不得自己直接实现代码，不得用 Codex 自己代替 Opus/Claude；如果 MCP 工具不可见、key 缺失或授权边界不完整，输出阻塞报告。
+- 创建 Tester Subagent 时，spawn message 必须明确写入：你是 Codex 可见壳子，不是 Gemini 本体；必须调用 `multi_model_tester_plan` 生成测试策略、建议命令、边界用例或失败日志分析；不得自己直接生成测试策略，不得用 Codex 自己代替 Gemini；如果 MCP 工具不可见、key 缺失或输入证据不足，输出阻塞或降级报告。
 - 子智能体完成任务并返回结果后，Main Orchestrator 必须调用 close_agent 或等价关闭能力释放子智能体并发槽位；不要让已完成的 Coder/Reviewer/Tester/Test Runner/RAG Curator/Security Auditor 长时间保持打开状态。
 - 如果当前线程没有子智能体工具，必须在任务开头明确写出：“当前线程没有可见子智能体工具，降级为 Main Orchestrator 直接调用 MCP 工具。”然后再继续保留角色边界。
 
@@ -33,16 +35,16 @@
 工程闸门：
 1. 正式编码前，Codex 先写工程设计和开发计划，包含目标、非目标、相关文件、读写边界、data flow、prompt injection surface、credential handling、external network scope、风险、回退和验证路径。
 2. 将设计和计划交给 Opus/Claude 做 plan-review。只要有 blocking findings 或 must-fix items，先修计划并复审，不得进入编码。
-3. plan-review 通过后，Coder Subagent 才能调用 multi_model_coder_workspace_edit，让 Opus/Claude 在授权范围内实现。
+3. plan-review 通过后，创建 Coder / primary-coder Subagent，并在 spawn message 中再次声明必须调用 multi_model_coder_workspace_edit，让 Opus/Claude 在授权范围内实现；Coder 不得自己直接写代码。
 4. 高风险或非平凡 diff 必须做 diff-review。默认用 Codex 内部 reviewer；需要外部第二意见时再调用外部 reviewer/role_call。
 5. 真实测试由 Codex/Test Runner 本地执行，必须记录 command、exit code、stdout、stderr。测试证据交给 Gemini 做 test-review 或失败日志分析。
 6. 未完成当前批准计划 100% 前，不得声明完成；需求变更时先更新 amended plan。
 
 默认角色：
 - Main Orchestrator：Codex 主控，负责规划、授权、审查、真实测试、RAG 写入和最终决策。
-- Coder：Opus/Claude，通过 multi_model_coder_workspace_edit 执行主要编码。只读写 Codex 授权路径。
+- Coder：Codex 可见壳子，必须通过 multi_model_coder_workspace_edit 调用 Opus/Claude 执行主要编码。只读写 Codex 授权路径，不得自己代替外部模型实现。
 - Reviewer：默认 Codex 内部审查，不调用 mcp__codex，不创建嵌套智能体。
-- Tester：Gemini，通过 multi_model_tester_plan 生成测试策略和失败日志分析；不声称自己运行过测试。
+- Tester：Codex 可见壳子，必须通过 multi_model_tester_plan 调用 Gemini 生成测试策略和失败日志分析；不得自己代替 Gemini 输出策略，不声称自己运行过测试。
 - Test Runner：只运行主控批准的真实本地命令，记录 command、exit code、stdout、stderr。
 - RAG Curator：整理已验证知识候选；最终写入由 Main Orchestrator 调用 RAG 工具完成。
 - Security Auditor：只读审计密钥泄漏、路径边界、发布包和 prompt injection surface。

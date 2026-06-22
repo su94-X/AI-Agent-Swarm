@@ -12,7 +12,15 @@ const requiredAgents = [
   {
     file: "primary-coder.toml",
     name: "primary-coder",
-    required: ["multi_model_coder_workspace_edit", "allowed_read_paths", "allowed_write_paths", "plan-review"],
+    required: [
+      "必须调用 multi_model_coder_workspace_edit",
+      "不得自己直接实现代码",
+      "不得用 Codex 自己代替 Opus/Claude",
+      "multi_model_coder_workspace_edit 不可见",
+      "allowed_read_paths",
+      "allowed_write_paths",
+      "plan-review",
+    ],
   },
   {
     file: "reviewer.toml",
@@ -24,7 +32,15 @@ const requiredAgents = [
     file: "tester.toml",
     name: "tester",
     sandbox: "read-only",
-    required: ["multi_model_tester_plan", "Gemini", "不得声称测试已通过", "verified_commands"],
+    required: [
+      "必须调用 multi_model_tester_plan",
+      "不得自己直接生成测试策略",
+      "不得用 Codex 自己代替 Gemini",
+      "multi_model_tester_plan 不可见",
+      "Gemini",
+      "不得声称测试已通过",
+      "verified_commands",
+    ],
   },
   {
     file: "test-runner.toml",
@@ -86,7 +102,17 @@ for (const agent of requiredAgents) {
 }
 
 const workflow = readFile("docs/CUSTOM_AGENTS.md");
-for (const snippet of [".codex/agents/*.toml", "~/.codex/agents/*.toml", "Skill", "MCP", "Plugin"]) {
+for (const snippet of [
+  ".codex/agents/*.toml",
+  "~/.codex/agents/*.toml",
+  "Skill",
+  "MCP",
+  "Plugin",
+  "spawn message",
+  "不得自己直接实现代码",
+  "不得自己直接生成测试策略",
+  "close_agent",
+]) {
   if (!workflow.includes(snippet)) {
     throw new Error(`docs/CUSTOM_AGENTS.md missing required snippet: ${snippet}`);
   }

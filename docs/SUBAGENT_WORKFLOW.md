@@ -11,6 +11,8 @@ V1.5.0 起，AI Agent Swarm 随包提供官方 Custom Agent 模板：`.codex/age
 - Main Orchestrator 不得仅在主线程中直接调用 `multi_model_coder_workspace_edit`、`multi_model_tester_plan` 或内部 reviewer 来替代应出现的 Coder、Tester、Test Runner、Reviewer、Security Auditor 或 RAG Curator 子智能体。
 - 非简单实现任务必须创建 Coder / primary-coder Subagent；涉及测试策略、测试选择或失败日志分析时创建 Tester Subagent；需要运行真实本地命令、发布、安装验证或测试执行时创建 Test Runner Subagent；高风险、非平凡、较大 diff，或触碰安全/RAG/MCP/发布逻辑时创建 Reviewer Subagent；触碰密钥、发布包、路径授权或 prompt injection surface 时创建 Security Auditor Subagent；需要整理可写入 RAG 的候选知识、项目接手、新项目初始化或长期记忆沉淀时创建 RAG Curator Subagent。
 - Coder/Tester 即使通过 MCP 调用 Opus/Gemini，也必须以可见 Codex 子智能体壳子的形式执行对应角色工作。外部模型不是 Codex 子智能体底层模型。
+- 创建 Coder / primary-coder Subagent 时，Main Orchestrator 的 spawn message 必须再次写明：必须调用 `multi_model_coder_workspace_edit`，不得自己直接实现代码，不得用 Codex 自己代替 Opus/Claude；工具、key 或授权边界不可用时输出阻塞报告。
+- 创建 Tester Subagent 时，Main Orchestrator 的 spawn message 必须再次写明：必须调用 `multi_model_tester_plan`，不得自己直接生成测试策略或失败分析，不得用 Codex 自己代替 Gemini；工具、key 或输入证据不足时输出阻塞或降级报告。
 - 子智能体完成任务并返回结果后，Main Orchestrator 必须调用 `close_agent` 或等价关闭能力释放并发槽位。已完成的 agent 不应继续占用位置。
 - 只有简单问答、纯解释、单条命令查询，或当前线程没有子智能体工具时，才允许不创建子智能体。
 - 如果当前线程没有子智能体工具，必须在任务开头明确写出：“当前线程没有可见子智能体工具，降级为 Main Orchestrator 直接调用 MCP 工具。”不得静默降级。
@@ -23,9 +25,9 @@ V1.5.0 起，AI Agent Swarm 随包提供官方 Custom Agent 模板：`.codex/age
 | 可见 Codex 单元 | 外部角色 | 主要工具 | 职责 |
 | --- | --- | --- | --- |
 | Main Orchestrator | 无 | 无 | 规划、授权边界、委派、整合、最终决策。 |
-| Coder Subagent | Opus/Claude | `multi_model_coder_workspace_edit` | 在授权范围内完成主要编码实现。 |
+| Coder Subagent | Opus/Claude | `multi_model_coder_workspace_edit` | Codex 可见壳子，必须通过 MCP 调用 Opus/Claude 在授权范围内完成主要编码实现。 |
 | Reviewer Subagent | Codex 内部 | 默认不调用外部工具 | 可选短审查，检查 diff 和边界合规。 |
-| Tester Subagent | Gemini | `multi_model_tester_plan` | 生成测试策略并分析失败日志。 |
+| Tester Subagent | Gemini | `multi_model_tester_plan` | Codex 可见壳子，必须通过 MCP 调用 Gemini 生成测试策略并分析失败日志。 |
 | Test Runner Subagent | 无 | Codex shell 工具 | 运行批准后的真实本地命令并记录输出。 |
 | RAG Curator Subagent | 无 | `multi_model_rag_note` / `multi_model_rag_ingest` 由主控调用 | 整理已验证知识候选条目。 |
 | Security Auditor Subagent | 无 | Codex read-only 审计 | 检查密钥、路径边界、发布包和 prompt injection surface。 |
@@ -78,8 +80,10 @@ V1.5.0 起，AI Agent Swarm 随包提供官方 Custom Agent 模板：`.codex/age
 职责：
 - 接收 Codex 主控给出的 task、plan、workspace_root、allowed_read_paths、allowed_write_paths 和 constraints。
 - 确认 Main Orchestrator 已说明 plan-review 通过；未通过时不得开始编码。
-- 使用 multi_model_coder_workspace_edit 作为主要实现路径。
+- 必须使用 multi_model_coder_workspace_edit 作为主要实现路径。
 - 把 Opus/Claude 当作主要代码作者。
+- 不得自己直接实现代码，不得用 Codex 自己代替 Opus/Claude。
+- 如果 multi_model_coder_workspace_edit 不可见、MCP 未加载、Opus/Claude key 缺失或授权边界不完整，输出阻塞报告，不要自行编码。
 - 通过 MCP 工具返回严格 JSON 兼容的文件编辑。如果模型输出格式错误，MCP server 会自动做一次 JSON 修复重试。
 - 不要自行扩大读写范围。
 - 不要授权 .env、.git、node_modules、dist、build、coverage、凭据文件或无关文件。
@@ -130,7 +134,9 @@ Reviewer 是 Codex 内部审查，不是外部模型角色。小 diff 应由 Mai
 
 职责：
 - 接收 task、plan、diff、changed_files、known_test_commands 和可选真实测试日志。
-- 使用 multi_model_tester_plan 让 Gemini 给出测试策略、具体命令、边界用例和失败日志分析。
+- 必须使用 multi_model_tester_plan 让 Gemini 给出测试策略、具体命令、边界用例和失败日志分析。
+- 不得自己直接生成测试策略或失败分析，不得用 Codex 自己代替 Gemini。
+- 如果 multi_model_tester_plan 不可见、MCP 未加载、Gemini key 缺失或输入证据不足，输出阻塞或降级报告，不要伪造外部分析。
 - 没有 Codex 真实运行日志时，不要声称测试已通过。
 - 区分 verified_commands、suggested_commands、cases_to_inspect、failure_analysis 和 evidence_bound_risks。
 - 只有当命令出现在 known_test_commands，或被提供的项目上下文直接支持时，才把它称为 verified command。
@@ -195,9 +201,9 @@ Security Auditor 只做只读安全审计，重点检查 `.env`、API key、GitH
 1. Main Orchestrator 用 `multi_model_config_status` 确认插件工具和角色配置。
 2. Main Orchestrator 制定方案并明确路径边界。
 3. Main Orchestrator 调用 `multi_model_rag_search` 检索并筛选相关历史知识。
-4. Coder Subagent 调用 `multi_model_coder_workspace_edit`。
+4. 创建 Coder Subagent 时把“必须调用 `multi_model_coder_workspace_edit`、不得自己直接编码”的执行合同写进 spawn message，然后由 Coder Subagent 调用该工具。
 5. Main Orchestrator 审查小 diff；较大或高风险 diff 由 Reviewer Subagent 做短审查。
-6. Tester Subagent 调用 `multi_model_tester_plan`。
+6. 创建 Tester Subagent 时把“必须调用 `multi_model_tester_plan`、不得自己直接生成测试策略”的执行合同写进 spawn message，然后由 Tester Subagent 调用该工具。
 7. Test Runner Subagent 运行批准后的真实命令。
 8. 失败日志交回 Tester Subagent 做 Gemini 分析，或交给 Coder Subagent 让 Opus/Claude 修复。
 9. RAG Curator 整理已验证 bug、命令、决策、约定或风险候选条目。

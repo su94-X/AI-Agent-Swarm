@@ -2,6 +2,19 @@
 
 All notable changes to AI Agent Swarm are documented here.
 
+## [1.5.2] - 2026-06-22
+
+### Fixed
+
+- Strengthened `primary-coder` Custom Agent prompts so the visible Codex subagent must call `multi_model_coder_workspace_edit` and must not directly implement code as a substitute for Opus/Claude.
+- Strengthened `tester` Custom Agent prompts so the visible Codex subagent must call `multi_model_tester_plan` and must not directly generate testing strategy or failure analysis as a substitute for Gemini.
+- Updated `docs/START_PROMPT.md` to require Main Orchestrator to include the MCP execution contract in each `primary-coder` / `tester` spawn message.
+- Added regression checks to `subagent-prompt-self-test.mjs` and `custom-agents-self-test.mjs` for the Custom Agent execution contract.
+
+### Notes
+
+- No intentional MCP runtime behavior changes. This is a workflow-policy, prompt-contract, metadata, and release-package update.
+
 ## [1.5.1] - 2026-06-22
 
 ### Changed

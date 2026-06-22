@@ -45,9 +45,9 @@ Copy-Item -Recurse C:\Users\su94\plugins\multi-model-agents\.codex\agents .\.cod
 
 | Agent | 权限建议 | 职责 |
 | --- | --- | --- |
-| `primary-coder` | `workspace-write` | Codex 可见壳子，通过 `multi_model_coder_workspace_edit` 调用 Opus/Claude 完成主要编码。 |
+| `primary-coder` | `workspace-write` | Codex 可见壳子，必须通过 `multi_model_coder_workspace_edit` 调用 Opus/Claude 完成主要编码；不得自己直接实现代码。 |
 | `reviewer` | `read-only` | Codex 内部审查 diff、边界、安全、测试缺口，不调用外部 reviewer。 |
-| `tester` | `read-only` | 通过 `multi_model_tester_plan` 调用 Gemini 生成测试策略和失败日志分析，不运行真实测试。 |
+| `tester` | `read-only` | Codex 可见壳子，必须通过 `multi_model_tester_plan` 调用 Gemini 生成测试策略和失败日志分析；不得自己直接生成测试策略。 |
 | `test-runner` | `workspace-write` | 只运行主控批准的本地命令，记录 command、exit code、stdout、stderr。 |
 | `rag-curator` | `read-only` | 整理可写入 RAG 的候选知识，最终写入由主控决定。 |
 | `security-auditor` | `read-only` | 审计密钥泄漏、路径边界、发布包和 prompt injection surface。 |
@@ -65,3 +65,11 @@ docs/START_PROMPT.md
 `START_PROMPT.md` 会要求 Codex 优先使用这些官方 Custom Agent 名称。可见子智能体是否真的出现，取决于当前 Codex 客户端是否暴露 subagent 工具，以及这些 `.toml` 是否位于当前项目或用户级 agent 目录。
 
 如果当前线程没有可见子智能体工具，Codex 必须明确降级为 Main Orchestrator 直接调用 MCP 工具，不能静默假装已经创建子智能体。
+
+## 创建时的执行合同
+
+`.codex/agents/*.toml` 是角色底座，但每次 `spawn_agent` 的任务消息仍然必须写清本次执行合同。尤其是 Coder 和 Tester：
+
+- 创建 `primary-coder` 时，Main Orchestrator 必须在 spawn message 中写明：你是 Codex 可见壳子，不是 Opus/Claude 本体；必须调用 `multi_model_coder_workspace_edit`；不得自己直接实现代码；工具、key 或授权边界不可用时输出阻塞报告。
+- 创建 `tester` 时，Main Orchestrator 必须在 spawn message 中写明：你是 Codex 可见壳子，不是 Gemini 本体；必须调用 `multi_model_tester_plan`；不得自己直接生成测试策略或失败分析；工具、key 或输入证据不足时输出阻塞或降级报告。
+- 子智能体完成任务并返回结果后，Main Orchestrator 必须调用 `close_agent` 或等价能力关闭它，释放并发槽位。
