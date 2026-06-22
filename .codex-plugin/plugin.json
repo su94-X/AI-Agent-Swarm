@@ -1,7 +1,7 @@
 {
   "name": "multi-model-agents",
-  "version": "1.5.1-lite.1",
-  "description": "AI Agent Swarm Lite 1.5.1-lite.1 strengthens the opus-reviewer Custom Agent spawn contract so external review and scoring must call Opus/Claude MCP tools instead of self-executing as Codex.",
+  "version": "1.5.2-lite.1",
+  "description": "AI Agent Swarm Lite 1.5.2-lite.1 enables streaming model calls by default for Opus/Claude reviewer/scorer timeout resilience.",
   "author": {
     "name": "Su94"
   },
@@ -24,8 +24,8 @@
   "skills": "./skills/",
   "interface": {
     "displayName": "AI Agent Swarm Lite",
-    "shortDescription": "AI Agent Swarm Lite 1.5.1-lite.1: opus-reviewer spawn contract for Opus/Claude review and scoring.",
-    "longDescription": "AI Agent Swarm Lite 1.5.1-lite.1 is the simplified branch of AI Agent Swarm. Codex keeps planning, authorization, real file changes, real command execution, local project memory, and final decisions. Opus/Claude acts as an external reviewer/scorer for plan-review, diff-review, test-review, and final-review through the opus-reviewer Custom Agent calling multi_model_reviewer_score or multi_model_reviewer_findings. The Gemini tester workflow is intentionally removed. This release strengthens the Custom Agent prompts and startup workflow so the visible reviewer subagent cannot silently substitute its own Codex reasoning for the configured external Opus/Claude reviewer/scorer role.",
+    "shortDescription": "AI Agent Swarm Lite 1.5.2-lite.1: streaming model calls enabled by default for Opus/Claude review and scoring.",
+    "longDescription": "AI Agent Swarm Lite 1.5.2-lite.1 is the simplified branch of AI Agent Swarm. Codex keeps planning, authorization, real file changes, real command execution, local project memory, and final decisions. Opus/Claude acts as an external reviewer/scorer for plan-review, diff-review, test-review, and final-review through the opus-reviewer Custom Agent calling multi_model_reviewer_score or multi_model_reviewer_findings. The Gemini tester workflow is intentionally removed. This release enables streaming model calls by default through the model layer, aggregating SSE responses before returning MCP tool results, and keeps MMA_MODEL_STREAMING=false as a fallback for gateways that do not support streaming.",
     "developerName": "Su94",
     "category": "Productivity",
     "capabilities": [

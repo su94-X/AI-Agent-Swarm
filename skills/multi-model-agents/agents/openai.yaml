@@ -1,7 +1,7 @@
 interface:
   display_name: "AI Agent Swarm Lite"
-  short_description: "AI Agent Swarm Lite 1.5.1-lite.1：Codex 主控，Opus/Claude 外部审查与评分，官方 Custom Agents，无 Gemini tester。"
-  default_prompt: "使用 $multi-model-agents / AI Agent Swarm Lite 1.5.1-lite.1：优先查看 docs/START_PROMPT.md；Codex 主控，Opus/Claude 只做外部审查与评分，真实测试和最终决策由 Codex 完成。创建 opus-reviewer 时必须要求其调用 reviewer/scorer MCP 工具，不得自己代替 Opus/Claude。"
+  short_description: "AI Agent Swarm Lite 1.5.2-lite.1：默认流式调用 Opus/Claude，Codex 主控，官方 Custom Agents，无 Gemini tester。"
+  default_prompt: "使用 $multi-model-agents / AI Agent Swarm Lite 1.5.2-lite.1：优先查看 docs/START_PROMPT.md；Codex 主控，Opus/Claude 只做外部审查与评分，真实测试和最终决策由 Codex 完成。默认启用模型层流式调用以降低大上下文超时风险。"
   icon_small: "./assets/ai-agent-swarm-icon.png"
   icon_large: "./assets/ai-agent-swarm-icon.png"
   brand_color: "#38BDF8"

@@ -4,6 +4,7 @@ import { createServer } from "node:http";
 import { callModel } from "../lib/model.mjs";
 
 process.env.MMA_HTTP_MAX_ATTEMPTS = "3";
+process.env.MMA_MODEL_STREAMING = "true";
 process.env.MMA_HTTP_RETRY_BASE_DELAY_MS = "0";
 process.env.EXTERNAL_MODEL_API_KEY = "test-key";
 
@@ -78,7 +79,7 @@ const prompt = {
 try {
   requestCount = 0;
   mode = "retry-json";
-  const retryText = await callModel(config, prompt, { maxOutputTokens: 32 });
+  const retryText = await callModel(config, prompt, { maxOutputTokens: 32, stream: false });
   if (!retryText.includes("retry-ok")) {
     throw new Error(`Retry response did not include expected model output: ${retryText}`);
   }
@@ -103,7 +104,7 @@ try {
 
   requestCount = 0;
   mode = "stream-openai";
-  const streamText = await callModel(config, prompt, { maxOutputTokens: 32, stream: true });
+  const streamText = await callModel(config, prompt, { maxOutputTokens: 32 });
   if (streamText !== "stream-ok") {
     throw new Error(`Stream response did not aggregate expected output: ${streamText}`);
   }

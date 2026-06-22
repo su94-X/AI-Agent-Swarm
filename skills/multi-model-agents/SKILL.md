@@ -14,7 +14,7 @@ Lite 版用户文档入口已经收敛为：
 - `docs/RELEASE_PROMPT.md`：维护者发布入口。
 - `docs/README.md`：完整文档导航。
 
-V1.5.1-lite.1 起，Lite 强化 `.codex/agents/*.toml` 官方 Custom Agent 模板的创建合同：`opus-reviewer` 是 Codex 可见壳子，必须调用 `multi_model_reviewer_score` 或 `multi_model_reviewer_findings` 让 Opus/Claude 完成外部审查评分，不能由 Codex 子智能体自己代替外部模型完成 reviewer/scorer 工作。这些模板需要位于当前项目 `.codex/agents/` 或用户级 `~/.codex/agents/` 才会被 Codex 加载。Skill 负责工作流，MCP 负责 Opus/Claude reviewer/scorer 与 RAG 工具，Plugin 负责打包分发。
+V1.5.2-lite.1 起，Lite 默认启用模型层 SSE/stream 聚合，降低 Opus/Claude reviewer/scorer 大上下文、长输出场景下的长时间无响应和网关空闲超时风险；如网关不支持 SSE，可设置 `MMA_MODEL_STREAMING=false` 回退。Lite 也保留 `.codex/agents/*.toml` 官方 Custom Agent 模板的创建合同：`opus-reviewer` 是 Codex 可见壳子，必须调用 `multi_model_reviewer_score` 或 `multi_model_reviewer_findings` 让 Opus/Claude 完成外部审查评分，不能由 Codex 子智能体自己代替外部模型完成 reviewer/scorer 工作。这些模板需要位于当前项目 `.codex/agents/` 或用户级 `~/.codex/agents/` 才会被 Codex 加载。Skill 负责工作流，MCP 负责 Opus/Claude reviewer/scorer 与 RAG 工具，Plugin 负责打包分发。
 
 Lite 版原则：
 

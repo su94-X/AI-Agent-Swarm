@@ -2,6 +2,19 @@
 
 All notable changes to AI Agent Swarm and its Lite branch are documented here.
 
+## [1.5.2-lite.1] - 2026-06-22
+
+### Changed
+
+- Enabled model-layer streaming by default with `MMA_MODEL_STREAMING=true` for Lite Opus/Claude reviewer/scorer calls.
+- Kept MCP tool outputs unchanged: streamed provider responses are still aggregated inside the server before returning tool results.
+- Documented `MMA_MODEL_STREAMING=false` as the fallback for gateways that do not support SSE/stream endpoints.
+
+### Verified
+
+- Offline HTTP retry and SSE aggregation self-test passed.
+- Streaming default self-test passed.
+
 ## [1.5.1-lite.1] - 2026-06-22
 
 ### Fixed

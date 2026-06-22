@@ -32,7 +32,7 @@
 
 ## 外部模型流式响应
 
-当前外部模型调用默认仍使用非流式 HTTP JSON 请求。继承自 V1.4.5 的模型层内部 SSE 聚合模式可通过 `MMA_MODEL_STREAMING=true` 启用：OpenAI-compatible 走 chat completions stream，Anthropic 走 messages stream，兼容 provider 按各自实现聚合。该模式仍会聚合为完整文本后返回给 MCP tool，不改变工具协议，也不会边流边写文件。
+V1.5.2-lite.1 起外部模型调用默认使用模型层内部 SSE 聚合模式，可通过 `MMA_MODEL_STREAMING=false` 回退到非流式 HTTP JSON 请求：OpenAI-compatible 走 chat completions stream，Anthropic 走 messages stream，兼容 provider 按各自实现聚合。该模式仍会聚合为完整文本后返回给 MCP tool，不改变工具协议，也不会边流边写文件。
 
 V1.4.5 已增加 Codex 客户端可见的 MCP 进度/日志通知：
 
@@ -43,8 +43,8 @@ V1.4.5 已增加 Codex 客户端可见的 MCP 进度/日志通知：
 
 设计边界：
 
-- 默认仍使用非流式，避免破坏现有网关兼容性。
-- 模型层流式只作为 `MMA_MODEL_STREAMING=true` 启用。
+- 默认使用流式，减少大上下文或长输出时的网关空闲超时风险。
+- 如果某个网关不支持 SSE，可设置 `MMA_MODEL_STREAMING=false` 回退到非流式。
 - MCP tool 最终仍返回完整文本、JSON edit、diff 和结构化结果。
 - workspace edit 必须在完整 JSON 解析和校验通过后才允许写文件，不能边流边写。
 - 保留当前 HTTP 重试逻辑；流式重试只能发生在没有开始产生有效内容之前。
