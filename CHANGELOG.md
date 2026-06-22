@@ -2,6 +2,16 @@
 
 All notable changes to AI Agent Swarm and its Lite branch are documented here.
 
+## [1.4.9-lite.2] - 2026-06-22
+
+### Changed
+
+- Simplified Lite documentation into three user-facing prompt entries: `docs/INSTALL_PROMPT.md`, `docs/START_PROMPT.md`, and `docs/RELEASE_PROMPT.md`.
+- Added `docs/README.md` as the documentation navigation page.
+- Moved older split prompt files into `docs/legacy/`.
+- Moved Lite release notes into `docs/releases/`.
+- Updated release packaging and GitHub Release sync scripts for the new docs layout.
+
 ## [1.4.9-lite.1] - 2026-06-22
 
 ### Added

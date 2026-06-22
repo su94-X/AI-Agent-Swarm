@@ -10,7 +10,7 @@
 
 <p align="center">
   <img alt="Branch" src="https://img.shields.io/badge/branch-lite--opus--review-38BDF8">
-  <img alt="Version" src="https://img.shields.io/badge/version-1.4.9--lite.1-22C55E">
+  <img alt="Version" src="https://img.shields.io/badge/version-1.4.9--lite.2-22C55E">
   <a href="./LICENSE"><img alt="License" src="https://img.shields.io/badge/license-Apache--2.0-22C55E"></a>
   <img alt="Node" src="https://img.shields.io/badge/node-no%20npm%20deps-111827">
 </p>
@@ -34,6 +34,18 @@ Lite 版只保留三个核心：
 Lite 版从 `1.4.9-lite.1` 开始同步主体版 V1.4.9 的安全发布能力，并继续默认启用工程闸门。非简单任务在正式编码前必须先产出工程设计文档和开发计划，并调用 Opus/Claude 做 `plan-review`。只要返回 blocking findings、must-fix items、`approved_to_continue: false`，或计划分低于 80 且没有充分解释，Codex 必须先修正文档和计划，再次审查。
 
 进入开发后，Codex 按批准计划自动推进。重要实现步骤后做 diff 检查；高风险或非平凡改动调用 `diff-review`。真实测试完成后，把 command、exit code、stdout、stderr 和变更摘要交给 Opus/Claude 做 `test-review`。详见 [docs/ENGINEERING_GATE.md](./docs/ENGINEERING_GATE.md)。
+
+## 文档怎么用
+
+普通用户只需要记住 3 个入口：
+
+| 场景 | 发送给 Codex 的文档 |
+| --- | --- |
+| 首次安装或更新后检查 | [docs/INSTALL_PROMPT.md](./docs/INSTALL_PROMPT.md) |
+| 日常开发、新项目、已有项目接手 | [docs/START_PROMPT.md](./docs/START_PROMPT.md) |
+| 维护者打包和同步 GitHub Release | [docs/RELEASE_PROMPT.md](./docs/RELEASE_PROMPT.md) |
+
+完整导航见 [docs/README.md](./docs/README.md)。旧版拆分提示词已移动到 [docs/legacy/](./docs/legacy/)，历史 release note 已移动到 [docs/releases/](./docs/releases/)；普通用户不需要再从这些归档文件里选择。
 
 ## 为什么做 Lite 版
 

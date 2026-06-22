@@ -7,6 +7,13 @@ description: 当 Codex 需要使用 AI Agent Swarm Lite 精简工作流时使用
 
 使用本 skill 通过 `multi-model-agents` MCP 工具运行精简多模型工作流。
 
+Lite 版用户文档入口已经收敛为：
+
+- `docs/INSTALL_PROMPT.md`：首次安装或新线程检查。
+- `docs/START_PROMPT.md`：日常开发、新项目和已有项目接手统一入口。
+- `docs/RELEASE_PROMPT.md`：维护者发布入口。
+- `docs/README.md`：完整文档导航。
+
 Lite 版原则：
 
 1. Codex 始终是主控，负责方案、授权、文件修改、命令执行、测试结果判断、RAG 写入和最终决策。

@@ -1,7 +1,7 @@
 {
   "name": "multi-model-agents",
-  "version": "1.4.9-lite.1",
-  "description": "AI Agent Swarm Lite 1.4.9-lite.1: Codex remains the orchestrator; Opus/Claude provides review and scoring; Gemini tester workflow is removed; safe GitHub Release sync is included.",
+  "version": "1.4.9-lite.2",
+  "description": "AI Agent Swarm Lite 1.4.9-lite.2: simplified docs with three user prompts, Codex orchestration, Opus/Claude review and scoring, no Gemini tester workflow.",
   "author": {
     "name": "Su94"
   },
@@ -24,8 +24,8 @@
   "skills": "./skills/",
   "interface": {
     "displayName": "AI Agent Swarm Lite",
-    "shortDescription": "AI Agent Swarm Lite 1.4.9-lite.1: Codex main control, Opus/Claude review and scoring, no Gemini tester workflow, safe release sync.",
-    "longDescription": "AI Agent Swarm Lite 1.4.9-lite.1 is the simplified branch of AI Agent Swarm. Codex keeps planning, authorization, real file changes, real command execution, local project memory, and final decisions. Opus/Claude acts as an external reviewer/scorer for plan-review, diff-review, test-review, and final-review, returning evidence-bound findings, risks, scores, must-fix items, and recommended Codex actions. The Gemini tester workflow is intentionally removed. This Lite release includes safe GitHub Release sync with user-level token storage support.",
+    "shortDescription": "AI Agent Swarm Lite 1.4.9-lite.2: three prompt docs, Codex main control, Opus/Claude review and scoring, no Gemini tester workflow.",
+    "longDescription": "AI Agent Swarm Lite 1.4.9-lite.2 is the simplified branch of AI Agent Swarm. Codex keeps planning, authorization, real file changes, real command execution, local project memory, and final decisions. Opus/Claude acts as an external reviewer/scorer for plan-review, diff-review, test-review, and final-review, returning evidence-bound findings, risks, scores, must-fix items, and recommended Codex actions. The Gemini tester workflow is intentionally removed. This release simplifies docs into INSTALL_PROMPT, START_PROMPT, RELEASE_PROMPT, plus a docs navigation page.",
     "developerName": "Su94",
     "category": "Productivity",
     "capabilities": [
