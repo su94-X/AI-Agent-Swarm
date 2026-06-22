@@ -10,7 +10,7 @@
 
 <p align="center">
   <img alt="Branch" src="https://img.shields.io/badge/branch-lite--opus--review-38BDF8">
-  <img alt="Version" src="https://img.shields.io/badge/version-1.4.5--lite.2-22C55E">
+  <img alt="Version" src="https://img.shields.io/badge/version-1.4.9--lite.1-22C55E">
   <a href="./LICENSE"><img alt="License" src="https://img.shields.io/badge/license-Apache--2.0-22C55E"></a>
   <img alt="Node" src="https://img.shields.io/badge/node-no%20npm%20deps-111827">
 </p>
@@ -31,7 +31,7 @@ Lite 版只保留三个核心：
 
 ## 工程闸门
 
-Lite 版从 `1.4.5-lite.2` 开始默认启用工程闸门。非简单任务在正式编码前必须先产出工程设计文档和开发计划，并调用 Opus/Claude 做 `plan-review`。只要返回 blocking findings、must-fix items、`approved_to_continue: false`，或计划分低于 80 且没有充分解释，Codex 必须先修正文档和计划，再次审查。
+Lite 版从 `1.4.9-lite.1` 开始同步主体版 V1.4.9 的安全发布能力，并继续默认启用工程闸门。非简单任务在正式编码前必须先产出工程设计文档和开发计划，并调用 Opus/Claude 做 `plan-review`。只要返回 blocking findings、must-fix items、`approved_to_continue: false`，或计划分低于 80 且没有充分解释，Codex 必须先修正文档和计划，再次审查。
 
 进入开发后，Codex 按批准计划自动推进。重要实现步骤后做 diff 检查；高风险或非平凡改动调用 `diff-review`。真实测试完成后，把 command、exit code、stdout、stderr 和变更摘要交给 Opus/Claude 做 `test-review`。详见 [docs/ENGINEERING_GATE.md](./docs/ENGINEERING_GATE.md)。
 
@@ -118,6 +118,7 @@ ANTHROPIC_API_KEY=这里才是本地真实 key
 ```powershell
 node scripts/mcp-smoke-test.mjs
 node scripts/http-retry-self-test.mjs
+node scripts/model-secret-self-test.mjs
 node scripts/rag-self-test.mjs
 node scripts/rag-metadata-self-test.mjs
 node scripts/rag-security-self-test.mjs
@@ -132,6 +133,30 @@ node scripts/reviewer-score-self-test.mjs
 ```powershell
 node scripts/api-smoke-test.mjs
 ```
+
+## 打包发布
+
+生成 Lite 发布包：
+
+```powershell
+node scripts/package-release.mjs C:\path\to\outputs
+```
+
+同步 GitHub Release 和 zip asset：
+
+```powershell
+node scripts/sync-github-release.mjs C:\path\to\outputs
+```
+
+GitHub Release token 只从环境变量或用户级凭据文件读取：
+
+1. `GITHUB_TOKEN` 或 `GH_TOKEN`。
+2. `MMA_GITHUB_TOKEN_FILE` 指定的用户级 token 文件。
+3. `$CODEX_HOME\multi-model-agents\github-release-token`，如果设置了 `CODEX_HOME`。
+4. `%USERPROFILE%\.codex\multi-model-agents\github-release-token`。
+5. `%TEMP%\github_release_token.txt` 兼容旧临时文件。
+
+不要把 GitHub token 放进插件仓库、`.env`、`.env.example`、README、发布包、RAG、issue、PR、截图或聊天记录。如果 token 曾经粘贴到聊天或日志中，必须撤销并重新创建。
 
 ## 联系方式
 

@@ -58,3 +58,41 @@ HTTP retry 可提升瞬时网络错误下的稳定性，但如果上游模型已
 | `MMA_RAG_MAX_RESULT_CHARS` | `4000` |
 
 不要把 `.env`、API key、生产数据、私有日志或未验证的外部模型输出写入 RAG。
+
+## GitHub Release Token
+
+GitHub Release 发布 token 不属于外部模型配置，不要写入插件根目录 `.env`、`.env.example`、README、release note、RAG、workspace 或聊天记录。
+
+推荐使用 fine-grained token，只授权 `su94-X/AI-Agent-Swarm` 仓库的 Contents/Metadata 读写权限。长期保存位置：
+
+```powershell
+New-Item -ItemType Directory -Force "$env:USERPROFILE\.codex\multi-model-agents"
+Set-Content -NoNewline -Path "$env:USERPROFILE\.codex\multi-model-agents\github-release-token" -Value "你的 fine-grained token"
+```
+
+发布同步脚本读取顺序：
+
+1. `GITHUB_TOKEN` 或 `GH_TOKEN` 环境变量。
+2. `MMA_GITHUB_TOKEN_FILE` 指定的用户级 token 文件。
+3. `$CODEX_HOME\multi-model-agents\github-release-token`，如果设置了 `CODEX_HOME`。
+4. `%USERPROFILE%\.codex\multi-model-agents\github-release-token`。
+5. 兼容旧临时文件：`%TEMP%\github_release_token.txt`。
+
+`scripts/sync-github-release.mjs` 会拒绝读取插件仓库、当前 workspace 或输出目录内的 token 文件。GitHub token 只能通过 `Authorization: Bearer <token>` header 发送，不得放在 URL query、命令参数、release body、asset 名、日志、错误消息或最终回复中。
+
+如果 GitHub Release token 曾经粘贴到聊天、issue、PR、日志、截图或 prompt 中，必须视为泄露，立即 revoke 并重新创建。
+
+## 验证
+
+```powershell
+node scripts/mcp-smoke-test.mjs
+node scripts/http-retry-self-test.mjs
+node scripts/model-secret-self-test.mjs
+node scripts/rag-self-test.mjs
+node scripts/rag-metadata-self-test.mjs
+node scripts/rag-security-self-test.mjs
+node scripts/rag-text-self-test.mjs
+node scripts/workspace-edit-json-self-test.mjs
+node scripts/workspace-edit-repair-self-test.mjs
+node scripts/reviewer-score-self-test.mjs
+```

@@ -62,7 +62,7 @@ Codex 随后必须调用 Opus/Claude 做 `plan-review`。推荐使用 `multi_mod
 - `scripts/multi-model-agents-mcp.mjs`：扩展 `multi_model_reviewer_score` schema，增加 `review_stage`、`test_evidence`、`must_fix_items`、`approved_to_continue` 输出要求。
 - `scripts/reviewer-score-self-test.mjs`：断言 prompt 包含 `review_stage`、`approved_to_continue`、`must_fix_items`、`plan-review`、`diff-review` 和 `test-review`。
 - `skills/multi-model-agents/SKILL.md`、`README.md`、`docs/STARTUP_PROMPT.md`、`docs/SUBAGENT_WORKFLOW.md`、`docs/roles/REVIEWER_SUBAGENT_PROMPT.md`：同步工程闸门默认规则。
-- `.codex-plugin/plugin.json`、`CHANGELOG.md`、release note、`scripts/package-release.mjs`：版本升到 `1.4.5-lite.2` 并打包新文档。
+- `.codex-plugin/plugin.json`、`CHANGELOG.md`、release note、`scripts/package-release.mjs`：同步 Lite 当前版本并打包新文档。
 
 实现验收：
 

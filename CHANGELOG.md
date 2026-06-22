@@ -2,6 +2,20 @@
 
 All notable changes to AI Agent Swarm and its Lite branch are documented here.
 
+## [1.4.9-lite.1] - 2026-06-22
+
+### Added
+
+- Added `scripts/sync-github-release.mjs` for Lite GitHub Release creation/update and zip asset upload.
+- Added user-level GitHub Release token support via environment variables, `MMA_GITHUB_TOKEN_FILE`, `$CODEX_HOME`, or `%USERPROFILE%\.codex\multi-model-agents\github-release-token`.
+- Added `lib/redaction.mjs` and `scripts/model-secret-self-test.mjs` for GitHub token detection and redaction coverage.
+
+### Changed
+
+- Extended RAG secret scanning and direct `*_API_KEY_ENV` mistake detection to cover GitHub token formats including `github_pat_...`.
+- Updated package validation to require Lite 1.4.9 release notes, release sync scripts, redaction helpers, icon assets, and skill UI metadata.
+- Kept Lite workflow unchanged: no Gemini tester workflow; Opus/Claude remains reviewer/scorer.
+
 ## [1.4.5-lite.2] - 2026-06-22
 
 ### Added

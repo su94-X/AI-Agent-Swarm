@@ -9,6 +9,7 @@ const outputDir = resolve(process.argv[2] || join(pluginRoot, "..", "..", "outpu
 const manifest = readManifest();
 const version = manifest.version;
 const packageName = "ai-agent-swarm-lite";
+const releaseNotePath = `docs/GITHUB_RELEASE_LITE_${version}.md`;
 const zipPath = join(outputDir, `${packageName}-${version}.zip`);
 const stageRoot = join(outputDir, `.${packageName}-${version}-stage`);
 
@@ -48,6 +49,12 @@ const forbiddenExtensions = new Set([
   ".kdbx",
   ".sqlite",
   ".db",
+  ".zip",
+  ".tgz",
+  ".tar",
+  ".gz",
+  ".rar",
+  ".7z",
 ]);
 
 function main() {
@@ -116,7 +123,7 @@ function validateStage() {
     "docs/PACKAGE_INSTALL_PROMPT.md",
     "docs/ENGINEERING_GATE.md",
     "docs/EXISTING_PROJECT_HANDOFF_PROMPT.md",
-    "docs/GITHUB_RELEASE_LITE_1.4.5-lite.2.md",
+    releaseNotePath,
     "docs/NEW_PROJECT_BOOTSTRAP_PROMPT.md",
     "docs/RAG.md",
     "docs/ROADMAP.md",
@@ -129,6 +136,7 @@ function validateStage() {
     "lib/rag.mjs",
     "lib/rag-security.mjs",
     "lib/rag-text.mjs",
+    "lib/redaction.mjs",
     "lib/workspace-edit-flow.mjs",
     "lib/workspace.mjs",
     "scripts/multi-model-agents-mcp.mjs",
@@ -138,10 +146,16 @@ function validateStage() {
     "scripts/rag-security-self-test.mjs",
     "scripts/rag-text-self-test.mjs",
     "scripts/http-retry-self-test.mjs",
+    "scripts/model-secret-self-test.mjs",
     "scripts/reviewer-score-self-test.mjs",
+    "scripts/sync-github-release.mjs",
+    "scripts/workspace-edit-json-self-test.mjs",
     "scripts/workspace-edit-repair-self-test.mjs",
     "scripts/package-release.mjs",
     "skills/multi-model-agents/SKILL.md",
+    "skills/multi-model-agents/agents/openai.yaml",
+    "assets/ai-agent-swarm-icon.png",
+    "skills/multi-model-agents/assets/ai-agent-swarm-icon.png",
   ];
   for (const rel of required) {
     if (!existsSync(join(stageRoot, ...rel.split("/")))) {
@@ -208,6 +222,12 @@ function assertSafeReleasePath(relPath) {
   const base = basename(rel).toLowerCase();
   if (!rel || rel.includes("../") || rel.startsWith("/")) {
     throw new Error(`Unsafe release path: ${relPath}`);
+  }
+  if ((base === ".env" || base.startsWith(".env.")) && rel !== ".env.example") {
+    throw new Error(`Forbidden environment file in release path: ${relPath}`);
+  }
+  if (base.includes("token")) {
+    throw new Error(`Forbidden token-like release path: ${relPath}`);
   }
   for (const forbidden of forbiddenEntries) {
     const pattern = forbidden.toLowerCase();
