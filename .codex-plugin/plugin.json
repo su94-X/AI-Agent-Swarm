@@ -1,7 +1,7 @@
 {
   "name": "multi-model-agents",
-  "version": "1.4.9",
-  "description": "AI Agent Swarm V1.4.9 adds a safe GitHub Release sync helper with user-level token storage support.",
+  "version": "1.4.10",
+  "description": "AI Agent Swarm V1.4.10 simplifies docs into three user prompt entries while keeping the full Codex, Opus/Claude, Gemini, RAG, and visible subagent workflow.",
   "author": {
     "name": "Su94"
   },
@@ -23,8 +23,8 @@
   "skills": "./skills/",
   "interface": {
     "displayName": "AI Agent Swarm",
-    "shortDescription": "AI Agent Swarm V1.4.9: Codex main control, Opus/Claude coding, Gemini test analysis, engineering gates, visible subagents, and release sync.",
-    "longDescription": "AI Agent Swarm V1.4.9 is a local Codex multi-model orchestration plugin for long-running development. Codex keeps planning, authorization, real tests, review integration, RAG writes, and final decisions. Opus/Claude performs primary coding inside authorized workspace boundaries after design plan-review. Gemini provides test strategy and failure-log analysis. V1.4.9 adds a no-dependency GitHub Release sync helper that reads tokens only from environment variables or user-level secret files, never from the plugin repository.",
+    "shortDescription": "AI Agent Swarm V1.4.10: three prompt docs, Codex main control, Opus/Claude coding, Gemini test analysis, RAG, and visible subagents.",
+    "longDescription": "AI Agent Swarm V1.4.10 is a local Codex multi-model orchestration plugin for long-running development. Codex keeps planning, authorization, real tests, review integration, RAG writes, and final decisions. Opus/Claude performs primary coding inside authorized workspace boundaries after design plan-review. Gemini provides test strategy and failure-log analysis. This release simplifies docs into INSTALL_PROMPT, START_PROMPT, RELEASE_PROMPT, plus a docs navigation page.",
     "developerName": "Su94",
     "category": "Productivity",
     "capabilities": [

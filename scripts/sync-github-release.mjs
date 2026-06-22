@@ -15,7 +15,7 @@ const owner = process.env.MMA_GITHUB_OWNER || "su94-X";
 const repo = process.env.MMA_GITHUB_REPO || "AI-Agent-Swarm";
 const outputDir = resolve(process.argv[2] || join(pluginRoot, "..", "..", "outputs"));
 const zipPath = resolve(process.argv[3] || join(outputDir, `ai-agent-swarm-${version}.zip`));
-const releaseNotePath = join(pluginRoot, "docs", `GITHUB_RELEASE_V${version}.md`);
+const releaseNotePath = join(pluginRoot, "docs", "releases", `GITHUB_RELEASE_V${version}.md`);
 const releaseName = `AI Agent Swarm V${version}`;
 const assetName = basename(zipPath);
 const defaultTokenPath = join(homedir(), ".codex", "multi-model-agents", "github-release-token");
@@ -37,7 +37,7 @@ async function main() {
   await assertRemoteTagExists(token);
   const release = await createOrUpdateRelease(token, releaseBody);
   await uploadZipAsset(token, release);
-  const verified = await verifyPublicRelease();
+  const verified = await verifyPublicRelease(token);
 
   console.log(`GitHub release synced: ${verified.html_url}`);
   const asset = verified.assets.find((candidate) => candidate.name === assetName);
@@ -145,8 +145,8 @@ async function uploadZipAsset(token, release) {
   });
 }
 
-async function verifyPublicRelease() {
-  const release = await githubJson(null, "GET", `/repos/${owner}/${repo}/releases/tags/${encodeURIComponent(tag)}`);
+async function verifyPublicRelease(token) {
+  const release = await githubJson(token, "GET", `/repos/${owner}/${repo}/releases/tags/${encodeURIComponent(tag)}`);
   const asset = (release.assets || []).find((candidate) => candidate.name === assetName);
   if (!asset?.browser_download_url) {
     throw new Error(`Public release ${tag} is missing asset ${assetName}.`);

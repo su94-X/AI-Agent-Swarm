@@ -8,7 +8,7 @@ const pluginRoot = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const outputDir = resolve(process.argv[2] || join(pluginRoot, "..", "..", "outputs"));
 const manifest = readManifest();
 const version = manifest.version;
-const releaseNotePath = `docs/GITHUB_RELEASE_V${version}.md`;
+const releaseNotePath = `docs/releases/GITHUB_RELEASE_V${version}.md`;
 const zipPath = join(outputDir, `ai-agent-swarm-${version}.zip`);
 const stageRoot = join(outputDir, `.ai-agent-swarm-${version}-stage`);
 
@@ -119,22 +119,23 @@ function validateStage() {
     "LICENSE",
     "NOTICE",
     "SECURITY.md",
+    "docs/README.md",
     "docs/INSTALL_PROMPT.md",
     "docs/START_PROMPT.md",
     "docs/RELEASE_PROMPT.md",
-    "docs/PACKAGE_INSTALL_PROMPT.md",
-    "docs/FIRST_INSTALL_PROMPT.md",
-    "docs/STARTUP_PROMPT.md",
-    "docs/PROJECT_START_PROMPT.md",
-    "docs/EXISTING_PROJECT_HANDOFF_PROMPT.md",
-    "docs/NEW_PROJECT_BOOTSTRAP_PROMPT.md",
+    "docs/legacy/PACKAGE_INSTALL_PROMPT.md",
+    "docs/legacy/FIRST_INSTALL_PROMPT.md",
+    "docs/legacy/STARTUP_PROMPT.md",
+    "docs/legacy/PROJECT_START_PROMPT.md",
+    "docs/legacy/EXISTING_PROJECT_HANDOFF_PROMPT.md",
+    "docs/legacy/NEW_PROJECT_BOOTSTRAP_PROMPT.md",
     "docs/ENVIRONMENT.md",
     "docs/ENGINEERING_GATE.md",
     "docs/ENGINEERING_GATE_IMPLEMENTATION_PLAN.md",
     releaseNotePath,
     "docs/RAG.md",
     "docs/ROADMAP.md",
-    "docs/SUBAGENT_START_PROMPT.md",
+    "docs/legacy/SUBAGENT_START_PROMPT.md",
     "docs/SUBAGENT_WORKFLOW.md",
     "docs/roles/CODER_SUBAGENT_PROMPT.md",
     "docs/roles/TESTER_SUBAGENT_PROMPT.md",

@@ -2,6 +2,17 @@
 
 All notable changes to AI Agent Swarm are documented here.
 
+## [1.4.10] - 2026-06-22
+
+### Changed
+
+- Simplified public documentation structure around three user-facing prompt entries: `docs/INSTALL_PROMPT.md`, `docs/START_PROMPT.md`, and `docs/RELEASE_PROMPT.md`.
+- Added `docs/README.md` as the documentation navigation page.
+- Moved older wrapper prompt files into `docs/legacy/`.
+- Moved GitHub Release notes into `docs/releases/`.
+- Updated packaging and GitHub Release sync scripts for the new docs layout.
+- Changed GitHub Release verification in `scripts/sync-github-release.mjs` to use the already-loaded token, avoiding anonymous API rate-limit failures.
+
 ## [1.4.9] - 2026-06-22
 
 ### Added

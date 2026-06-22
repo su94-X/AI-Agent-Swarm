@@ -9,7 +9,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/su94-X/AI-Agent-Swarm/releases/tag/v1.4.9"><img alt="Release" src="https://img.shields.io/badge/release-v1.4.9-38BDF8"></a>
+  <a href="https://github.com/su94-X/AI-Agent-Swarm/releases/tag/v1.4.10"><img alt="Release" src="https://img.shields.io/badge/release-v1.4.10-38BDF8"></a>
   <a href="./LICENSE"><img alt="License" src="https://img.shields.io/badge/license-Apache--2.0-22C55E"></a>
   <img alt="Node" src="https://img.shields.io/badge/node-no%20npm%20deps-111827">
   <img alt="Codex Plugin" src="https://img.shields.io/badge/Codex-plugin-8B5CF6">
@@ -19,7 +19,7 @@
 
 AI Agent Swarm 是一个面向长期项目维护的本地 Codex 多模型编排插件。它的目标不是替换 Codex 主智能体，而是把外部模型能力纳入 Codex 可控的授权、审查、测试和记忆流程。
 
-V1.4.9 是当前正式稳定版本。它保留三段式通用提示词、工程闸门、workspace 安全、RAG 质量层、MCP 可见日志、patch/edit 局部编辑和强制可见角色子智能体契约，并新增安全的 GitHub Release 同步脚本，支持从用户级凭据文件读取长期 token。
+V1.4.10 是当前正式稳定版本。它保留三段式通用提示词、工程闸门、workspace 安全、RAG 质量层、MCP 可见日志、patch/edit 局部编辑和强制可见角色子智能体契约，并把 `docs/` 目录整理为清晰的用户入口、进阶文档、归档提示词和历史 release note。
 
 ## 核心定位
 
@@ -70,7 +70,7 @@ flowchart TD
 
 ## 3 步快速开始
 
-1. 下载并解压 [ai-agent-swarm-1.4.9.zip](https://github.com/su94-X/AI-Agent-Swarm/releases/download/v1.4.9/ai-agent-swarm-1.4.9.zip)。
+1. 下载并解压 [ai-agent-swarm-1.4.10.zip](https://github.com/su94-X/AI-Agent-Swarm/releases/download/v1.4.10/ai-agent-swarm-1.4.10.zip)。
 2. 复制 `.env.example` 为 `.env`，只填写当前确实要用的外部模型 key。
 3. 在 Codex 中发送 `docs/INSTALL_PROMPT.md` 做安装检查；日常开发发送 `docs/START_PROMPT.md`。
 
@@ -162,6 +162,7 @@ MMA_GEMINI_API_KEY_IN_HEADER=false
 
 | 文档 | 说明 |
 | --- | --- |
+| `docs/README.md` | 文档导航：告诉用户应该看哪个文档 |
 | `docs/INSTALL_PROMPT.md` | 唯一安装检查入口：安装、结构、MCP 可见性和离线自检 |
 | `docs/START_PROMPT.md` | 唯一日常启动入口：简单任务、新项目、已有项目、工程闸门和子智能体自动判断 |
 | `docs/RELEASE_PROMPT.md` | 维护者发布入口：分支、tag、GitHub Release、zip asset 和页面核查 |
@@ -171,7 +172,7 @@ MMA_GEMINI_API_KEY_IN_HEADER=false
 | `docs/ROADMAP.md` | 后续路线图 |
 | `docs/roles/` | 各可见角色子智能体的中文提示词 |
 
-旧的 `PACKAGE_INSTALL_PROMPT.md`、`FIRST_INSTALL_PROMPT.md`、`STARTUP_PROMPT.md`、`PROJECT_START_PROMPT.md`、`SUBAGENT_START_PROMPT.md`、`EXISTING_PROJECT_HANDOFF_PROMPT.md`、`NEW_PROJECT_BOOTSTRAP_PROMPT.md` 仅作为兼容跳转保留，普通用户不需要再选择它们。
+旧的 `PACKAGE_INSTALL_PROMPT.md`、`FIRST_INSTALL_PROMPT.md`、`STARTUP_PROMPT.md`、`PROJECT_START_PROMPT.md`、`SUBAGENT_START_PROMPT.md`、`EXISTING_PROJECT_HANDOFF_PROMPT.md`、`NEW_PROJECT_BOOTSTRAP_PROMPT.md` 已移动到 `docs/legacy/`，普通用户不需要再选择它们。历史 GitHub release note 已移动到 `docs/releases/`。
 
 ## 本地自检
 
@@ -232,7 +233,7 @@ node scripts/sync-github-release.mjs C:\path\to\outputs
 - 变更记录：[CHANGELOG.md](./CHANGELOG.md)
 - 安全策略：[SECURITY.md](./SECURITY.md)
 - 贡献说明：[CONTRIBUTING.md](./CONTRIBUTING.md)
-- Release：[AI Agent Swarm V1.4.9](https://github.com/su94-X/AI-Agent-Swarm/releases/tag/v1.4.9)
+- Release：[AI Agent Swarm V1.4.10](https://github.com/su94-X/AI-Agent-Swarm/releases/tag/v1.4.10)
 
 ## 联系方式
 

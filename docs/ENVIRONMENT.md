@@ -173,7 +173,7 @@ Set-Content -NoNewline -Path "$env:USERPROFILE\.codex\multi-model-agents\github-
 - `docs/ENVIRONMENT.md`
 - `docs/ENGINEERING_GATE.md`
 - `docs/ENGINEERING_GATE_IMPLEMENTATION_PLAN.md`
-- `docs/GITHUB_RELEASE_V版本号.md`
+- `docs/releases/GITHUB_RELEASE_V版本号.md`
 - `docs/SUBAGENT_WORKFLOW.md`
 - `docs/RAG.md`
 - `docs/ROADMAP.md`
@@ -205,7 +205,7 @@ Set-Content -NoNewline -Path "$env:USERPROFILE\.codex\multi-model-agents\github-
 - `assets/ai-agent-swarm-icon.png`
 - `skills/multi-model-agents/assets/ai-agent-swarm-icon.png`
 
-`PACKAGE_INSTALL_PROMPT.md`、`FIRST_INSTALL_PROMPT.md`、`STARTUP_PROMPT.md`、`PROJECT_START_PROMPT.md`、`SUBAGENT_START_PROMPT.md`、`EXISTING_PROJECT_HANDOFF_PROMPT.md` 和 `NEW_PROJECT_BOOTSTRAP_PROMPT.md` 只是兼容旧链接的短 wrapper。普通用户入口是 `INSTALL_PROMPT.md`、`START_PROMPT.md` 和 `RELEASE_PROMPT.md`。
+`PACKAGE_INSTALL_PROMPT.md`、`FIRST_INSTALL_PROMPT.md`、`STARTUP_PROMPT.md`、`PROJECT_START_PROMPT.md`、`SUBAGENT_START_PROMPT.md`、`EXISTING_PROJECT_HANDOFF_PROMPT.md` 和 `NEW_PROJECT_BOOTSTRAP_PROMPT.md` 已归档到 `docs/legacy/`。普通用户入口是 `INSTALL_PROMPT.md`、`START_PROMPT.md` 和 `RELEASE_PROMPT.md`，完整导航见 `docs/README.md`。
 
 必须排除：
 
