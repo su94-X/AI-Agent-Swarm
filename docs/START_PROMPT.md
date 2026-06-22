@@ -16,6 +16,13 @@
 1. 确认 multi-model-agents skill 和 Lite MCP 工具可见。
 2. 调用 multi_model_config_status，不打印任何 key。
 3. 调用 multi_model_rag_status。非简单任务开始前按需调用 multi_model_rag_search 检索项目记忆，检索结果必须由 Codex 筛选后才能进入计划或外部模型上下文。
+4. 检查当前项目或用户级是否存在 Lite 官方 Custom Agent 模板：.codex/agents/opus-reviewer.toml、test-runner.toml、rag-curator.toml、security-auditor.toml，或等价的 ~/.codex/agents/*.toml。
+
+可见子智能体规则：
+- 非简单任务如果当前线程有可见子智能体工具，应优先使用 `opus-reviewer`、`test-runner`、`rag-curator`、`security-auditor` 这些 Lite Custom Agent；如果当前客户端只能使用内置 worker/explorer，则用内置子智能体承载同样角色，并记录映射关系。
+- 涉及 plan-review、diff-review、test-review 或 final-review 时使用 Opus Reviewer 子智能体；需要运行真实命令时使用 Test Runner；需要整理 RAG 候选时使用 RAG Curator；触碰密钥、发布包、路径授权或 prompt injection surface 时使用 Security Auditor。
+- 子智能体完成任务并返回结果后，Main Orchestrator 必须调用 close_agent 或等价关闭能力释放并发槽位。
+- 如果当前线程没有子智能体工具，必须明确说明“当前线程没有可见子智能体工具，降级为 Main Orchestrator 直接调用 MCP 工具。”
 
 任务类型自动判断：
 - 如果这是新项目，先生成最小项目文档：PROJECT_BRIEF、PROJECT_OVERVIEW、DEVELOPMENT_GUIDE、TESTING_GUIDE、AGENT_MEMORY，并只把已确认事实写入 RAG。

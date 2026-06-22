@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import { existsSync, mkdirSync, readdirSync, readFileSync, rmSync, statSync, writeFileSync } from "node:fs";
+import { existsSync, lstatSync, mkdirSync, readdirSync, readFileSync, rmSync, statSync, writeFileSync } from "node:fs";
 import { basename, dirname, extname, join, relative, resolve, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -15,6 +15,7 @@ const stageRoot = join(outputDir, `.${packageName}-${version}-stage`);
 
 const includeRoots = [
   ".codex-plugin",
+  ".codex/agents",
   "assets",
   "docs",
   "lib",
@@ -112,6 +113,10 @@ function validateStage() {
   }
   const required = [
     ".codex-plugin/plugin.json",
+    ".codex/agents/opus-reviewer.toml",
+    ".codex/agents/test-runner.toml",
+    ".codex/agents/rag-curator.toml",
+    ".codex/agents/security-auditor.toml",
     ".mcp.json",
     ".env.example",
     "README.md",
@@ -121,6 +126,7 @@ function validateStage() {
     "NOTICE",
     "SECURITY.md",
     "docs/README.md",
+    "docs/CUSTOM_AGENTS.md",
     "docs/INSTALL_PROMPT.md",
     "docs/START_PROMPT.md",
     "docs/RELEASE_PROMPT.md",
@@ -155,6 +161,7 @@ function validateStage() {
     "scripts/rag-text-self-test.mjs",
     "scripts/http-retry-self-test.mjs",
     "scripts/model-secret-self-test.mjs",
+    "scripts/custom-agents-self-test.mjs",
     "scripts/reviewer-score-self-test.mjs",
     "scripts/sync-github-release.mjs",
     "scripts/workspace-edit-json-self-test.mjs",
@@ -196,9 +203,11 @@ function validateZip(path) {
 }
 
 function copyIncluded(source, destination) {
-  const stats = statSync(source);
+  const linkStats = lstatSync(source);
   const rel = toPosix(relative(pluginRoot, source));
   assertSafeReleasePath(rel);
+  assertNoSymlinkOrReparsePoint(source, linkStats);
+  const stats = statSync(source);
   if (stats.isDirectory()) {
     mkdirSync(destination, { recursive: true });
     for (const name of readdirSync(source)) {
@@ -208,6 +217,7 @@ function copyIncluded(source, destination) {
   }
   mkdirSync(dirname(destination), { recursive: true });
   const data = readFileSync(source);
+  assertSafeReleaseContent(rel, data);
   writeFileSync(destination, data);
 }
 
@@ -255,6 +265,82 @@ function assertSafeReleasePath(relPath) {
   if (forbiddenExtensions.has(extname(base))) {
     throw new Error(`Forbidden credential/data file extension in release path: ${relPath}`);
   }
+}
+
+function assertNoSymlinkOrReparsePoint(path, stats) {
+  if (stats.isSymbolicLink()) {
+    throw new Error(`Refusing to package symbolic link: ${path}`);
+  }
+  if (process.platform === "win32" && stats.isFile() === false && stats.isDirectory() === false) {
+    throw new Error(`Refusing to package non-regular Windows filesystem entry: ${path}`);
+  }
+  if (process.platform === "win32" && (stats.mode & 0o170000) === 0o120000) {
+    throw new Error(`Refusing to package Windows reparse-like entry: ${path}`);
+  }
+}
+
+function assertSafeReleaseContent(relPath, data) {
+  if (!shouldScanText(relPath, data)) {
+    return;
+  }
+  let text = data.toString("utf8");
+  if (isAllowedFixtureFile(relPath)) {
+    text = stripAllowedFakeSecrets(text);
+  }
+  const matches = scanReleaseSecrets(text);
+  if (matches.length) {
+    throw new Error(`Release file appears to contain sensitive data (${[...new Set(matches)].join(", ")}): ${relPath}`);
+  }
+  if (/(^|\n)\s*"origin"\s*:\s*"codex_verified_note"/.test(text) && !relPath.startsWith("scripts/")) {
+    throw new Error(`Release file appears to contain exported RAG data: ${relPath}`);
+  }
+}
+
+function shouldScanText(relPath, data) {
+  if (data.length > 1024 * 1024) {
+    return false;
+  }
+  const ext = extname(relPath).toLowerCase();
+  const textExtensions = new Set([".js", ".mjs", ".json", ".md", ".txt", ".toml", ".yaml", ".yml", ".example"]);
+  if (textExtensions.has(ext)) {
+    return true;
+  }
+  return /^[\x09\x0a\x0d\x20-\x7e\u0080-\uffff]*$/.test(data.toString("utf8"));
+}
+
+function isAllowedFixtureFile(relPath) {
+  const rel = toPosix(relPath);
+  return rel.startsWith("scripts/") && rel.endsWith("-self-test.mjs");
+}
+
+function stripAllowedFakeSecrets(text) {
+  const fakeGithubTokenShort = `ghp_${"1234567890abcdef1234567890abcdef1234"}`;
+  const fakeGithubTokenLong = `ghp_${"1234567890abcdef1234567890abcdef123456"}`;
+  const fakeDatabaseUrl = ["postgres://user", "password@example.com/db"].join(":");
+  const fakePrivateKeyBlock = [`-----BEGIN ${"PRIVATE"} KEY-----`, "abc", `-----END ${"PRIVATE"} KEY-----`].join("\n");
+  const fakePrivateKeyEscaped = fakePrivateKeyBlock.replaceAll("\n", "\\n");
+  return text
+    .replaceAll("sk-should-not-ingest", "[allowed-test-openai-key]")
+    .replaceAll(fakeDatabaseUrl, "[allowed-test-database-url]")
+    .replaceAll(fakePrivateKeyBlock, "[allowed-test-private-key]")
+    .replaceAll(fakePrivateKeyEscaped, "[allowed-test-private-key]")
+    .replaceAll(fakeGithubTokenShort, "[allowed-test-github-token]")
+    .replaceAll(fakeGithubTokenLong, "[allowed-test-github-token]");
+}
+
+function scanReleaseSecrets(text) {
+  const patterns = [
+    ["private_key", /-----BEGIN [A-Z ]*PRIVATE KEY-----/i],
+    ["openai_key", /\bsk-[A-Za-z0-9._-]{20,}\b/],
+    ["google_key", /\bAIza[A-Za-z0-9._-]{20,}\b/],
+    ["oauth_token", /\bya29\.[A-Za-z0-9._-]{20,}\b/],
+    ["aws_access_key", /\bAKIA[0-9A-Z]{16}\b/],
+    ["github_token", /\b(?:ghp|gho|ghu|ghs|ghr)_[A-Za-z0-9_]{20,}\b|\bgithub_pat_[A-Za-z0-9_]{20,}\b/],
+    ["jwt", /\beyJ[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}\b/],
+    ["secret_assignment", /^\s*["']?(password|passwd|secret|token|api[_-]?key)["']?\s*[:=]\s*["'][A-Za-z0-9._~+/=-]{20,}["']\s*[,;]?\s*$/im],
+    ["database_url", /\b(postgres|postgresql|mysql|mongodb|redis):\/\/[^/\s:]+:[^@\s]+@/i],
+  ];
+  return patterns.filter(([, pattern]) => pattern.test(text)).map(([name]) => name);
 }
 
 function createZip(sourceDir, targetZip) {

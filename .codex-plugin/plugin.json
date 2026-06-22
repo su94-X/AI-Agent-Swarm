@@ -1,7 +1,7 @@
 {
   "name": "multi-model-agents",
-  "version": "1.4.9-lite.2",
-  "description": "AI Agent Swarm Lite 1.4.9-lite.2: simplified docs with three user prompts, Codex orchestration, Opus/Claude review and scoring, no Gemini tester workflow.",
+  "version": "1.5.0-lite.1",
+  "description": "AI Agent Swarm Lite 1.5.0-lite.1: official Codex Custom Agent templates, Codex orchestration, Opus/Claude review and scoring, no Gemini tester workflow.",
   "author": {
     "name": "Su94"
   },
@@ -24,8 +24,8 @@
   "skills": "./skills/",
   "interface": {
     "displayName": "AI Agent Swarm Lite",
-    "shortDescription": "AI Agent Swarm Lite 1.4.9-lite.2: three prompt docs, Codex main control, Opus/Claude review and scoring, no Gemini tester workflow.",
-    "longDescription": "AI Agent Swarm Lite 1.4.9-lite.2 is the simplified branch of AI Agent Swarm. Codex keeps planning, authorization, real file changes, real command execution, local project memory, and final decisions. Opus/Claude acts as an external reviewer/scorer for plan-review, diff-review, test-review, and final-review, returning evidence-bound findings, risks, scores, must-fix items, and recommended Codex actions. The Gemini tester workflow is intentionally removed. This release simplifies docs into INSTALL_PROMPT, START_PROMPT, RELEASE_PROMPT, plus a docs navigation page.",
+    "shortDescription": "AI Agent Swarm Lite 1.5.0-lite.1: official Custom Agents, Codex main control, Opus/Claude review and scoring, no Gemini tester workflow.",
+    "longDescription": "AI Agent Swarm Lite 1.5.0-lite.1 is the simplified branch of AI Agent Swarm. Codex keeps planning, authorization, real file changes, real command execution, local project memory, and final decisions. Opus/Claude acts as an external reviewer/scorer for plan-review, diff-review, test-review, and final-review, returning evidence-bound findings, risks, scores, must-fix items, and recommended Codex actions. The Gemini tester workflow is intentionally removed. This release adds .codex/agents/*.toml Custom Agent templates for the Lite workflow.",
     "developerName": "Su94",
     "category": "Productivity",
     "capabilities": [
@@ -33,7 +33,8 @@
       "engineering gate review",
       "code review",
       "local project memory",
-      "visible subagent workflow"
+      "visible subagent workflow",
+      "Codex Custom Agents"
     ],
     "defaultPrompt": [
       "Use AI Agent Swarm Lite for this task: Codex remains the orchestrator and final decision maker; Opus/Claude may be used for engineering gate review and scoring."

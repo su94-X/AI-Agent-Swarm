@@ -1,6 +1,10 @@
 # AI Agent Swarm Lite 后续路线图
 
-本文档记录 AI Agent Swarm Lite 在 `1.4.9-lite.2` 之后的工程改进方向，以及从完整版继承下来的已完成工程化事项。这里的未完成内容不是当前版本承诺，而是后续小版本或中版本的设计入口。
+本文档记录 AI Agent Swarm Lite 在 `1.5.0-lite.1` 之后的工程改进方向，以及从完整版继承下来的已完成工程化事项。这里的未完成内容不是当前版本承诺，而是后续小版本或中版本的设计入口。
+
+## Custom Agents
+
+`1.5.0-lite.1` 已新增 Lite 官方 Codex Custom Agent 模板 `.codex/agents/*.toml`，包括 `opus-reviewer`、`test-runner`、`rag-curator` 和 `security-auditor`。该版本明确区分 Custom Agent、Skill、MCP 和 Plugin：Custom Agent 负责可见子智能体角色配置，Skill 负责 Lite 工作流，MCP 负责 Opus/Claude reviewer/scorer、RAG 和 workspace 兼容工具，Plugin 负责打包分发。子智能体完成后必须关闭以释放并发槽位。
 
 ## MCP server 模块拆分
 

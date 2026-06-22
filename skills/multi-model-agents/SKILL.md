@@ -14,6 +14,8 @@ Lite 版用户文档入口已经收敛为：
 - `docs/RELEASE_PROMPT.md`：维护者发布入口。
 - `docs/README.md`：完整文档导航。
 
+V1.5.0-lite.1 起，Lite 随包提供 `.codex/agents/*.toml` 官方 Custom Agent 模板：`opus-reviewer`、`test-runner`、`rag-curator`、`security-auditor`。这些模板需要位于当前项目 `.codex/agents/` 或用户级 `~/.codex/agents/` 才会被 Codex 加载。Skill 负责工作流，MCP 负责 Opus/Claude reviewer/scorer 与 RAG 工具，Plugin 负责打包分发。
+
 Lite 版原则：
 
 1. Codex 始终是主控，负责方案、授权、文件修改、命令执行、测试结果判断、RAG 写入和最终决策。
@@ -21,6 +23,7 @@ Lite 版原则：
 3. 不使用 Gemini tester 环节；真实测试由 Codex 本地执行。
 4. 外部模型不直接写 RAG，不直接决定接受/拒绝。
 5. RAG 是 Codex 主控的本地项目记忆库；检索结果必须由 Codex 筛选后再进入上下文。
+6. 非简单任务若当前线程有可见子智能体工具，应优先使用 Lite Custom Agents；子智能体完成后必须关闭以释放并发槽位。
 
 ## 工具
 
@@ -49,3 +52,4 @@ Lite 版原则：
 - 不要在工程闸门未通过时进入正式编码，除非用户明确批准降级为 Codex-only 审查。
 - 不要把未验证的外部模型输出写入 trusted RAG。
 - 不要向外部模型发送 `.env`、API key、生产数据或无关仓库内容。
+- 不要让已完成子智能体继续占用并发槽位。

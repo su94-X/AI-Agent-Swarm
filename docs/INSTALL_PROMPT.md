@@ -22,11 +22,14 @@
 5. 调用 multi_model_rag_status，确认本地项目记忆库状态。
 6. 如果 reviewer provider 显示为 codex-internal，说明可能沿用了完整版旧 .env；Lite 版应改为 MMA_REVIEWER_PROVIDER=anthropic。
 7. 确认 docs/ENGINEERING_GATE.md 存在；非简单任务默认需要 plan-review、diff-review 和 test-review。
+8. 确认 Lite 官方 Custom Agent 模板存在：.codex/agents/opus-reviewer.toml、test-runner.toml、rag-curator.toml、security-auditor.toml。说明这些模板需要位于当前项目 .codex/agents/ 或用户级 ~/.codex/agents/ 才会被 Codex 作为 Custom Agents 加载。
+9. 如可用，运行 custom-agents-self-test。
 
 请输出：
 - Lite 插件是否加载成功。
 - Opus/Claude reviewer/scorer 是否具备 API key。
 - RAG 是否可写。
 - 工程闸门是否可用。
+- Custom Agent 模板是否存在。
 - 如果不可用，给出最小修复步骤，不要请求或打印任何密钥。
 ```

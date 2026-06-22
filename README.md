@@ -10,7 +10,7 @@
 
 <p align="center">
   <img alt="Branch" src="https://img.shields.io/badge/branch-lite--opus--review-38BDF8">
-  <img alt="Version" src="https://img.shields.io/badge/version-1.4.9--lite.2-22C55E">
+  <img alt="Version" src="https://img.shields.io/badge/version-1.5.0--lite.1-22C55E">
   <a href="./LICENSE"><img alt="License" src="https://img.shields.io/badge/license-Apache--2.0-22C55E"></a>
   <img alt="Node" src="https://img.shields.io/badge/node-no%20npm%20deps-111827">
 </p>
@@ -31,7 +31,7 @@ Lite 版只保留三个核心：
 
 ## 工程闸门
 
-Lite 版从 `1.4.9-lite.1` 开始同步主体版 V1.4.9 的安全发布能力，并继续默认启用工程闸门。非简单任务在正式编码前必须先产出工程设计文档和开发计划，并调用 Opus/Claude 做 `plan-review`。只要返回 blocking findings、must-fix items、`approved_to_continue: false`，或计划分低于 80 且没有充分解释，Codex 必须先修正文档和计划，再次审查。
+Lite 版从 `1.5.0-lite.1` 开始随包提供官方 Codex Custom Agent 模板，并继续默认启用工程闸门。非简单任务在正式编码前必须先产出工程设计文档和开发计划，并调用 Opus/Claude 做 `plan-review`。只要返回 blocking findings、must-fix items、`approved_to_continue: false`，或计划分低于 80 且没有充分解释，Codex 必须先修正文档和计划，再次审查。
 
 进入开发后，Codex 按批准计划自动推进。重要实现步骤后做 diff 检查；高风险或非平凡改动调用 `diff-review`。真实测试完成后，把 command、exit code、stdout、stderr 和变更摘要交给 Opus/Claude 做 `test-review`。详见 [docs/ENGINEERING_GATE.md](./docs/ENGINEERING_GATE.md)。
 
@@ -57,6 +57,21 @@ Lite 版适合更轻的日常工作流：
 - 你不想引入 Gemini 测试策略环节。
 - 你希望 Opus/Claude 作为“外部高质量审查员”给方案或 diff 打分。
 - 你希望流程更短、更容易解释、更低成本。
+
+## Custom Agents
+
+V1.5.0-lite.1 起发布包包含 Lite 官方 Codex Custom Agent 模板：
+
+```text
+.codex/agents/opus-reviewer.toml
+.codex/agents/test-runner.toml
+.codex/agents/rag-curator.toml
+.codex/agents/security-auditor.toml
+```
+
+这些模板需要位于当前项目 `.codex/agents/` 或用户级 `~/.codex/agents/` 才会被 Codex 加载。Skill 负责工作流，MCP 负责 Opus/Claude reviewer/scorer 和 RAG 工具，Plugin 负责打包分发；插件安装本身不等于所有项目自动获得自定义子智能体。
+
+详见 [docs/CUSTOM_AGENTS.md](./docs/CUSTOM_AGENTS.md)。
 
 ## 架构
 
@@ -138,6 +153,7 @@ node scripts/rag-text-self-test.mjs
 node scripts/workspace-edit-json-self-test.mjs
 node scripts/workspace-edit-repair-self-test.mjs
 node scripts/reviewer-score-self-test.mjs
+node scripts/custom-agents-self-test.mjs
 ```
 
 真实外部模型连通性测试：

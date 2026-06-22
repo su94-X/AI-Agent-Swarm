@@ -2,6 +2,25 @@
 
 All notable changes to AI Agent Swarm and its Lite branch are documented here.
 
+## [1.5.0-lite.1] - 2026-06-22
+
+### Added
+
+- Added Lite official Codex Custom Agent templates under `.codex/agents/`:
+  - `opus-reviewer`
+  - `test-runner`
+  - `rag-curator`
+  - `security-auditor`
+- Added `docs/CUSTOM_AGENTS.md` for Lite.
+- Added `scripts/custom-agents-self-test.mjs`.
+- Added release packaging validation for `.codex/agents/*.toml`.
+
+### Changed
+
+- Updated Lite startup, subagent workflow, installation, release, README, skill metadata, and roadmap docs for Custom Agents.
+- Documented that completed subagents must be closed with `close_agent` or equivalent to release concurrency slots.
+- Strengthened Lite package-release validation with content-level secret scanning and symlink/reparse-point rejection.
+
 ## [1.4.9-lite.2] - 2026-06-22
 
 ### Changed
