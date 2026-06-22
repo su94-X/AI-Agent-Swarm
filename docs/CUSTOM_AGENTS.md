@@ -37,9 +37,16 @@ Windows 用户级：C:\Users\<你的用户名>\.codex\agents\*.toml
 
 | Agent | 权限建议 | 职责 |
 | --- | --- | --- |
-| `opus-reviewer` | `read-only` | 调用 Opus/Claude reviewer/scorer MCP 工具做 plan-review、diff-review、test-review 和 final-review。 |
+| `opus-reviewer` | `read-only` | Codex 可见壳子，必须调用 Opus/Claude reviewer/scorer MCP 工具做 plan-review、diff-review、test-review 和 final-review；不得自己直接审查评分。 |
 | `test-runner` | `workspace-write` | 只运行主控批准的本地命令，记录 command、exit code、stdout、stderr。 |
 | `rag-curator` | `read-only` | 整理可写入 RAG 的候选知识，最终写入由主控决定。 |
 | `security-auditor` | `read-only` | 审计密钥泄漏、路径边界、发布包和 prompt injection surface。 |
 
 所有子智能体完成后，Main Orchestrator 必须调用 `close_agent` 或等价能力关闭，释放并发槽位。
+
+## 创建时的执行合同
+
+`.codex/agents/*.toml` 是角色底座，但每次 `spawn_agent` 的任务消息仍然必须写清本次执行合同。Lite 版尤其要避免 `opus-reviewer` 被创建后直接用 Codex 自己做审查评分。
+
+- 创建 `opus-reviewer` 时，Main Orchestrator 必须在 spawn message 中写明：你是 Codex 可见壳子，不是 Opus/Claude 本体；必须调用 `multi_model_reviewer_score` 或 `multi_model_reviewer_findings`；不得自己直接审查评分；工具、key 或输入证据不足时输出阻塞或降级报告。
+- 子智能体完成任务并返回结果后，Main Orchestrator 必须调用 `close_agent` 或等价能力关闭它，释放并发槽位。

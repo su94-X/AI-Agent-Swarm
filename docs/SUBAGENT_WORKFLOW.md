@@ -7,7 +7,7 @@ V1.5.0-lite.1 起，Lite 随包提供官方 Custom Agent 模板：`.codex/agents
 | 角色 | 底层能力 | 工具 | 职责 |
 | --- | --- | --- | --- |
 | Main Orchestrator | Codex | 本地工具 + RAG 工具 | 规划、授权、文件修改、真实测试、最终决策 |
-| Opus Reviewer / Scorer | Opus/Claude | `multi_model_reviewer_findings` / `multi_model_reviewer_score` | 外部审查、风险判断、0-100 评分 |
+| Opus Reviewer / Scorer | Opus/Claude | `multi_model_reviewer_findings` / `multi_model_reviewer_score` | Codex 可见壳子，必须通过 MCP 调用 Opus/Claude 做外部审查、风险判断、0-100 评分 |
 | Test Runner | Codex | 本地命令工具 | 运行主控批准的真实命令并记录证据 |
 | RAG Curator | Codex | RAG 工具 | 整理候选知识，最终由主控写入 |
 | Security Auditor | Codex | 只读审计 | 检查密钥、路径边界、发布包和 prompt injection surface |
@@ -17,6 +17,7 @@ V1.5.0-lite.1 起，Lite 随包提供官方 Custom Agent 模板：`.codex/agents
 
 - 非简单任务优先使用 `opus-reviewer`、`test-runner`、`rag-curator`、`security-auditor` 这些 Custom Agent。
 - 如果只能使用内置 `worker` / `explorer`，则用内置子智能体承载同样角色，并记录映射关系。
+- 创建 Opus Reviewer / Scorer 子智能体时，Main Orchestrator 的 spawn message 必须再次写明：必须调用 `multi_model_reviewer_score` 或 `multi_model_reviewer_findings`，不得自己直接审查评分，不得用 Codex 自己代替 Opus/Claude；工具、key 或输入证据不足时输出阻塞或降级报告。
 - 子智能体完成任务并返回结果后，Main Orchestrator 必须调用 `close_agent` 或等价关闭能力释放并发槽位。
 - Security Auditor 不得打开、读取、打印或转述真实 `.env`、token、凭据、私有日志或 RAG 正文；只能检查 diff、文件名、manifest、发布包条目、`.env.example`、文档说明、脚本逻辑和泄漏路径。
 
@@ -25,7 +26,7 @@ V1.5.0-lite.1 起，Lite 随包提供官方 Custom Agent 模板：`.codex/agents
 1. Main Orchestrator 调用 `multi_model_config_status`。
 2. Main Orchestrator 调用 `multi_model_rag_status`，必要时调用 `multi_model_rag_search`。
 3. Codex 制定工程设计和开发计划。
-4. Reviewer / Scorer 调用 `multi_model_reviewer_score`，设置 `review_stage: "plan"`，做 plan-review。
+4. 创建 Reviewer / Scorer 子智能体时把“必须调用 `multi_model_reviewer_score`、不得自己直接审查评分”的执行合同写进 spawn message，然后由 Reviewer / Scorer 调用 `multi_model_reviewer_score`，设置 `review_stage: "plan"`，做 plan-review。
 5. 只有没有 blocking findings、must-fix items 且 Codex 确认计划可执行后，才进入文件修改或命令执行。
 6. 高风险或非平凡 diff 调用 `review_stage: "diff"`。
 7. 真实测试完成后调用 `review_stage: "test"`，传入 command、exit code、stdout、stderr 和变更摘要。

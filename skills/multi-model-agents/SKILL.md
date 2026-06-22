@@ -14,16 +14,16 @@ Lite 版用户文档入口已经收敛为：
 - `docs/RELEASE_PROMPT.md`：维护者发布入口。
 - `docs/README.md`：完整文档导航。
 
-V1.5.0-lite.1 起，Lite 随包提供 `.codex/agents/*.toml` 官方 Custom Agent 模板：`opus-reviewer`、`test-runner`、`rag-curator`、`security-auditor`。这些模板需要位于当前项目 `.codex/agents/` 或用户级 `~/.codex/agents/` 才会被 Codex 加载。Skill 负责工作流，MCP 负责 Opus/Claude reviewer/scorer 与 RAG 工具，Plugin 负责打包分发。
+V1.5.1-lite.1 起，Lite 强化 `.codex/agents/*.toml` 官方 Custom Agent 模板的创建合同：`opus-reviewer` 是 Codex 可见壳子，必须调用 `multi_model_reviewer_score` 或 `multi_model_reviewer_findings` 让 Opus/Claude 完成外部审查评分，不能由 Codex 子智能体自己代替外部模型完成 reviewer/scorer 工作。这些模板需要位于当前项目 `.codex/agents/` 或用户级 `~/.codex/agents/` 才会被 Codex 加载。Skill 负责工作流，MCP 负责 Opus/Claude reviewer/scorer 与 RAG 工具，Plugin 负责打包分发。
 
 Lite 版原则：
 
 1. Codex 始终是主控，负责方案、授权、文件修改、命令执行、测试结果判断、RAG 写入和最终决策。
-2. Opus/Claude 是外部 reviewer/scorer，负责 plan-review、diff-review、test-review、final-review，只提供审查 findings、风险判断、评分、must-fix items 和建议动作。
+2. Opus/Claude 是外部 reviewer/scorer，负责 plan-review、diff-review、test-review、final-review，只提供审查 findings、风险判断、评分、must-fix items 和建议动作。涉及这些阶段时，创建 Opus Reviewer 子智能体的 spawn message 必须写明：必须调用 `multi_model_reviewer_score` 或 `multi_model_reviewer_findings`，不得自己直接审查评分。
 3. 不使用 Gemini tester 环节；真实测试由 Codex 本地执行。
 4. 外部模型不直接写 RAG，不直接决定接受/拒绝。
 5. RAG 是 Codex 主控的本地项目记忆库；检索结果必须由 Codex 筛选后再进入上下文。
-6. 非简单任务若当前线程有可见子智能体工具，应优先使用 Lite Custom Agents；子智能体完成后必须关闭以释放并发槽位。
+6. 非简单任务若当前线程有可见子智能体工具，应优先使用 Lite Custom Agents；子智能体完成后必须关闭以释放并发槽位。`opus-reviewer` 工具、key 或输入证据不足时必须输出阻塞或降级报告，不能伪造外部审查。
 
 ## 工具
 
@@ -39,7 +39,7 @@ Lite 版原则：
 
 1. 调用 `multi_model_config_status`，确认 reviewer/scorer 的 Opus/Claude 配置可用。
 2. 调用 `multi_model_rag_status`。非简单任务先用 `multi_model_rag_search` 检索项目记忆。
-3. 非简单任务正式编码前，Codex 必须产出工程设计和开发计划，并调用 `multi_model_reviewer_score` 做 `review_stage: "plan"` 审查。存在阻断项、must-fix items 或 `approved_to_continue: false` 时，必须先修计划并复审。
+3. 非简单任务正式编码前，Codex 必须产出工程设计和开发计划，创建 Opus Reviewer 子智能体，并在 spawn message 中声明必须调用 `multi_model_reviewer_score` 做 `review_stage: "plan"` 审查。存在阻断项、must-fix items 或 `approved_to_continue: false` 时，必须先修计划并复审。
 4. Codex 按批准计划执行必要文件修改或命令；重要步骤后做 diff 检查，高风险或非平凡改动调用 `review_stage: "diff"`。
 5. 真实测试完成后，把 command、exit code、stdout、stderr 和变更摘要作为 `test_evidence` 传给 `review_stage: "test"`。
 6. Codex 根据评分、findings、must-fix items 和真实测试结果决定接受、继续修改或回退。

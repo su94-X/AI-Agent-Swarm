@@ -2,6 +2,18 @@
 
 All notable changes to AI Agent Swarm and its Lite branch are documented here.
 
+## [1.5.1-lite.1] - 2026-06-22
+
+### Fixed
+
+- Strengthened the Lite `opus-reviewer` Custom Agent prompt so the visible Codex subagent must call `multi_model_reviewer_score` or `multi_model_reviewer_findings` and must not directly perform review/scoring as a substitute for Opus/Claude.
+- Updated `docs/START_PROMPT.md` to require Main Orchestrator to include the reviewer/scorer MCP execution contract in each `opus-reviewer` spawn message.
+- Updated README, Custom Agent docs, role prompt, installation/release prompts, skill metadata, and self-tests for the stricter Lite review contract.
+
+### Notes
+
+- No intentional MCP runtime behavior changes. Lite still removes the Gemini tester workflow and keeps Codex as the only final decision maker.
+
 ## [1.5.0-lite.1] - 2026-06-22
 
 ### Added

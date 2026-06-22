@@ -12,7 +12,15 @@ const requiredAgents = [
     file: "opus-reviewer.toml",
     name: "opus-reviewer",
     sandbox: "read-only",
-    required: ["multi_model_reviewer_score", "multi_model_reviewer_findings", "approved_to_continue", "关闭本子智能体"],
+    required: [
+      "必须调用 multi_model_reviewer_score",
+      "multi_model_reviewer_findings",
+      "不得自己直接审查评分",
+      "不得用 Codex 自己代替 Opus/Claude",
+      "reviewer/scorer MCP 工具不可见",
+      "approved_to_continue",
+      "关闭本子智能体",
+    ],
   },
   {
     file: "test-runner.toml",
@@ -61,9 +69,32 @@ for (const agent of requiredAgents) {
 }
 
 const docs = readFile("docs/CUSTOM_AGENTS.md");
-for (const snippet of [".codex/agents/*.toml", "~/.codex/agents/*.toml", "Skill", "MCP", "Plugin", "Lite 版不包含 Gemini"]) {
+for (const snippet of [
+  ".codex/agents/*.toml",
+  "~/.codex/agents/*.toml",
+  "Skill",
+  "MCP",
+  "Plugin",
+  "Lite 版不包含 Gemini",
+  "spawn message",
+  "必须调用 `multi_model_reviewer_score`",
+  "不得自己直接审查评分",
+  "close_agent",
+]) {
   if (!docs.includes(snippet)) {
     throw new Error(`docs/CUSTOM_AGENTS.md missing required snippet: ${snippet}`);
+  }
+}
+
+const startPrompt = readFile("docs/START_PROMPT.md");
+for (const snippet of [
+  "创建 Opus Reviewer / Scorer 子智能体时，spawn message 必须明确写入",
+  "必须调用 `multi_model_reviewer_score`",
+  "不得自己直接审查评分",
+  "不得用 Codex 自己代替 Opus/Claude",
+]) {
+  if (!startPrompt.includes(snippet)) {
+    throw new Error(`docs/START_PROMPT.md missing required Lite reviewer spawn contract: ${snippet}`);
   }
 }
 

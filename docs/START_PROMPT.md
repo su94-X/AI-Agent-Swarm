@@ -21,6 +21,7 @@
 可见子智能体规则：
 - 非简单任务如果当前线程有可见子智能体工具，应优先使用 `opus-reviewer`、`test-runner`、`rag-curator`、`security-auditor` 这些 Lite Custom Agent；如果当前客户端只能使用内置 worker/explorer，则用内置子智能体承载同样角色，并记录映射关系。
 - 涉及 plan-review、diff-review、test-review 或 final-review 时使用 Opus Reviewer 子智能体；需要运行真实命令时使用 Test Runner；需要整理 RAG 候选时使用 RAG Curator；触碰密钥、发布包、路径授权或 prompt injection surface 时使用 Security Auditor。
+- 创建 Opus Reviewer / Scorer 子智能体时，spawn message 必须明确写入：你是 Codex 可见壳子，不是 Opus/Claude 本体；必须调用 `multi_model_reviewer_score` 或 `multi_model_reviewer_findings` 执行外部审查/评分；不得自己直接审查评分，不得用 Codex 自己代替 Opus/Claude；如果 MCP 工具不可见、key 缺失或输入证据不足，输出阻塞或降级报告。
 - 子智能体完成任务并返回结果后，Main Orchestrator 必须调用 close_agent 或等价关闭能力释放并发槽位。
 - 如果当前线程没有子智能体工具，必须明确说明“当前线程没有可见子智能体工具，降级为 Main Orchestrator 直接调用 MCP 工具。”
 
@@ -31,7 +32,7 @@
 
 工程闸门：
 1. 非简单任务正式编码前，Codex 必须输出工程设计和开发计划，包含目标、非目标、读写边界、风险、回退策略和验证方法。
-2. 调用 multi_model_reviewer_score，设置 review_stage=plan，把设计和计划交给 Opus/Claude 审查评分。
+2. 创建 Opus Reviewer / Scorer 子智能体，并在 spawn message 中再次声明必须调用 multi_model_reviewer_score；设置 review_stage=plan，把设计和计划交给 Opus/Claude 审查评分。Opus Reviewer 不得自己直接审查评分。
 3. 如果存在 blocking_findings、must_fix_items、approved_to_continue=false，或分数低于 80 且没有充分解释，Codex 必须先修正文档和计划，再次审查。
 4. 开发中高风险或非平凡 diff 使用 review_stage=diff。
 5. 真实测试由 Codex 本地运行。测试后把 command、exit code、stdout、stderr 和变更摘要作为 test_evidence，使用 review_stage=test。

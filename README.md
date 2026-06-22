@@ -10,7 +10,7 @@
 
 <p align="center">
   <img alt="Branch" src="https://img.shields.io/badge/branch-lite--opus--review-38BDF8">
-  <img alt="Version" src="https://img.shields.io/badge/version-1.5.0--lite.1-22C55E">
+  <img alt="Version" src="https://img.shields.io/badge/version-1.5.1--lite.1-22C55E">
   <a href="./LICENSE"><img alt="License" src="https://img.shields.io/badge/license-Apache--2.0-22C55E"></a>
   <img alt="Node" src="https://img.shields.io/badge/node-no%20npm%20deps-111827">
 </p>
@@ -31,7 +31,7 @@ Lite 版只保留三个核心：
 
 ## 工程闸门
 
-Lite 版从 `1.5.0-lite.1` 开始随包提供官方 Codex Custom Agent 模板，并继续默认启用工程闸门。非简单任务在正式编码前必须先产出工程设计文档和开发计划，并调用 Opus/Claude 做 `plan-review`。只要返回 blocking findings、must-fix items、`approved_to_continue: false`，或计划分低于 80 且没有充分解释，Codex 必须先修正文档和计划，再次审查。
+Lite 版从 `1.5.0-lite.1` 开始随包提供官方 Codex Custom Agent 模板，并继续默认启用工程闸门。`1.5.1-lite.1` 强化了 `opus-reviewer` 的创建合同：它是 Codex 可见壳子，必须调用 Opus/Claude reviewer/scorer MCP 工具，不能自己直接审查评分。非简单任务在正式编码前必须先产出工程设计文档和开发计划，并调用 Opus/Claude 做 `plan-review`。只要返回 blocking findings、must-fix items、`approved_to_continue: false`，或计划分低于 80 且没有充分解释，Codex 必须先修正文档和计划，再次审查。
 
 进入开发后，Codex 按批准计划自动推进。重要实现步骤后做 diff 检查；高风险或非平凡改动调用 `diff-review`。真实测试完成后，把 command、exit code、stdout、stderr 和变更摘要交给 Opus/Claude 做 `test-review`。详见 [docs/ENGINEERING_GATE.md](./docs/ENGINEERING_GATE.md)。
 
@@ -60,7 +60,7 @@ Lite 版适合更轻的日常工作流：
 
 ## Custom Agents
 
-V1.5.0-lite.1 起发布包包含 Lite 官方 Codex Custom Agent 模板：
+V1.5.x Lite 发布包包含 Lite 官方 Codex Custom Agent 模板：
 
 ```text
 .codex/agents/opus-reviewer.toml
@@ -73,6 +73,13 @@ V1.5.0-lite.1 起发布包包含 Lite 官方 Codex Custom Agent 模板：
 
 详见 [docs/CUSTOM_AGENTS.md](./docs/CUSTOM_AGENTS.md)。
 
+### 创建子智能体时必须写清任务合同
+
+`.codex/agents/*.toml` 是角色底座，但每次创建子智能体时，主控 Codex 仍必须在 spawn message 中写清本次任务合同：
+
+- 创建 `opus-reviewer` 时：它是 Codex 可见壳子，不是 Opus/Claude 本体；必须调用 `multi_model_reviewer_score` 或 `multi_model_reviewer_findings`；不得自己直接审查评分；工具、key 或输入证据不足时输出阻塞或降级报告。
+- 子智能体返回结果后，主控必须 `close_agent` 或使用等价能力关闭它，释放并发槽位。
+
 ## 架构
 
 ```mermaid
@@ -80,7 +87,8 @@ flowchart TD
   U["User Task"] --> C["Codex Main Orchestrator"]
   C --> R["Local RAG Memory"]
   C --> W["Workspace / Shell / Real Tests"]
-  C --> O["Opus / Claude Reviewer & Scorer<br/>MCP external model call"]
+  C --> A["opus-reviewer Custom Agent<br/>visible Codex shell"]
+  A --> O["Opus / Claude Reviewer & Scorer<br/>MCP external model call"]
   O --> F["Findings + Score + Recommended Codex Actions"]
   F --> C
   W --> C
