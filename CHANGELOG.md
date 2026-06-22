@@ -2,6 +2,16 @@
 
 All notable changes to AI Agent Swarm are documented here.
 
+## [1.5.1] - 2026-06-22
+
+### Changed
+
+- Reworked `README.md` as a clearer GitHub landing page.
+- Added an upfront comparison between the full AI Agent Swarm workflow and the Lite branch.
+- Clarified how to enable `.codex/agents/*.toml` Custom Agent templates in project-level or user-level agent directories.
+- Highlighted the `close_agent` lifecycle rule, RAG safety boundaries, release package checks, and the three prompt entrypoints.
+- Kept core MCP runtime behavior unchanged.
+
 ## [1.5.0] - 2026-06-22
 
 ### Added

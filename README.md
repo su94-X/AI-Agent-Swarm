@@ -5,96 +5,147 @@
 </p>
 
 <p align="center">
-  <strong>Codex 主控的多模型协作插件：Opus/Claude 主编码，Gemini 测试分析，Codex 内部审查，本地项目记忆库长期沉淀。</strong>
+  <strong>Codex 主控的多模型协作插件：让 Codex 编排 Opus/Claude、Gemini、本地项目记忆库和官方 Custom Agents。</strong>
 </p>
 
 <p align="center">
-  <a href="https://github.com/su94-X/AI-Agent-Swarm/releases/tag/v1.5.0"><img alt="Release" src="https://img.shields.io/badge/release-v1.5.0-38BDF8"></a>
+  <a href="https://github.com/su94-X/AI-Agent-Swarm/releases/tag/v1.5.1"><img alt="Release" src="https://img.shields.io/badge/release-v1.5.1-38BDF8"></a>
   <a href="./LICENSE"><img alt="License" src="https://img.shields.io/badge/license-Apache--2.0-22C55E"></a>
   <img alt="Node" src="https://img.shields.io/badge/node-no%20npm%20deps-111827">
   <img alt="Codex Plugin" src="https://img.shields.io/badge/Codex-plugin-8B5CF6">
 </p>
 
-## 简介
+## 这是什么
 
-AI Agent Swarm 是一个面向长期项目维护的本地 Codex 多模型编排插件。它的目标不是替换 Codex 主智能体，而是把外部模型能力纳入 Codex 可控的授权、审查、测试和记忆流程。
+AI Agent Swarm 是一个本地 Codex 插件，用于长期项目维护中的多模型协作。
 
-V1.5.0 是当前正式稳定版本。它在三段式通用提示词、工程闸门、workspace 安全、RAG 质量层、MCP 可见日志、patch/edit 局部编辑和强制可见角色子智能体契约基础上，新增 `.codex/agents/*.toml` 官方 Custom Agent 模板，让 Coder、Reviewer、Tester、Test Runner、RAG Curator 和 Security Auditor 可以作为真正的 Codex 自定义子智能体角色被加载。
+它不替代 Codex 主智能体，也不让外部模型无限接管仓库。它做的是把外部模型能力放进 Codex 可控的工程流程里：
 
-## 核心定位
+- Codex 负责规划、授权、真实文件修改、真实测试、审查整合、RAG 写入和最终决策。
+- Opus/Claude 负责主要编码实现，或在 Lite 版中负责审查与评分。
+- Gemini 负责测试计划、边界用例和失败日志分析。
+- 本地项目记忆库用于沉淀已验证的 bug、命令、决策、约定和风险。
+- 官方 Custom Agents 模板让 Coder、Tester、Reviewer、Test Runner、RAG Curator、Security Auditor 成为可见的 Codex 子智能体角色。
 
-| 角色 | 职责 |
+V1.5.1 是 README 和发布说明刷新版本，延续 V1.5.0 的核心能力：`.codex/agents/*.toml` 官方 Custom Agent 模板、工程闸门、workspace 安全边界、本地项目记忆库、MCP 可见日志、patch/edit 局部编辑和安全发布包。
+
+## 两个版本
+
+| 版本 | 适合场景 | 外部模型角色 | Release |
+| --- | --- | --- | --- |
+| AI Agent Swarm | 完整多模型开发工作流 | Opus/Claude 主编码，Gemini 测试分析，Codex 内部审查 | [v1.5.1](https://github.com/su94-X/AI-Agent-Swarm/releases/tag/v1.5.1) |
+| AI Agent Swarm Lite | 更短、更低成本的审查评分流程 | Codex 自己实现，Opus/Claude 做外部审查和评分，无 Gemini | [v1.5.0-lite.1](https://github.com/su94-X/AI-Agent-Swarm/releases/tag/v1.5.0-lite.1) |
+
+如果你想让 Opus/Claude 负责主要编码，用完整版。
+如果你只想让 Opus/Claude 做高质量审查和评分，用 Lite 分支。
+
+## 核心原则
+
+| 原则 | 说明 |
 | --- | --- |
-| Codex Main Orchestrator | 规划、授权、审查、真实测试执行、RAG 写入、最终决策 |
-| Opus/Claude Coder | 在 Codex 授权路径内执行主要编码实现 |
-| Gemini Tester | 生成测试计划、边界用例和失败日志分析 |
-| Codex Internal Reviewer | 默认负责代码审查，不额外调用外部 GPT reviewer |
-| RAG Curator | 整理候选知识，最终由 Codex 写入本地项目记忆库 |
-| Security Auditor | 只读审计密钥、路径边界、发布包和 prompt injection surface |
-| Custom Role | 可选 OpenAI-compatible 外部模型角色 |
-
-外部模型不会直接获得无限仓库权限，也不会直接写入项目记忆库。所有真实文件修改、命令执行、测试结果判定和最终接受决定仍由 Codex 完成。
-
-## 工程闸门
-
-非简单任务默认启用工程闸门：
-
-1. Codex 先执行 Gate 0 预检，确认 MCP 工具、RAG、Coder、Tester 和必要 key 状态，不打印密钥。
-2. Codex 产出工程设计文档和开发计划，包含目标、非目标、读写边界、data flow、prompt injection surface、credential handling、外部网络范围、风险、回退和验证路径。
-3. 设计和计划交给 Opus/Claude 做 plan-review。只要有 blocking findings 或 must-fix items，Codex 必须先修文档和计划并复审。
-4. 进入开发后，Codex 按批准计划自动推进；高风险或非平凡 diff 进入 diff-review。
-5. 真实测试由 Codex/Test Runner 执行，并记录 command、exit code、stdout、stderr。测试证据交给 Gemini 做 test-review/failure analysis。
-
-详见 [docs/ENGINEERING_GATE.md](./docs/ENGINEERING_GATE.md)。
+| Codex 是主控 | 只有 Codex 做最终决策、运行真实命令、写入 RAG、接受或拒绝结果。 |
+| 外部模型有边界 | 只把必要文件、diff、日志和约束发给外部模型，不发送密钥或无关仓库内容。 |
+| 写权限窄授权 | `multi_model_coder_workspace_edit` 必须传入 `allowed_read_paths` 和 `allowed_write_paths`。 |
+| 真实测试本地执行 | Gemini 可以建议测试，但不能声称测试已运行。 |
+| RAG 只写已验证事实 | 未验证的 Opus/Gemini 输出不能直接写入 trusted RAG。 |
+| 子智能体要关闭 | 子智能体完成后必须 `close_agent` 或等价关闭，释放并发槽位。 |
 
 ## 架构
 
 ```mermaid
 flowchart TD
-  U["User / Project Task"] --> C["Codex Main Orchestrator"]
+  U["User Task"] --> C["Codex Main Orchestrator"]
+  C --> G["Engineering Gate<br/>plan-review / diff-review / test-review"]
   C --> R["Local Project Memory<br/>Lightweight RAG"]
-  C --> S["Visible Codex Subagents"]
-  S --> CO["Coder Subagent<br/>MCP -> Opus / Claude"]
-  S --> TE["Tester Subagent<br/>MCP -> Gemini"]
-  S --> RV["Reviewer Subagent<br/>Codex Internal"]
-  S --> TR["Test Runner Subagent<br/>Local Commands"]
-  CO --> W["Workspace Edit Layer<br/>Path Guard / SHA256 / Patch Edit"]
-  TE --> P["Test Plan / Failure Analysis"]
-  RV --> F["Review Findings"]
-  TR --> L["Real Test Logs"]
+  C --> A["Codex Custom Agents<br/>.codex/agents/*.toml"]
+  A --> PC["primary-coder<br/>MCP -> Opus / Claude"]
+  A --> TE["tester<br/>MCP -> Gemini"]
+  A --> RV["reviewer<br/>Codex Internal"]
+  A --> TR["test-runner<br/>Local Commands"]
+  A --> RC["rag-curator<br/>Memory Candidates"]
+  A --> SA["security-auditor<br/>Read-only Safety Review"]
+  PC --> W["Workspace Edit Layer<br/>Path Guard / SHA256 / Patch Edit"]
+  TE --> TP["Test Plan / Failure Analysis"]
+  TR --> TL["Real Test Evidence"]
   W --> C
-  P --> C
-  F --> C
-  L --> C
+  TP --> C
+  TL --> C
+  R --> C
   C --> D["Final Decision"]
 ```
 
-## 3 步快速开始
+## 快速开始
 
-1. 下载并解压 [ai-agent-swarm-1.5.0.zip](https://github.com/su94-X/AI-Agent-Swarm/releases/download/v1.5.0/ai-agent-swarm-1.5.0.zip)。
-2. 复制 `.env.example` 为 `.env`，只填写当前确实要用的外部模型 key。
-3. 在 Codex 中发送 `docs/INSTALL_PROMPT.md` 做安装检查；日常开发发送 `docs/START_PROMPT.md`。
+1. 下载发布包：[ai-agent-swarm-1.5.1.zip](https://github.com/su94-X/AI-Agent-Swarm/releases/download/v1.5.1/ai-agent-swarm-1.5.1.zip)
+2. 复制 `.env.example` 为 `.env`，只填写你本地确实要用的外部模型 key。
+3. 在新的 Codex 线程中发送：
 
-维护者发布版本时，发送：
+```text
+docs/INSTALL_PROMPT.md
+```
+
+4. 日常开发、新项目、已有项目接手，都发送：
+
+```text
+docs/START_PROMPT.md
+```
+
+5. 维护者打包和同步 GitHub Release 时，发送：
 
 ```text
 docs/RELEASE_PROMPT.md
 ```
 
-## 功能亮点
+普通用户只需要记住这三个文档。旧版拆分提示词已经移动到 `docs/legacy/`。
 
-- **Opus/Claude 主编码**：通过 `multi_model_coder_workspace_edit` 在授权路径内执行主要编码。
-- **Patch/Edit 局部编辑**：支持 `replace`、`insert_after`、`insert_before`，并要求唯一匹配。
-- **Workspace 安全边界**：路径校验、symlink 防逃逸、forbidden paths、`expected_sha256` 防旧上下文覆盖。
-- **Gemini 测试分析**：输出测试计划、建议命令、边界用例和失败日志分析，但不伪装成真实测试执行。
-- **Codex 内部审查**：默认 reviewer 为 `codex-internal`，避免重复消耗外部 GPT API。
-- **本地项目记忆库**：JSONL + 词法检索，支持 `confidence`、`verified_by`、`expires_at`、`scope`、`aliases`、`status`。
-- **官方 Custom Agent 模板**：随包提供 `.codex/agents/*.toml`，可复制到项目级或用户级 agent 目录，让 Codex 使用稳定的角色子智能体配置。
-- **可见角色子智能体**：Coder、Tester、Reviewer、Test Runner、RAG Curator、Security Auditor 都可以在 Codex 中保留可见过程。
-- **强制可见子智能体契约**：非简单任务若有 Codex 子智能体工具可用，必须先创建或复用角色子智能体；没有工具时必须明示降级。
-- **无 npm 依赖**：MCP server、打包、zip 校验和自测均使用 Node 内置模块。
-- **跨平台发布包**：`scripts/package-release.mjs` 统一生成 zip，并校验无 `.env`、无 RAG 数据、无反斜杠路径。
-- **安全 Release 同步**：`scripts/sync-github-release.mjs` 可创建/更新 GitHub Release 并上传 zip asset，token 只从环境变量或用户级凭据文件读取。
+## 启用 Custom Agents
+
+V1.5.x 发布包内置官方 Codex Custom Agent 模板：
+
+```text
+.codex/agents/
+  primary-coder.toml
+  reviewer.toml
+  tester.toml
+  test-runner.toml
+  rag-curator.toml
+  security-auditor.toml
+```
+
+这些文件不是 Skill，也不是 MCP 工具。它们是 Codex 官方 Subagents / Custom Agents 配置模板。
+
+Codex 只会从当前项目或用户级目录加载 Custom Agents：
+
+```text
+项目级：<你的项目>/.codex/agents/*.toml
+用户级：~/.codex/agents/*.toml
+Windows 用户级：C:\Users\<你的用户名>\.codex\agents\*.toml
+```
+
+如果你希望某个开发项目默认使用这些角色，把发布包里的 `.codex/agents/` 复制到项目根目录：
+
+```powershell
+New-Item -ItemType Directory -Force .\.codex
+Copy-Item -Recurse <AI-Agent-Swarm目录>\.codex\agents .\.codex\
+```
+
+插件安装本身不等于所有项目自动加载子智能体。Skill 负责工作流，MCP 负责外部模型/RAG/workspace 工具，Plugin 负责打包分发，Custom Agent 负责可见子智能体角色配置。
+
+详见 [docs/CUSTOM_AGENTS.md](./docs/CUSTOM_AGENTS.md)。
+
+## 角色分工
+
+| 角色 | 运行位置 | 职责 |
+| --- | --- | --- |
+| Main Orchestrator | 当前 Codex 主线程 | 规划、授权、整合、真实测试、RAG 写入、最终决策 |
+| `primary-coder` | Codex Custom Agent | 调用 Opus/Claude coder，在授权路径内实现 |
+| `tester` | Codex Custom Agent | 调用 Gemini tester，生成测试计划和失败日志分析 |
+| `reviewer` | Codex Custom Agent | Codex 内部只读审查，不调用外部 reviewer |
+| `test-runner` | Codex Custom Agent | 运行主控批准的真实本地命令 |
+| `rag-curator` | Codex Custom Agent | 整理可写入 RAG 的候选知识，最终写入由主控决定 |
+| `security-auditor` | Codex Custom Agent | 只读审计密钥、路径边界、发布包和 prompt injection surface |
+
+子智能体完成任务并返回结果后，主控必须关闭它们，避免一直占用子智能体并发位置。
 
 ## MCP 工具
 
@@ -112,7 +163,7 @@ docs/RELEASE_PROMPT.md
 | `multi_model_rag_search` | 本地词法检索，不调用外部模型 |
 | `multi_model_rag_get` | 按 chunk/document id 获取有限上下文 |
 
-## 默认角色配置
+## 默认模型配置
 
 | 角色 | Provider | 默认模型 | API Key 环境变量 |
 | --- | --- | --- | --- |
@@ -123,78 +174,42 @@ docs/RELEASE_PROMPT.md
 
 如果你的账号、网关或任务需要其他模型，可通过 `.env` 中的 `MMA_*_MODEL` 变量覆盖。
 
-## 配置
-
-复制模板：
-
-```powershell
-Copy-Item .env.example .env
-```
-
-`*_API_KEY_ENV` 字段应填写环境变量名，不是密钥值本身：
+`*_API_KEY_ENV` 字段应填写环境变量名，不是 key 本身：
 
 ```text
 MMA_CODER_API_KEY_ENV=ANTHROPIC_API_KEY
 ANTHROPIC_API_KEY=这里才是本地真实 key
 ```
 
-RAG 可选配置：
+## 本地项目记忆库
 
-```text
-MMA_RAG_ROOT=
-MMA_RAG_WRITE_ENABLED=true
-MMA_RAG_MAX_RESULT_CHARS=4000
-```
+AI Agent Swarm 的 RAG 是本地轻量项目记忆库，不是外部模型记忆。它使用 JSONL 存储和本地词法检索，用于保存：
 
-Gemini 默认用 `x-goog-api-key` header 传递 key，避免 key 出现在 URL query 中。如果某些 Gemini-compatible 网关只支持 query 参数，可以设置：
+- 已验证 bug 和修复方式
+- 真实可运行命令
+- 架构决策
+- 项目约定
+- 长期风险
+- 测试结果
 
-```text
-MMA_GEMINI_API_KEY_IN_HEADER=false
-```
+默认 RAG 根目录在 Codex 用户目录下，不应提交、打包或发送给外部模型。写入 RAG 前会做 secret scan；`.env`、token、私有日志、生产数据和未验证外部模型输出不能写入 trusted RAG。
 
-## Custom Agents
+详见 [docs/RAG.md](./docs/RAG.md)。
 
-V1.5.0 起发布包包含官方 Codex Custom Agent 模板：
+## 安全边界
 
-```text
-.codex/agents/primary-coder.toml
-.codex/agents/reviewer.toml
-.codex/agents/tester.toml
-.codex/agents/test-runner.toml
-.codex/agents/rag-curator.toml
-.codex/agents/security-auditor.toml
-```
+不要启用外部模型或 workspace edit，如果：
 
-这些模板需要位于当前项目 `.codex/agents/` 或用户级 `~/.codex/agents/` 才会被 Codex 加载。Skill 负责工作流，MCP 负责外部模型和 RAG 工具，Plugin 负责打包分发；插件安装本身不等于所有项目自动获得自定义子智能体。
+- 任务涉及 `.env`、API key、生产数据、客户数据、私有日志或无法裁剪的敏感上下文。
+- 不能明确给出窄范围 `allowed_read_paths` 和 `allowed_write_paths`。
+- 网络/API 成本或合规要求不允许调用外部模型。
+- 需要最终安全结论、测试结论或发布结论时，外部模型只能提供建议，不能代替 Codex 决策。
 
-详见 [docs/CUSTOM_AGENTS.md](./docs/CUSTOM_AGENTS.md)。
-
-## 何时不要启用外部模型
-
-- 任务只是简单问答、纯解释、单条命令查询或很小的局部修改。
-- 当前任务涉及 `.env`、API key、生产数据、私有日志、客户数据或无法裁剪的敏感上下文。
-- 不能明确给出窄范围的 `allowed_read_paths` 和 `allowed_write_paths`。
-- 网络/API 成本或合规边界不允许调用外部模型。
-- 需要最终验收、真实测试结论或安全结论时，不应让外部模型直接做最终决定。
-
-## 文档
-
-| 文档 | 说明 |
-| --- | --- |
-| `docs/README.md` | 文档导航：告诉用户应该看哪个文档 |
-| `docs/INSTALL_PROMPT.md` | 唯一安装检查入口：安装、结构、MCP 可见性和离线自检 |
-| `docs/START_PROMPT.md` | 唯一日常启动入口：简单任务、新项目、已有项目、工程闸门和子智能体自动判断 |
-| `docs/RELEASE_PROMPT.md` | 维护者发布入口：分支、tag、GitHub Release、zip asset 和页面核查 |
-| `docs/ENGINEERING_GATE.md` | 工程闸门：plan-review、diff-review、test-review 和阻塞报告规则 |
-| `docs/CUSTOM_AGENTS.md` | 官方 Custom Agent 模板说明：`.codex/agents/*.toml`、Skill、MCP 和 Plugin 的区别 |
-| `docs/SUBAGENT_WORKFLOW.md` | 可见子智能体工作流和角色说明 |
-| `docs/RAG.md` | 本地项目记忆库说明 |
-| `docs/ROADMAP.md` | 后续路线图 |
-| `docs/roles/` | 各可见角色子智能体的中文提示词 |
-
-旧的 `PACKAGE_INSTALL_PROMPT.md`、`FIRST_INSTALL_PROMPT.md`、`STARTUP_PROMPT.md`、`PROJECT_START_PROMPT.md`、`SUBAGENT_START_PROMPT.md`、`EXISTING_PROJECT_HANDOFF_PROMPT.md`、`NEW_PROJECT_BOOTSTRAP_PROMPT.md` 已移动到 `docs/legacy/`，普通用户不需要再选择它们。历史 GitHub release note 已移动到 `docs/releases/`。
+AI Agent Swarm 默认禁止 coder 读写 `.env`、`.git`、`node_modules`、`dist`、`build`、`coverage`、`.local/rag`、`.rag`、凭据文件和无关文件。
 
 ## 本地自检
+
+离线自检不调用真实外部模型 API：
 
 ```powershell
 node scripts/mcp-smoke-test.mjs
@@ -211,7 +226,7 @@ node scripts/subagent-prompt-self-test.mjs
 node scripts/custom-agents-self-test.mjs
 ```
 
-这些离线自检不调用真实外部模型 API。真实连通性测试使用：
+真实连通性测试会调用本地配置的外部模型：
 
 ```powershell
 node scripts/api-smoke-test.mjs
@@ -219,42 +234,51 @@ node scripts/api-smoke-test.mjs
 
 ## 打包发布
 
-正式发布包使用白名单打包脚本生成：
+发布包使用白名单脚本生成：
 
 ```powershell
 node scripts/package-release.mjs C:\path\to\outputs
 ```
 
-该脚本只打包 `.codex-plugin`、`.codex/agents`、`.mcp.json`、`.env.example`、`README.md`、`LICENSE`、`NOTICE`、`CHANGELOG.md`、`CONTRIBUTING.md`、`SECURITY.md`、`docs/`、`skills/`、`scripts/`、`lib/` 和 `assets/`，并校验：
+脚本会校验：
 
-- 包内没有 `.env`
-- 包内没有 RAG 数据目录
+- 包含 `.codex/agents/*.toml`
+- 不包含 `.env`、RAG 数据、token 文件、凭据文件、本机绝对路径
 - zip entry 统一使用 `/`
 - `plugin.json` 是 ASCII-only 可解析 JSON
-- `.mcp.json` 使用相对 MCP 路径
+- `.mcp.json` 使用相对路径
+- 文本文件不会包含常见 secret、私钥块、数据库连接串或 RAG 导出正文
+- symlink / reparse-point 不会被打包
 
-GitHub Release 同步可以使用：
+GitHub Release 同步：
 
 ```powershell
 node scripts/sync-github-release.mjs C:\path\to\outputs
 ```
 
-认证顺序：
+GitHub token 只从环境变量或用户级凭据文件读取，不要放进仓库、`.env`、README、发布包、issue、PR、截图或聊天记录。
 
-1. `GITHUB_TOKEN` 或 `GH_TOKEN` 环境变量。
-2. `MMA_GITHUB_TOKEN_FILE` 指定的用户级 token 文件。
-3. `$CODEX_HOME\multi-model-agents\github-release-token`，如果设置了 `CODEX_HOME`。
-4. 默认用户级文件：`%USERPROFILE%\.codex\multi-model-agents\github-release-token`。
-5. 兼容临时文件：`%TEMP%\github_release_token.txt`。
+## 文档导航
 
-不要把 GitHub token 放进插件仓库、`.env`、README、发布包或聊天记录。`sync-github-release.mjs` 会拒绝读取插件仓库内的 token 文件，并在错误输出中脱敏常见 GitHub token 形态。长期维护建议使用 fine-grained token，只授权 `su94-X/AI-Agent-Swarm` 的 Contents/Metadata 读写权限。如果 token 曾经粘贴到聊天里，建议撤销并重新生成。
+| 文档 | 说明 |
+| --- | --- |
+| [docs/README.md](./docs/README.md) | 文档导航 |
+| [docs/INSTALL_PROMPT.md](./docs/INSTALL_PROMPT.md) | 安装检查入口 |
+| [docs/START_PROMPT.md](./docs/START_PROMPT.md) | 日常启动入口 |
+| [docs/RELEASE_PROMPT.md](./docs/RELEASE_PROMPT.md) | 发布入口 |
+| [docs/CUSTOM_AGENTS.md](./docs/CUSTOM_AGENTS.md) | Custom Agents 说明 |
+| [docs/ENGINEERING_GATE.md](./docs/ENGINEERING_GATE.md) | 工程闸门 |
+| [docs/SUBAGENT_WORKFLOW.md](./docs/SUBAGENT_WORKFLOW.md) | 子智能体流程 |
+| [docs/RAG.md](./docs/RAG.md) | 本地项目记忆库 |
+| [docs/ROADMAP.md](./docs/ROADMAP.md) | 路线图 |
 
 ## 开源与贡献
 
 - 变更记录：[CHANGELOG.md](./CHANGELOG.md)
 - 安全策略：[SECURITY.md](./SECURITY.md)
 - 贡献说明：[CONTRIBUTING.md](./CONTRIBUTING.md)
-- Release：[AI Agent Swarm V1.5.0](https://github.com/su94-X/AI-Agent-Swarm/releases/tag/v1.5.0)
+- 主版本 Release：[AI Agent Swarm V1.5.1](https://github.com/su94-X/AI-Agent-Swarm/releases/tag/v1.5.1)
+- Lite Release：[AI Agent Swarm Lite 1.5.0-lite.1](https://github.com/su94-X/AI-Agent-Swarm/releases/tag/v1.5.0-lite.1)
 
 ## 联系方式
 
