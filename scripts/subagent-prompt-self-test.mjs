@@ -19,7 +19,6 @@ mustInclude(files.start, [
 ]);
 
 mustInclude(files.skill, [
-  "V1.4.8",
   "默认强制使用可见角色子智能体工作流",
   "Main Orchestrator 不得用主线程直接调用 MCP 工具来替代应出现的",
   "降级时必须明确说明原因",

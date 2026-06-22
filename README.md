@@ -9,7 +9,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/su94-X/AI-Agent-Swarm/releases/tag/v1.4.8"><img alt="Release" src="https://img.shields.io/badge/release-v1.4.8-38BDF8"></a>
+  <a href="https://github.com/su94-X/AI-Agent-Swarm/releases/tag/v1.4.9"><img alt="Release" src="https://img.shields.io/badge/release-v1.4.9-38BDF8"></a>
   <a href="./LICENSE"><img alt="License" src="https://img.shields.io/badge/license-Apache--2.0-22C55E"></a>
   <img alt="Node" src="https://img.shields.io/badge/node-no%20npm%20deps-111827">
   <img alt="Codex Plugin" src="https://img.shields.io/badge/Codex-plugin-8B5CF6">
@@ -19,7 +19,7 @@
 
 AI Agent Swarm 是一个面向长期项目维护的本地 Codex 多模型编排插件。它的目标不是替换 Codex 主智能体，而是把外部模型能力纳入 Codex 可控的授权、审查、测试和记忆流程。
 
-V1.4.8 是当前正式稳定版本。它保留 V1.4.7 的三段式通用提示词、工程闸门、workspace 安全、RAG 质量层、MCP 可见日志和 patch/edit 局部编辑，并强化默认可见角色子智能体契约：非简单任务在当前线程暴露子智能体工具时，必须先创建角色子智能体，否则要明确说明降级原因。
+V1.4.9 是当前正式稳定版本。它保留三段式通用提示词、工程闸门、workspace 安全、RAG 质量层、MCP 可见日志、patch/edit 局部编辑和强制可见角色子智能体契约，并新增安全的 GitHub Release 同步脚本，支持从用户级凭据文件读取长期 token。
 
 ## 核心定位
 
@@ -70,7 +70,7 @@ flowchart TD
 
 ## 3 步快速开始
 
-1. 下载并解压 [ai-agent-swarm-1.4.8.zip](https://github.com/su94-X/AI-Agent-Swarm/releases/download/v1.4.8/ai-agent-swarm-1.4.8.zip)。
+1. 下载并解压 [ai-agent-swarm-1.4.9.zip](https://github.com/su94-X/AI-Agent-Swarm/releases/download/v1.4.9/ai-agent-swarm-1.4.9.zip)。
 2. 复制 `.env.example` 为 `.env`，只填写当前确实要用的外部模型 key。
 3. 在 Codex 中发送 `docs/INSTALL_PROMPT.md` 做安装检查；日常开发发送 `docs/START_PROMPT.md`。
 
@@ -92,6 +92,7 @@ docs/RELEASE_PROMPT.md
 - **强制可见子智能体契约**：非简单任务若有 Codex 子智能体工具可用，必须先创建或复用角色子智能体；没有工具时必须明示降级。
 - **无 npm 依赖**：MCP server、打包、zip 校验和自测均使用 Node 内置模块。
 - **跨平台发布包**：`scripts/package-release.mjs` 统一生成 zip，并校验无 `.env`、无 RAG 数据、无反斜杠路径。
+- **安全 Release 同步**：`scripts/sync-github-release.mjs` 可创建/更新 GitHub Release 并上传 zip asset，token 只从环境变量或用户级凭据文件读取。
 
 ## MCP 工具
 
@@ -177,6 +178,7 @@ MMA_GEMINI_API_KEY_IN_HEADER=false
 ```powershell
 node scripts/mcp-smoke-test.mjs
 node scripts/http-retry-self-test.mjs
+node scripts/model-secret-self-test.mjs
 node scripts/rag-self-test.mjs
 node scripts/rag-metadata-self-test.mjs
 node scripts/rag-security-self-test.mjs
@@ -209,12 +211,28 @@ node scripts/package-release.mjs C:\path\to\outputs
 - `plugin.json` 是 ASCII-only 可解析 JSON
 - `.mcp.json` 使用相对 MCP 路径
 
+GitHub Release 同步可以使用：
+
+```powershell
+node scripts/sync-github-release.mjs C:\path\to\outputs
+```
+
+认证顺序：
+
+1. `GITHUB_TOKEN` 或 `GH_TOKEN` 环境变量。
+2. `MMA_GITHUB_TOKEN_FILE` 指定的用户级 token 文件。
+3. `$CODEX_HOME\multi-model-agents\github-release-token`，如果设置了 `CODEX_HOME`。
+4. 默认用户级文件：`%USERPROFILE%\.codex\multi-model-agents\github-release-token`。
+5. 兼容临时文件：`%TEMP%\github_release_token.txt`。
+
+不要把 GitHub token 放进插件仓库、`.env`、README、发布包或聊天记录。`sync-github-release.mjs` 会拒绝读取插件仓库内的 token 文件，并在错误输出中脱敏常见 GitHub token 形态。长期维护建议使用 fine-grained token，只授权 `su94-X/AI-Agent-Swarm` 的 Contents/Metadata 读写权限。如果 token 曾经粘贴到聊天里，建议撤销并重新生成。
+
 ## 开源与贡献
 
 - 变更记录：[CHANGELOG.md](./CHANGELOG.md)
 - 安全策略：[SECURITY.md](./SECURITY.md)
 - 贡献说明：[CONTRIBUTING.md](./CONTRIBUTING.md)
-- Release：[AI Agent Swarm V1.4.8](https://github.com/su94-X/AI-Agent-Swarm/releases/tag/v1.4.8)
+- Release：[AI Agent Swarm V1.4.9](https://github.com/su94-X/AI-Agent-Swarm/releases/tag/v1.4.9)
 
 ## 联系方式
 

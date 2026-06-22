@@ -23,6 +23,7 @@ const fakeOpenAiKey = ["sk", "should-not-be-stored-12345678901234567890"].join("
 const fakeGoogleKey = ["AI", "zaabcdefghijklmnopqrstuvwxyz1234567890"].join("");
 const fakeAwsKey = ["AKIA", "1234567890ABCDEF"].join("");
 const fakeGitHubToken = ["ghp", "abcdefghijklmnopqrstuvwxyz123456"].join("_");
+const fakeGitHubFineGrainedToken = ["github", "pat", "11BUYUIQY086abcdefghijklmnopqrstuvwxyz1234567890"].join("_");
 const fakeJwt = ["eyJabcdefghijklmnopqrstuvwxyz", "eyJabcdefghijklmnopqrstuvwxyz", "signature1234567890"].join(".");
 
 const secretSamples = [
@@ -30,6 +31,7 @@ const secretSamples = [
   ["google_key", fakeGoogleKey],
   ["aws_access_key", fakeAwsKey],
   ["github_token", fakeGitHubToken],
+  ["github_token", fakeGitHubFineGrainedToken],
   ["jwt", fakeJwt],
   ["secret_assignment", "api_key = supersecretvalue12345"],
   ["database_url", "postgres://user:password@example.com/db"],
@@ -56,8 +58,11 @@ try {
   assert(/sensitive data/.test(error.message), `Unexpected safeRagOutput error: ${error.message}`);
 }
 
-const sanitized = sanitizeErrorMessage(`failed with ${["sk", "abcdefghi1234567890"].join("-")} and ${["AI", "zaabcdefghi1234567890"].join("")}`);
+const sanitized = sanitizeErrorMessage(
+  `failed with ${["sk", "abcdefghi1234567890"].join("-")} and ${["AI", "zaabcdefghi1234567890"].join("")} and ${fakeGitHubFineGrainedToken}`
+);
 assert(!sanitized.includes(["sk", "abcdefghi"].join("-")), "sanitizeErrorMessage did not redact OpenAI-like key.");
 assert(!sanitized.includes(["AI", "zaabcdefghi"].join("")), "sanitizeErrorMessage did not redact Google-like key.");
+assert(!sanitized.includes(fakeGitHubFineGrainedToken), "sanitizeErrorMessage did not redact GitHub token.");
 
 console.log("RAG security self-test passed.");

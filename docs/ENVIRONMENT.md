@@ -114,13 +114,37 @@ V1.4.5 起，RAG 条目可携带 `confidence`、`verified_by`、`expires_at`、`
 ```powershell
 node scripts/mcp-smoke-test.mjs
 node scripts/http-retry-self-test.mjs
+node scripts/model-secret-self-test.mjs
 node scripts/workspace-edit-repair-self-test.mjs
 node scripts/subagent-prompt-self-test.mjs
 node scripts/api-smoke-test.mjs
 node scripts/rag-self-test.mjs
 ```
 
-`mcp-smoke-test.mjs`、`http-retry-self-test.mjs`、`workspace-edit-repair-self-test.mjs`、`subagent-prompt-self-test.mjs` 和 `rag-self-test.mjs` 不调用外部模型。`http-retry-self-test.mjs` 和 `workspace-edit-repair-self-test.mjs` 只启动本地临时 HTTP server 验证重试或修复逻辑。`api-smoke-test.mjs` 会调用已配置的 coder、tester 和 custom 角色，只应在本地 key 配好后运行。
+`mcp-smoke-test.mjs`、`http-retry-self-test.mjs`、`model-secret-self-test.mjs`、`workspace-edit-repair-self-test.mjs`、`subagent-prompt-self-test.mjs` 和 `rag-self-test.mjs` 不调用外部模型。`http-retry-self-test.mjs` 和 `workspace-edit-repair-self-test.mjs` 只启动本地临时 HTTP server 验证重试或修复逻辑。`api-smoke-test.mjs` 会调用已配置的 coder、tester 和 custom 角色，只应在本地 key 配好后运行。
+
+## GitHub Release Token
+
+GitHub Release 发布 token 不属于外部模型配置，不要写入插件根目录 `.env`、`.env.example`、README、release note、RAG、workspace 或聊天记录。
+
+推荐使用 fine-grained token，只授权 `su94-X/AI-Agent-Swarm` 仓库的 Contents/Metadata 读写权限。长期保存位置：
+
+```powershell
+New-Item -ItemType Directory -Force "$env:USERPROFILE\.codex\multi-model-agents"
+Set-Content -NoNewline -Path "$env:USERPROFILE\.codex\multi-model-agents\github-release-token" -Value "你的 fine-grained token"
+```
+
+发布同步脚本读取顺序：
+
+1. `GITHUB_TOKEN` 或 `GH_TOKEN` 环境变量。
+2. `MMA_GITHUB_TOKEN_FILE` 指定的用户级 token 文件。
+3. `$CODEX_HOME\multi-model-agents\github-release-token`，如果设置了 `CODEX_HOME`。
+4. `%USERPROFILE%\.codex\multi-model-agents\github-release-token`。
+5. 兼容旧临时文件：`%TEMP%\github_release_token.txt`。
+
+`scripts/sync-github-release.mjs` 会拒绝读取插件仓库、当前 workspace 或输出目录内的 token 文件。GitHub token 只能通过 `Authorization: Bearer <token>` header 发送，不得放在 URL query、命令参数、release body、asset 名、日志、错误消息或最终回复中。
+
+如果 GitHub Release token 曾经粘贴到聊天、issue、PR、日志、截图或 prompt 中，必须视为泄露，立即 revoke 并重新创建。
 
 ## 打包规则
 
@@ -162,9 +186,11 @@ node scripts/rag-self-test.mjs
 - `lib/rag-metadata.mjs`
 - `lib/rag-security.mjs`
 - `lib/rag-text.mjs`
+- `lib/redaction.mjs`
 - `scripts/multi-model-agents-mcp.mjs`
 - `scripts/mcp-smoke-test.mjs`
 - `scripts/http-retry-self-test.mjs`
+- `scripts/model-secret-self-test.mjs`
 - `scripts/rag-self-test.mjs`
 - `scripts/rag-metadata-self-test.mjs`
 - `scripts/rag-security-self-test.mjs`
@@ -174,6 +200,7 @@ node scripts/rag-self-test.mjs
 - `scripts/workspace-edit-repair-self-test.mjs`
 - `scripts/tester-prompt-self-test.mjs`
 - `scripts/subagent-prompt-self-test.mjs`
+- `scripts/sync-github-release.mjs`
 - `skills/multi-model-agents/agents/openai.yaml`
 - `assets/ai-agent-swarm-icon.png`
 - `skills/multi-model-agents/assets/ai-agent-swarm-icon.png`

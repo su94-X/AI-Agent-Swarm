@@ -15,15 +15,16 @@
 5. 创建本地 commit。
 6. push 目标分支。
 7. 创建并 push tag。
-8. 创建或更新 GitHub Release。
-9. 上传对应 zip asset。
+8. 优先运行 scripts/sync-github-release.mjs 创建或更新 GitHub Release，并上传对应 zip asset。
+9. 如果 sync 脚本不可用，才手动调用 GitHub API；不得跳过 Release 或 zip asset。
 10. 用公开 GitHub API 或网页反查 Release 页面，确认 tag、release name、zip asset 和 latest 状态正确。
 11. 在新的 Codex 线程中发送 docs/START_PROMPT.md 做一次启动验收：非简单任务必须先出现可见 Coder/Reviewer/Tester 子智能体；如果该线程没有子智能体工具，必须明确输出降级说明。
 12. 如果有 Lite 分支或其他发布分支，也要同步完成 branch、tag、GitHub Release 和 zip asset。
 
 安全规则：
 - 不要打印、提交或上传 .env、API key、token、RAG 数据或本地缓存。
-- 如果需要 GitHub token，只能从本地环境变量或临时文件读取；使用后删除临时 token 文件。
+- GitHub token 优先从 GITHUB_TOKEN/GH_TOKEN、MMA_GITHUB_TOKEN_FILE 或 `%USERPROFILE%\.codex\secrets\github-release-token.txt` 读取；不要放进插件仓库。
+- 临时 token 文件只作为兼容方案；使用后删除临时 token 文件。长期 token 建议使用 fine-grained token，并只授权当前仓库。
 - Release 未创建、zip asset 未上传、release 页面未反查通过之前，不得声明发布完成。
 
 最终回复必须给出：分支、commit、tag、release URL、asset URL、验证命令摘要和失败/跳过项。

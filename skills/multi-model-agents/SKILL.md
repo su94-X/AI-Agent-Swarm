@@ -7,7 +7,7 @@ description: 当 Codex 需要编排多模型协作工作流时使用：Opus/Clau
 
 使用本 skill 通过 `multi-model-agents` MCP 工具协调外部模型角色。
 
-V1.4.8 是 AI Agent Swarm 的当前正式版本，用于把 Opus/Claude 主编码、Gemini 测试分析、Codex 内部审查、工程闸门、强制可见角色子智能体、MCP 可见进度/日志通知、workspace patch/edit 局部编辑模式和本地项目记忆库（轻量 RAG）纳入 Codex 主控的授权、审查和真实测试流程。本版继续使用 `docs/INSTALL_PROMPT.md`、`docs/START_PROMPT.md` 和 `docs/RELEASE_PROMPT.md` 三个用户入口，并强化非简单任务必须先创建可见角色子智能体的启动契约。
+V1.4.9 是 AI Agent Swarm 的当前正式版本，用于把 Opus/Claude 主编码、Gemini 测试分析、Codex 内部审查、工程闸门、强制可见角色子智能体、MCP 可见进度/日志通知、workspace patch/edit 局部编辑模式和本地项目记忆库（轻量 RAG）纳入 Codex 主控的授权、审查和真实测试流程。本版继续使用 `docs/INSTALL_PROMPT.md`、`docs/START_PROMPT.md` 和 `docs/RELEASE_PROMPT.md` 三个用户入口，并新增安全的 GitHub Release 同步脚本和用户级长期 token 读取边界。
 
 开发者：Su94。项目主页：https://github.com/su94-X/AI-Agent-Swarm。
 

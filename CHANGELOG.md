@@ -2,6 +2,21 @@
 
 All notable changes to AI Agent Swarm are documented here.
 
+## [1.4.9] - 2026-06-22
+
+### Added
+
+- Added `scripts/sync-github-release.mjs` to create/update GitHub Releases and upload the versioned zip asset.
+- Added user-level GitHub Release token support via `GITHUB_TOKEN`/`GH_TOKEN`, `MMA_GITHUB_TOKEN_FILE`, or `%USERPROFILE%\.codex\multi-model-agents\github-release-token`.
+- Added shared token detection and redaction helpers in `lib/redaction.mjs`.
+- Added `scripts/model-secret-self-test.mjs` for GitHub token and direct-key redaction coverage.
+
+### Changed
+
+- Extended RAG secret scanning and error redaction to cover GitHub fine-grained tokens such as `github_pat_...`.
+- Extended direct `*_API_KEY_ENV` secret detection to catch GitHub token formats.
+- Updated release documentation to keep GitHub Release tokens outside the plugin repository, workspace, output directory, `.env`, and `.env.example`.
+
 ## [1.4.8] - 2026-06-22
 
 ### Changed
