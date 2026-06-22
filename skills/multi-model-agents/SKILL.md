@@ -7,7 +7,7 @@ description: 当 Codex 需要编排多模型协作工作流时使用：Opus/Clau
 
 使用本 skill 通过 `multi-model-agents` MCP 工具协调外部模型角色。
 
-V1.4.6 是 AI Agent Swarm 的当前正式版本，用于把 Opus/Claude 主编码、Gemini 测试分析、Codex 内部审查、工程闸门、可见角色子智能体、MCP 可见进度/日志通知、workspace patch/edit 局部编辑模式和本地项目记忆库（轻量 RAG）纳入 Codex 主控的授权、审查和真实测试流程。
+V1.4.7 是 AI Agent Swarm 的当前正式版本，用于把 Opus/Claude 主编码、Gemini 测试分析、Codex 内部审查、工程闸门、可见角色子智能体、MCP 可见进度/日志通知、workspace patch/edit 局部编辑模式和本地项目记忆库（轻量 RAG）纳入 Codex 主控的授权、审查和真实测试流程。本版把用户提示词入口简化为 `docs/INSTALL_PROMPT.md`、`docs/START_PROMPT.md` 和 `docs/RELEASE_PROMPT.md`。
 
 开发者：Su94。项目主页：https://github.com/su94-X/AI-Agent-Swarm。
 
@@ -113,7 +113,7 @@ RAG：
 
 可见角色子智能体：
 
-1. 默认启用可见角色子智能体。日常使用 `docs/STARTUP_PROMPT.md` 或 `docs/PROJECT_START_PROMPT.md` 时，不需要再单独发送 `docs/SUBAGENT_START_PROMPT.md`。
+1. 默认启用可见角色子智能体。日常使用统一入口 `docs/START_PROMPT.md`，不需要再单独区分项目启动、已有项目接手或子智能体启动提示词。
 2. Coder Subagent 是 Codex 可见壳子，调用 `multi_model_coder_workspace_edit`，由 Opus/Claude 执行主要编码。
 3. Tester Subagent 是 Codex 可见壳子，调用 `multi_model_tester_plan`，由 Gemini 生成测试策略和失败分析。
 4. Reviewer Subagent 使用 Codex 内部审查，不调用 `mcp__codex`，不创建嵌套智能体。

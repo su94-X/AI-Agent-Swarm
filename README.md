@@ -9,7 +9,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/su94-X/AI-Agent-Swarm/releases/tag/v1.4.6"><img alt="Release" src="https://img.shields.io/badge/release-v1.4.6-38BDF8"></a>
+  <a href="https://github.com/su94-X/AI-Agent-Swarm/releases/tag/v1.4.7"><img alt="Release" src="https://img.shields.io/badge/release-v1.4.7-38BDF8"></a>
   <a href="./LICENSE"><img alt="License" src="https://img.shields.io/badge/license-Apache--2.0-22C55E"></a>
   <img alt="Node" src="https://img.shields.io/badge/node-no%20npm%20deps-111827">
   <img alt="Codex Plugin" src="https://img.shields.io/badge/Codex-plugin-8B5CF6">
@@ -19,7 +19,7 @@
 
 AI Agent Swarm 是一个面向长期项目维护的本地 Codex 多模型编排插件。它的目标不是替换 Codex 主智能体，而是把外部模型能力纳入 Codex 可控的授权、审查、测试和记忆流程。
 
-V1.4.6 是当前正式稳定版本。它在 V1.4.5 的跨平台打包、workspace 安全、RAG 质量层、MCP 可见日志、patch/edit 局部编辑和可见角色子智能体基础上，加入工程闸门：非简单任务正式编码前必须完成设计文档、开发计划和 Opus/Claude plan-review；高风险 diff 进入 diff-review；真实测试结果需要 command、exit code、stdout、stderr 证据。
+V1.4.7 是当前正式稳定版本。它保留 V1.4.6 的工程闸门、workspace 安全、RAG 质量层、MCP 可见日志、patch/edit 局部编辑和可见角色子智能体，同时把用户提示词入口简化为三份通用文档：安装检查、日常启动、维护发布。
 
 ## 核心定位
 
@@ -70,26 +70,14 @@ flowchart TD
 
 ## 3 步快速开始
 
-1. 下载并解压 [ai-agent-swarm-1.4.6.zip](https://github.com/su94-X/AI-Agent-Swarm/releases/download/v1.4.6/ai-agent-swarm-1.4.6.zip)。
+1. 下载并解压 [ai-agent-swarm-1.4.7.zip](https://github.com/su94-X/AI-Agent-Swarm/releases/download/v1.4.7/ai-agent-swarm-1.4.7.zip)。
 2. 复制 `.env.example` 为 `.env`，只填写当前确实要用的外部模型 key。
-3. 在 Codex 中发送 `docs/PACKAGE_INSTALL_PROMPT.md` 做安装检查；新线程中发送 `docs/FIRST_INSTALL_PROMPT.md` 检查 skill 和 MCP tools 是否可见。
+3. 在 Codex 中发送 `docs/INSTALL_PROMPT.md` 做安装检查；日常开发发送 `docs/START_PROMPT.md`。
 
-日常开发时，发送：
-
-```text
-docs/PROJECT_START_PROMPT.md
-```
-
-已有项目首次接手时，发送：
+维护者发布版本时，发送：
 
 ```text
-docs/EXISTING_PROJECT_HANDOFF_PROMPT.md
-```
-
-新项目启动时，发送：
-
-```text
-docs/NEW_PROJECT_BOOTSTRAP_PROMPT.md
+docs/RELEASE_PROMPT.md
 ```
 
 ## 功能亮点
@@ -172,17 +160,16 @@ MMA_GEMINI_API_KEY_IN_HEADER=false
 
 | 文档 | 说明 |
 | --- | --- |
-| `docs/PACKAGE_INSTALL_PROMPT.md` | 从 zip 包安装时发送给 Codex 的中文提示词 |
-| `docs/FIRST_INSTALL_PROMPT.md` | 首次安装后检查 skill 和 MCP tools 是否可见 |
-| `docs/STARTUP_PROMPT.md` | 日常工作会话启动提示词 |
+| `docs/INSTALL_PROMPT.md` | 唯一安装检查入口：安装、结构、MCP 可见性和离线自检 |
+| `docs/START_PROMPT.md` | 唯一日常启动入口：简单任务、新项目、已有项目、工程闸门和子智能体自动判断 |
+| `docs/RELEASE_PROMPT.md` | 维护者发布入口：分支、tag、GitHub Release、zip asset 和页面核查 |
 | `docs/ENGINEERING_GATE.md` | 工程闸门：plan-review、diff-review、test-review 和阻塞报告规则 |
-| `docs/PROJECT_START_PROMPT.md` | 目标项目中开始编码任务的提示词 |
-| `docs/EXISTING_PROJECT_HANDOFF_PROMPT.md` | 已有项目首次接入时的项目分析和接手文档生成提示词 |
-| `docs/NEW_PROJECT_BOOTSTRAP_PROMPT.md` | 新项目启动时生成初始项目文档和记忆文档 |
 | `docs/SUBAGENT_WORKFLOW.md` | 可见子智能体工作流和角色说明 |
 | `docs/RAG.md` | 本地项目记忆库说明 |
 | `docs/ROADMAP.md` | 后续路线图 |
 | `docs/roles/` | 各可见角色子智能体的中文提示词 |
+
+旧的 `PACKAGE_INSTALL_PROMPT.md`、`FIRST_INSTALL_PROMPT.md`、`STARTUP_PROMPT.md`、`PROJECT_START_PROMPT.md`、`SUBAGENT_START_PROMPT.md`、`EXISTING_PROJECT_HANDOFF_PROMPT.md`、`NEW_PROJECT_BOOTSTRAP_PROMPT.md` 仅作为兼容跳转保留，普通用户不需要再选择它们。
 
 ## 本地自检
 
@@ -225,7 +212,7 @@ node scripts/package-release.mjs C:\path\to\outputs
 - 变更记录：[CHANGELOG.md](./CHANGELOG.md)
 - 安全策略：[SECURITY.md](./SECURITY.md)
 - 贡献说明：[CONTRIBUTING.md](./CONTRIBUTING.md)
-- Release：[AI Agent Swarm V1.4.6](https://github.com/su94-X/AI-Agent-Swarm/releases/tag/v1.4.6)
+- Release：[AI Agent Swarm V1.4.7](https://github.com/su94-X/AI-Agent-Swarm/releases/tag/v1.4.7)
 
 ## 联系方式
 

@@ -1,7 +1,7 @@
 {
   "name": "multi-model-agents",
-  "version": "1.4.6",
-  "description": "AI Agent Swarm V1.4.6 adds an engineering gate workflow: Codex remains orchestrator, Opus/Claude codes after plan-review, Gemini handles test strategy and failure analysis, and Codex keeps final review and decisions.",
+  "version": "1.4.7",
+  "description": "AI Agent Swarm V1.4.7 simplifies the user prompt experience into three universal docs: install, start, and release, while preserving Codex-led engineering gates.",
   "author": {
     "name": "Su94"
   },
@@ -23,8 +23,8 @@
   "skills": "./skills/",
   "interface": {
     "displayName": "AI Agent Swarm",
-    "shortDescription": "AI Agent Swarm V1.4.6: Codex main control, Opus/Claude primary coding, Gemini test analysis, and engineering gates.",
-    "longDescription": "AI Agent Swarm V1.4.6 is a local Codex multi-model orchestration plugin for long-running development. Codex keeps planning, authorization, real tests, review integration, RAG writes, and final decisions. Opus/Claude performs primary coding inside authorized workspace boundaries after design plan-review. Gemini provides test strategy and failure-log analysis. V1.4.6 adds engineering gates for plan-review, diff-review, test-review evidence, blocking reports, and approved development plans.",
+    "shortDescription": "AI Agent Swarm V1.4.7: Codex main control, Opus/Claude coding, Gemini test analysis, engineering gates, and simpler prompts.",
+    "longDescription": "AI Agent Swarm V1.4.7 is a local Codex multi-model orchestration plugin for long-running development. Codex keeps planning, authorization, real tests, review integration, RAG writes, and final decisions. Opus/Claude performs primary coding inside authorized workspace boundaries after design plan-review. Gemini provides test strategy and failure-log analysis. V1.4.7 simplifies user-facing docs into INSTALL_PROMPT, START_PROMPT, and RELEASE_PROMPT while keeping advanced engineering gate, RAG, and subagent references available.",
     "developerName": "Su94",
     "category": "Productivity",
     "capabilities": [

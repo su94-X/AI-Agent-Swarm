@@ -48,6 +48,12 @@ const forbiddenExtensions = new Set([
   ".kdbx",
   ".sqlite",
   ".db",
+  ".zip",
+  ".tgz",
+  ".tar",
+  ".gz",
+  ".rar",
+  ".7z",
 ]);
 
 function main() {
@@ -113,6 +119,9 @@ function validateStage() {
     "LICENSE",
     "NOTICE",
     "SECURITY.md",
+    "docs/INSTALL_PROMPT.md",
+    "docs/START_PROMPT.md",
+    "docs/RELEASE_PROMPT.md",
     "docs/PACKAGE_INSTALL_PROMPT.md",
     "docs/FIRST_INSTALL_PROMPT.md",
     "docs/STARTUP_PROMPT.md",
@@ -218,6 +227,12 @@ function assertSafeReleasePath(relPath) {
   const base = basename(rel).toLowerCase();
   if (!rel || rel.includes("../") || rel.startsWith("/")) {
     throw new Error(`Unsafe release path: ${relPath}`);
+  }
+  if ((base === ".env" || base.startsWith(".env.")) && rel !== ".env.example") {
+    throw new Error(`Forbidden environment file in release path: ${relPath}`);
+  }
+  if (base.includes("token")) {
+    throw new Error(`Forbidden token-like release path: ${relPath}`);
   }
   for (const forbidden of forbiddenEntries) {
     const pattern = forbidden.toLowerCase();

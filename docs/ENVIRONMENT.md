@@ -142,17 +142,13 @@ node scripts/rag-self-test.mjs
 
 关键必需文件至少包括：
 
+- `docs/INSTALL_PROMPT.md`
+- `docs/START_PROMPT.md`
+- `docs/RELEASE_PROMPT.md`
 - `docs/ENVIRONMENT.md`
-- `docs/FIRST_INSTALL_PROMPT.md`
-- `docs/STARTUP_PROMPT.md`
-- `docs/PACKAGE_INSTALL_PROMPT.md`
-- `docs/PROJECT_START_PROMPT.md`
-- `docs/EXISTING_PROJECT_HANDOFF_PROMPT.md`
-- `docs/NEW_PROJECT_BOOTSTRAP_PROMPT.md`
 - `docs/ENGINEERING_GATE.md`
 - `docs/ENGINEERING_GATE_IMPLEMENTATION_PLAN.md`
-- `docs/GITHUB_RELEASE_V1.4.6.md`
-- `docs/SUBAGENT_START_PROMPT.md`
+- `docs/GITHUB_RELEASE_V版本号.md`
 - `docs/SUBAGENT_WORKFLOW.md`
 - `docs/RAG.md`
 - `docs/ROADMAP.md`
@@ -176,6 +172,8 @@ node scripts/rag-self-test.mjs
 - `scripts/package-release.mjs`
 - `scripts/workspace-edit-repair-self-test.mjs`
 - `scripts/tester-prompt-self-test.mjs`
+
+`PACKAGE_INSTALL_PROMPT.md`、`FIRST_INSTALL_PROMPT.md`、`STARTUP_PROMPT.md`、`PROJECT_START_PROMPT.md`、`SUBAGENT_START_PROMPT.md`、`EXISTING_PROJECT_HANDOFF_PROMPT.md` 和 `NEW_PROJECT_BOOTSTRAP_PROMPT.md` 只是兼容旧链接的短 wrapper。普通用户入口是 `INSTALL_PROMPT.md`、`START_PROMPT.md` 和 `RELEASE_PROMPT.md`。
 
 必须排除：
 

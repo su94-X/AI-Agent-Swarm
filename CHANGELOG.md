@@ -2,6 +2,23 @@
 
 All notable changes to AI Agent Swarm are documented here.
 
+## [1.4.7] - 2026-06-22
+
+### Added
+
+- Added three universal user prompts:
+  - `docs/INSTALL_PROMPT.md`
+  - `docs/START_PROMPT.md`
+  - `docs/RELEASE_PROMPT.md`
+- Added release notes for V1.4.7.
+
+### Changed
+
+- Simplified the public prompt UX from many task-specific prompt files to three primary entry points.
+- Converted older prompt files into short compatibility wrappers pointing to the new universal prompts.
+- Updated README, skill metadata, environment docs, roadmap, and package validation to make the new prompts canonical.
+- Kept core MCP runtime behavior unchanged; this release focuses on documentation and release UX.
+
 ## [1.4.6] - 2026-06-22
 
 ### Added
