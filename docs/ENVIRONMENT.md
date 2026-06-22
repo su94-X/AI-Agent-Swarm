@@ -160,6 +160,7 @@ Set-Content -NoNewline -Path "$env:USERPROFILE\.codex\multi-model-agents\github-
 - `NOTICE`
 - `SECURITY.md`
 - `assets/`
+- `.codex/agents/`
 - `docs/`
 - `lib/`
 - `scripts/`
@@ -170,6 +171,7 @@ Set-Content -NoNewline -Path "$env:USERPROFILE\.codex\multi-model-agents\github-
 - `docs/INSTALL_PROMPT.md`
 - `docs/START_PROMPT.md`
 - `docs/RELEASE_PROMPT.md`
+- `docs/CUSTOM_AGENTS.md`
 - `docs/ENVIRONMENT.md`
 - `docs/ENGINEERING_GATE.md`
 - `docs/ENGINEERING_GATE_IMPLEMENTATION_PLAN.md`
@@ -178,6 +180,12 @@ Set-Content -NoNewline -Path "$env:USERPROFILE\.codex\multi-model-agents\github-
 - `docs/RAG.md`
 - `docs/ROADMAP.md`
 - `docs/roles/`
+- `.codex/agents/primary-coder.toml`
+- `.codex/agents/reviewer.toml`
+- `.codex/agents/tester.toml`
+- `.codex/agents/test-runner.toml`
+- `.codex/agents/rag-curator.toml`
+- `.codex/agents/security-auditor.toml`
 - `lib/mcp.mjs`
 - `lib/model.mjs`
 - `lib/workspace.mjs`
@@ -191,6 +199,7 @@ Set-Content -NoNewline -Path "$env:USERPROFILE\.codex\multi-model-agents\github-
 - `scripts/mcp-smoke-test.mjs`
 - `scripts/http-retry-self-test.mjs`
 - `scripts/model-secret-self-test.mjs`
+- `scripts/custom-agents-self-test.mjs`
 - `scripts/rag-self-test.mjs`
 - `scripts/rag-metadata-self-test.mjs`
 - `scripts/rag-security-self-test.mjs`

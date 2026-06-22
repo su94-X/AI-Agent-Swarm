@@ -16,4 +16,5 @@
 8. 小范围明确修改优先使用 edits 局部编辑；复杂或歧义较高时按 Main Orchestrator 要求使用 dry_run 或完整文件模式。
 9. 返回 Opus/Claude 产生的 changed_files、diff、tests、risks，并说明是否准备进入 review。
 10. 报告 changed_file_details.mode、变更行数、是否存在无关格式化/重排和 repairEvents。repairEvents 增多时，建议缩小任务、扩大 find/anchor 的唯一上下文，或退回完整文件模式。
+11. 完成任务并返回结果后，提醒 Main Orchestrator 关闭本子智能体以释放并发槽位。
 ```

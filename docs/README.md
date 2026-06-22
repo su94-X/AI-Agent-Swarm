@@ -13,6 +13,7 @@
 | 文档 | 用途 |
 | --- | --- |
 | [ENGINEERING_GATE.md](./ENGINEERING_GATE.md) | 非简单任务的 plan-review、diff-review、test-review 和阻塞报告规则。 |
+| [CUSTOM_AGENTS.md](./CUSTOM_AGENTS.md) | 官方 Codex Custom Agent 模板说明：`.codex/agents/*.toml`、Skill、MCP 和 Plugin 的区别。 |
 | [SUBAGENT_WORKFLOW.md](./SUBAGENT_WORKFLOW.md) | 可见子智能体工作流和角色说明。 |
 | [ENVIRONMENT.md](./ENVIRONMENT.md) | `.env`、外部模型、RAG、HTTP、GitHub Release token 配置说明。 |
 | [RAG.md](./RAG.md) | 本地项目记忆库使用规则和安全边界。 |

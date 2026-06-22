@@ -27,7 +27,9 @@
 - plan-review 所需工具可用：优先 `multi_model_role_call`，可选 `multi_model_reviewer_findings`。
 - 当前任务需要 Opus/Claude coder 时，确认 coder provider、model、apiKeyEnv、hasApiKey 状态。
 - 当前任务需要 Gemini tester 时，确认 tester provider、model、apiKeyEnv、hasApiKey 状态。
-- 当前线程是否有可见子智能体工具。非简单任务如果有子智能体工具，必须先创建或复用 Coder、Reviewer、Tester；涉及真实命令时创建 Test Runner；涉及 RAG 写入或长期记忆沉淀时创建 RAG Curator。
+- 当前线程是否有可见子智能体工具。非简单任务如果有子智能体工具，必须先创建或复用 Coder / `primary-coder`、Reviewer、Tester；涉及真实命令时创建 Test Runner；涉及 RAG 写入或长期记忆沉淀时创建 RAG Curator；触碰密钥、发布包、路径授权或 prompt injection surface 时创建 Security Auditor。
+- 官方 Custom Agent 模板是否位于当前项目 `.codex/agents/` 或用户级 `~/.codex/agents/`。模板不存在时仍可用内置 `worker` / `explorer` 承载角色，但必须记录映射关系。
+- 子智能体完成后必须调用 `close_agent` 或等价能力关闭，释放并发槽位。
 - 如果当前线程没有子智能体工具，必须把降级原因写入 Gate 0 结果：“当前线程没有可见子智能体工具，降级为 Main Orchestrator 直接调用 MCP 工具。”
 
 如果预检失败，不应继续写正式设计文档，必须直接输出阻塞报告。预检不得打印 API key。

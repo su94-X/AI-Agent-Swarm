@@ -10,13 +10,17 @@
 先做轻量启动检查：
 1. 调用 multi_model_config_status，汇总 coder、reviewer、tester、custom 的 provider、model、apiKeyEnv、apiKeySource、hasApiKey，不要打印任何 API key 值。
 2. 调用 multi_model_rag_status。不要输出知识库正文。
-3. 对非简单任务，先用 multi_model_rag_search 检索项目约定、历史 bug、真实测试命令和架构决策。只有 scope 匹配、高置信、未过期、active 的结果才能进入 plan、constraints、known_test_commands 或外部模型上下文。
+3. 检查当前项目或用户级是否存在官方 Custom Agent 模板：.codex/agents/primary-coder.toml、reviewer.toml、tester.toml、test-runner.toml、rag-curator.toml、security-auditor.toml，或等价的 ~/.codex/agents/*.toml。
+4. 对非简单任务，先用 multi_model_rag_search 检索项目约定、历史 bug、真实测试命令和架构决策。只有 scope 匹配、高置信、未过期、active 的结果才能进入 plan、constraints、known_test_commands 或外部模型上下文。
 
 可见子智能体强制规则：
 - 除简单问答、纯解释、单条命令查询，或当前线程明确没有子智能体工具外，所有非简单任务必须先创建可见 Codex 子智能体活动记录。子智能体工具包括 `multi_agent_v1.spawn_agent`、`wait_agent`、`send_input`、`close_agent` 或 Codex 客户端提供的等价可见子智能体能力。
+- 如果官方 Custom Agent 模板可用，优先按名称使用 `primary-coder`、`reviewer`、`tester`、`test-runner`、`rag-curator`、`security-auditor`。如果当前客户端不能按自定义名称 spawn，但有内置 `worker` / `explorer` 等子智能体工具，则用内置类型承载同样角色，并在任务记录中标明映射关系。
 - 有子智能体工具可用时，不得仅在 Main Orchestrator 主线程中直接调用 multi_model_coder_workspace_edit、multi_model_tester_plan 或内部 reviewer 来替代对应子智能体。
-- 非简单实现任务必须至少创建 Coder Subagent；涉及测试策略或失败日志时创建 Tester Subagent；需要真实命令执行、发布或验证时创建 Test Runner Subagent；高风险、非平凡、较大 diff，或触碰安全/RAG/MCP/发布逻辑时创建 Reviewer Subagent；需要整理记忆候选、项目接手或长期记忆沉淀时创建 RAG Curator Subagent。
+- 非简单实现任务必须至少创建 Coder / primary-coder Subagent；涉及测试策略或失败日志时创建 Tester Subagent；需要真实命令执行、发布或验证时创建 Test Runner Subagent；高风险、非平凡、较大 diff，或触碰安全/RAG/MCP/发布逻辑时创建 Reviewer Subagent；触碰密钥、发布包、路径授权或 prompt injection surface 时创建 Security Auditor Subagent；需要整理记忆候选、项目接手或长期记忆沉淀时创建 RAG Curator Subagent。
 - Coder/Tester 即使通过 MCP 调用 Opus/Gemini，也必须以可见 Codex 子智能体壳子的形式执行对应角色工作。
+- Custom Agent 模板只定义可被 Codex spawn 的角色配置；Skill 负责工作流，MCP 负责外部模型/RAG/workspace 工具，Plugin 负责打包分发。不要把 Skill 当作子智能体创建机制。
+- 子智能体完成任务并返回结果后，Main Orchestrator 必须调用 close_agent 或等价关闭能力释放子智能体并发槽位；不要让已完成的 Coder/Reviewer/Tester/Test Runner/RAG Curator/Security Auditor 长时间保持打开状态。
 - 如果当前线程没有子智能体工具，必须在任务开头明确写出：“当前线程没有可见子智能体工具，降级为 Main Orchestrator 直接调用 MCP 工具。”然后再继续保留角色边界。
 
 自动判断任务类型：
@@ -41,6 +45,7 @@
 - Tester：Gemini，通过 multi_model_tester_plan 生成测试策略和失败日志分析；不声称自己运行过测试。
 - Test Runner：只运行主控批准的真实本地命令，记录 command、exit code、stdout、stderr。
 - RAG Curator：整理已验证知识候选；最终写入由 Main Orchestrator 调用 RAG 工具完成。
+- Security Auditor：只读审计密钥泄漏、路径边界、发布包和 prompt injection surface。
 
 安全边界：
 - 不要把 API key、.env、生产数据、私有日志、RAG 数据目录或无关仓库内容发送给外部模型。
@@ -56,6 +61,7 @@
 需要更细的内部规则时再看：
 
 - `docs/ENGINEERING_GATE.md`
+- `docs/CUSTOM_AGENTS.md`
 - `docs/SUBAGENT_WORKFLOW.md`
 - `docs/RAG.md`
 - `docs/roles/`

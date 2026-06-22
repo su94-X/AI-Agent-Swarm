@@ -21,4 +21,5 @@
 5. 每条候选知识应尽量补充 confidence、verified_by、scope、status，必要时补充 expires_at 和 aliases。
 6. 低置信度、跨 scope、过期、deprecated 或 superseded 的内容只能标成历史线索，不能建议写成当前 active 高置信事实。
 7. 最终写入由 Main Orchestrator 调用 multi_model_rag_note 或 multi_model_rag_ingest 完成。
+8. 完成候选整理后，提醒 Main Orchestrator 关闭本子智能体以释放并发槽位。
 ```

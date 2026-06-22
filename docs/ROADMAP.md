@@ -1,6 +1,6 @@
 # 后续路线图
 
-本文档记录 AI Agent Swarm 在 V1.4.10 正式版之后的工程改进方向，以及 V1.4.5 到 V1.4.10 已完成的工程化事项。这里的未完成内容不是当前版本承诺，而是后续小版本或中版本的设计入口。
+本文档记录 AI Agent Swarm 在 V1.5.0 正式版之后的工程改进方向，以及 V1.4.5 到 V1.5.0 已完成的工程化事项。这里的未完成内容不是当前版本承诺，而是后续小版本或中版本的设计入口。
 
 ## 提示词入口简化
 
@@ -15,6 +15,8 @@ V1.4.10 已把旧提示词 wrapper 移入 `docs/legacy/`，并新增 `docs/READM
 V1.4.8 已强化 `docs/START_PROMPT.md` 和 skill 默认规则：非简单任务在当前线程暴露 Codex 子智能体工具时，必须先创建或复用可见角色子智能体；如果没有子智能体工具，必须明确说明降级原因。
 
 V1.4.9 同时新增 `scripts/sync-github-release.mjs`，用于用用户级 GitHub Release token 同步 GitHub Release 和 zip asset。该 token 不属于插件 `.env` 配置，不应进入仓库、workspace、输出目录、RAG 或发布包。
+
+V1.5.0 已新增官方 Codex Custom Agent 模板 `.codex/agents/*.toml`，并加入 `docs/CUSTOM_AGENTS.md`、`scripts/custom-agents-self-test.mjs` 和发布包校验。该版本明确区分 Custom Agent、Skill、MCP 和 Plugin：Custom Agent 负责可见子智能体角色配置，Skill 负责工作流，MCP 负责外部模型/RAG/workspace 工具，Plugin 负责打包分发。子智能体完成后必须关闭以释放并发槽位。
 
 ## 工程闸门
 

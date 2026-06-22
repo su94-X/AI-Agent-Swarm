@@ -9,7 +9,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/su94-X/AI-Agent-Swarm/releases/tag/v1.4.10"><img alt="Release" src="https://img.shields.io/badge/release-v1.4.10-38BDF8"></a>
+  <a href="https://github.com/su94-X/AI-Agent-Swarm/releases/tag/v1.5.0"><img alt="Release" src="https://img.shields.io/badge/release-v1.5.0-38BDF8"></a>
   <a href="./LICENSE"><img alt="License" src="https://img.shields.io/badge/license-Apache--2.0-22C55E"></a>
   <img alt="Node" src="https://img.shields.io/badge/node-no%20npm%20deps-111827">
   <img alt="Codex Plugin" src="https://img.shields.io/badge/Codex-plugin-8B5CF6">
@@ -19,7 +19,7 @@
 
 AI Agent Swarm 是一个面向长期项目维护的本地 Codex 多模型编排插件。它的目标不是替换 Codex 主智能体，而是把外部模型能力纳入 Codex 可控的授权、审查、测试和记忆流程。
 
-V1.4.10 是当前正式稳定版本。它保留三段式通用提示词、工程闸门、workspace 安全、RAG 质量层、MCP 可见日志、patch/edit 局部编辑和强制可见角色子智能体契约，并把 `docs/` 目录整理为清晰的用户入口、进阶文档、归档提示词和历史 release note。
+V1.5.0 是当前正式稳定版本。它在三段式通用提示词、工程闸门、workspace 安全、RAG 质量层、MCP 可见日志、patch/edit 局部编辑和强制可见角色子智能体契约基础上，新增 `.codex/agents/*.toml` 官方 Custom Agent 模板，让 Coder、Reviewer、Tester、Test Runner、RAG Curator 和 Security Auditor 可以作为真正的 Codex 自定义子智能体角色被加载。
 
 ## 核心定位
 
@@ -30,6 +30,7 @@ V1.4.10 是当前正式稳定版本。它保留三段式通用提示词、工程
 | Gemini Tester | 生成测试计划、边界用例和失败日志分析 |
 | Codex Internal Reviewer | 默认负责代码审查，不额外调用外部 GPT reviewer |
 | RAG Curator | 整理候选知识，最终由 Codex 写入本地项目记忆库 |
+| Security Auditor | 只读审计密钥、路径边界、发布包和 prompt injection surface |
 | Custom Role | 可选 OpenAI-compatible 外部模型角色 |
 
 外部模型不会直接获得无限仓库权限，也不会直接写入项目记忆库。所有真实文件修改、命令执行、测试结果判定和最终接受决定仍由 Codex 完成。
@@ -70,7 +71,7 @@ flowchart TD
 
 ## 3 步快速开始
 
-1. 下载并解压 [ai-agent-swarm-1.4.10.zip](https://github.com/su94-X/AI-Agent-Swarm/releases/download/v1.4.10/ai-agent-swarm-1.4.10.zip)。
+1. 下载并解压 [ai-agent-swarm-1.5.0.zip](https://github.com/su94-X/AI-Agent-Swarm/releases/download/v1.5.0/ai-agent-swarm-1.5.0.zip)。
 2. 复制 `.env.example` 为 `.env`，只填写当前确实要用的外部模型 key。
 3. 在 Codex 中发送 `docs/INSTALL_PROMPT.md` 做安装检查；日常开发发送 `docs/START_PROMPT.md`。
 
@@ -88,7 +89,8 @@ docs/RELEASE_PROMPT.md
 - **Gemini 测试分析**：输出测试计划、建议命令、边界用例和失败日志分析，但不伪装成真实测试执行。
 - **Codex 内部审查**：默认 reviewer 为 `codex-internal`，避免重复消耗外部 GPT API。
 - **本地项目记忆库**：JSONL + 词法检索，支持 `confidence`、`verified_by`、`expires_at`、`scope`、`aliases`、`status`。
-- **可见角色子智能体**：Coder、Tester、Reviewer、Test Runner、RAG Curator 都可以在 Codex 中保留可见过程。
+- **官方 Custom Agent 模板**：随包提供 `.codex/agents/*.toml`，可复制到项目级或用户级 agent 目录，让 Codex 使用稳定的角色子智能体配置。
+- **可见角色子智能体**：Coder、Tester、Reviewer、Test Runner、RAG Curator、Security Auditor 都可以在 Codex 中保留可见过程。
 - **强制可见子智能体契约**：非简单任务若有 Codex 子智能体工具可用，必须先创建或复用角色子智能体；没有工具时必须明示降级。
 - **无 npm 依赖**：MCP server、打包、zip 校验和自测均使用 Node 内置模块。
 - **跨平台发布包**：`scripts/package-release.mjs` 统一生成 zip，并校验无 `.env`、无 RAG 数据、无反斜杠路径。
@@ -150,6 +152,23 @@ Gemini 默认用 `x-goog-api-key` header 传递 key，避免 key 出现在 URL q
 MMA_GEMINI_API_KEY_IN_HEADER=false
 ```
 
+## Custom Agents
+
+V1.5.0 起发布包包含官方 Codex Custom Agent 模板：
+
+```text
+.codex/agents/primary-coder.toml
+.codex/agents/reviewer.toml
+.codex/agents/tester.toml
+.codex/agents/test-runner.toml
+.codex/agents/rag-curator.toml
+.codex/agents/security-auditor.toml
+```
+
+这些模板需要位于当前项目 `.codex/agents/` 或用户级 `~/.codex/agents/` 才会被 Codex 加载。Skill 负责工作流，MCP 负责外部模型和 RAG 工具，Plugin 负责打包分发；插件安装本身不等于所有项目自动获得自定义子智能体。
+
+详见 [docs/CUSTOM_AGENTS.md](./docs/CUSTOM_AGENTS.md)。
+
 ## 何时不要启用外部模型
 
 - 任务只是简单问答、纯解释、单条命令查询或很小的局部修改。
@@ -167,6 +186,7 @@ MMA_GEMINI_API_KEY_IN_HEADER=false
 | `docs/START_PROMPT.md` | 唯一日常启动入口：简单任务、新项目、已有项目、工程闸门和子智能体自动判断 |
 | `docs/RELEASE_PROMPT.md` | 维护者发布入口：分支、tag、GitHub Release、zip asset 和页面核查 |
 | `docs/ENGINEERING_GATE.md` | 工程闸门：plan-review、diff-review、test-review 和阻塞报告规则 |
+| `docs/CUSTOM_AGENTS.md` | 官方 Custom Agent 模板说明：`.codex/agents/*.toml`、Skill、MCP 和 Plugin 的区别 |
 | `docs/SUBAGENT_WORKFLOW.md` | 可见子智能体工作流和角色说明 |
 | `docs/RAG.md` | 本地项目记忆库说明 |
 | `docs/ROADMAP.md` | 后续路线图 |
@@ -188,6 +208,7 @@ node scripts/workspace-edit-json-self-test.mjs
 node scripts/workspace-edit-repair-self-test.mjs
 node scripts/tester-prompt-self-test.mjs
 node scripts/subagent-prompt-self-test.mjs
+node scripts/custom-agents-self-test.mjs
 ```
 
 这些离线自检不调用真实外部模型 API。真实连通性测试使用：
@@ -204,7 +225,7 @@ node scripts/api-smoke-test.mjs
 node scripts/package-release.mjs C:\path\to\outputs
 ```
 
-该脚本只打包 `.codex-plugin`、`.mcp.json`、`.env.example`、`README.md`、`LICENSE`、`NOTICE`、`CHANGELOG.md`、`CONTRIBUTING.md`、`SECURITY.md`、`docs/`、`skills/`、`scripts/`、`lib/` 和 `assets/`，并校验：
+该脚本只打包 `.codex-plugin`、`.codex/agents`、`.mcp.json`、`.env.example`、`README.md`、`LICENSE`、`NOTICE`、`CHANGELOG.md`、`CONTRIBUTING.md`、`SECURITY.md`、`docs/`、`skills/`、`scripts/`、`lib/` 和 `assets/`，并校验：
 
 - 包内没有 `.env`
 - 包内没有 RAG 数据目录
@@ -233,7 +254,7 @@ node scripts/sync-github-release.mjs C:\path\to\outputs
 - 变更记录：[CHANGELOG.md](./CHANGELOG.md)
 - 安全策略：[SECURITY.md](./SECURITY.md)
 - 贡献说明：[CONTRIBUTING.md](./CONTRIBUTING.md)
-- Release：[AI Agent Swarm V1.4.10](https://github.com/su94-X/AI-Agent-Swarm/releases/tag/v1.4.10)
+- Release：[AI Agent Swarm V1.5.0](https://github.com/su94-X/AI-Agent-Swarm/releases/tag/v1.5.0)
 
 ## 联系方式
 

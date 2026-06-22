@@ -1,7 +1,7 @@
 {
   "name": "multi-model-agents",
-  "version": "1.4.10",
-  "description": "AI Agent Swarm V1.4.10 simplifies docs into three user prompt entries while keeping the full Codex, Opus/Claude, Gemini, RAG, and visible subagent workflow.",
+  "version": "1.5.0",
+  "description": "AI Agent Swarm V1.5.0 adds official Codex Custom Agent templates while keeping Codex main control, Opus/Claude coding, Gemini testing analysis, RAG, and MCP tools.",
   "author": {
     "name": "Su94"
   },
@@ -23,8 +23,8 @@
   "skills": "./skills/",
   "interface": {
     "displayName": "AI Agent Swarm",
-    "shortDescription": "AI Agent Swarm V1.4.10: three prompt docs, Codex main control, Opus/Claude coding, Gemini test analysis, RAG, and visible subagents.",
-    "longDescription": "AI Agent Swarm V1.4.10 is a local Codex multi-model orchestration plugin for long-running development. Codex keeps planning, authorization, real tests, review integration, RAG writes, and final decisions. Opus/Claude performs primary coding inside authorized workspace boundaries after design plan-review. Gemini provides test strategy and failure-log analysis. This release simplifies docs into INSTALL_PROMPT, START_PROMPT, RELEASE_PROMPT, plus a docs navigation page.",
+    "shortDescription": "AI Agent Swarm V1.5.0: official Custom Agent templates, Codex main control, Opus/Claude coding, Gemini test analysis, RAG, and MCP tools.",
+    "longDescription": "AI Agent Swarm V1.5.0 is a local Codex multi-model orchestration plugin for long-running development. Codex keeps planning, authorization, real tests, review integration, RAG writes, and final decisions. Opus/Claude performs primary coding inside authorized workspace boundaries after design plan-review. Gemini provides test strategy and failure-log analysis. This release adds .codex/agents/*.toml Custom Agent templates for visible role subagents while keeping Skill and MCP responsibilities separate.",
     "developerName": "Su94",
     "category": "Productivity",
     "capabilities": [
@@ -34,7 +34,8 @@
       "\u6d4b\u8bd5\u7b56\u7565",
       "engineering gates",
       "\u672c\u5730\u9879\u76ee\u8bb0\u5fc6\u5e93\uff08\u8f7b\u91cf RAG\uff09",
-      "\u53ef\u89c1\u5b50\u667a\u80fd\u4f53\u6d41\u7a0b"
+      "\u53ef\u89c1\u5b50\u667a\u80fd\u4f53\u6d41\u7a0b",
+      "Codex Custom Agents"
     ],
     "defaultPrompt": [
       "\u4f7f\u7528 AI Agent Swarm \u5904\u7406\u8fd9\u6b21\u4ee3\u7801\u4fee\u6539\uff0c\u9ed8\u8ba4\u542f\u7528\u53ef\u89c1\u89d2\u8272\u5b50\u667a\u80fd\u4f53\u5de5\u4f5c\u6d41\u3002"

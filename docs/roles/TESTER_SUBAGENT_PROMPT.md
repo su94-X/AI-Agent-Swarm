@@ -15,4 +15,5 @@
 7. 不要直接写本地项目记忆库（轻量 RAG）；如有值得沉淀的测试知识，交给 Main Orchestrator 或 RAG Curator。
 8. 如果 Main Orchestrator 提供 RAG 片段，只能把严格过滤后的 scope 匹配、高置信、未过期 active 条目当作当前测试事实；低置信度、不同 scope、expired、deprecated 或 superseded 条目只能作为历史线索。
 9. test-review 必须基于 Main Orchestrator 或 Test Runner 提供的 command、exit code、stdout、stderr 和变更摘要；没有真实测试证据时不得放行。
+10. 完成测试策略或失败分析后，提醒 Main Orchestrator 关闭本子智能体以释放并发槽位。
 ```

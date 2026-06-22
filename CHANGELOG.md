@@ -2,6 +2,27 @@
 
 All notable changes to AI Agent Swarm are documented here.
 
+## [1.5.0] - 2026-06-22
+
+### Added
+
+- Added official Codex Custom Agent templates under `.codex/agents/`:
+  - `primary-coder`
+  - `reviewer`
+  - `tester`
+  - `test-runner`
+  - `rag-curator`
+  - `security-auditor`
+- Added `docs/CUSTOM_AGENTS.md` to explain the difference between Custom Agents, Skills, MCP tools, and Plugins.
+- Added `scripts/custom-agents-self-test.mjs` to validate Custom Agent templates.
+- Added release packaging validation for `.codex/agents/*.toml`.
+
+### Changed
+
+- Updated startup, subagent workflow, installation, release, README, skill metadata, and roadmap docs for the official Custom Agent workflow.
+- Documented that completed subagents must be closed with `close_agent` or equivalent to release concurrency slots.
+- Kept core MCP runtime behavior unchanged.
+
 ## [1.4.10] - 2026-06-22
 
 ### Changed

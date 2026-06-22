@@ -15,11 +15,12 @@
 5. 调用 multi_model_config_status，只汇总 provider、model、apiKeyEnv、apiKeySource、hasApiKey，不要打印任何 API key 值。
 6. 调用 multi_model_rag_status，只报告状态，不输出知识库正文。
 7. 检查插件包结构：.codex-plugin/plugin.json、.mcp.json、.env.example、README.md、LICENSE、NOTICE、docs/、lib/、scripts/、skills/ 是否存在。
-8. 确认 plugin.json 可解析，版本和展示名正确；确认 .mcp.json 使用 ./scripts/multi-model-agents-mcp.mjs 相对路径。
-9. 确认包内没有 .env、.local/rag、.rag、node_modules、.git、凭据文件或本地绝对路径。
-10. 如可用，运行离线自检：mcp-smoke-test、http-retry-self-test、RAG self-tests、workspace edit self-tests、tester prompt self-test。
-11. 提醒我把 .env.example 复制为 .env，真实 key 只保存在本地 .env 或本机环境变量中。
-12. 安装检查完成后，提醒我新开线程并发送 docs/START_PROMPT.md 开始日常开发。
+8. 检查官方 Custom Agent 模板是否存在：.codex/agents/primary-coder.toml、reviewer.toml、tester.toml、test-runner.toml、rag-curator.toml、security-auditor.toml。说明这些模板需要位于当前项目 .codex/agents/ 或用户级 ~/.codex/agents/ 才会被 Codex 作为 Custom Agents 加载。
+9. 确认 plugin.json 可解析，版本和展示名正确；确认 .mcp.json 使用 ./scripts/multi-model-agents-mcp.mjs 相对路径。
+10. 确认包内没有 .env、.local/rag、.rag、node_modules、.git、凭据文件或本地绝对路径。
+11. 如可用，运行离线自检：mcp-smoke-test、http-retry-self-test、RAG self-tests、workspace edit self-tests、tester prompt self-test、subagent prompt self-test、custom agents self-test。
+12. 提醒我把 .env.example 复制为 .env，真实 key 只保存在本地 .env 或本机环境变量中。
+13. 安装检查完成后，提醒我新开线程并发送 docs/START_PROMPT.md 开始日常开发。
 
 不要请求、打印、保存或提交任何 API key。
 不要调用真实外部模型 API；api-smoke-test 只在我明确要求真实连通性测试时运行。
