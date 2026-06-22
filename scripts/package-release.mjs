@@ -166,6 +166,7 @@ function validateStage() {
     "scripts/rag-security-self-test.mjs",
     "scripts/rag-text-self-test.mjs",
     "scripts/http-retry-self-test.mjs",
+    "scripts/streaming-default-self-test.mjs",
     "scripts/model-secret-self-test.mjs",
     "scripts/custom-agents-self-test.mjs",
     "scripts/workspace-edit-json-self-test.mjs",

@@ -1,7 +1,7 @@
 {
   "name": "multi-model-agents",
-  "version": "1.5.2",
-  "description": "AI Agent Swarm V1.5.2 strengthens Custom Agent spawn contracts so primary-coder must call Opus/Claude MCP tools and tester must call Gemini MCP tools instead of self-executing those roles.",
+  "version": "1.5.3",
+  "description": "AI Agent Swarm V1.5.3 enables streaming model calls by default to reduce long Opus/Claude and Gemini timeout risk while keeping a non-streaming fallback.",
   "author": {
     "name": "Su94"
   },
@@ -23,8 +23,8 @@
   "skills": "./skills/",
   "interface": {
     "displayName": "AI Agent Swarm",
-    "shortDescription": "AI Agent Swarm V1.5.2: Custom Agent spawn contracts for Opus/Claude coding and Gemini test analysis.",
-    "longDescription": "AI Agent Swarm V1.5.2 is a local Codex multi-model orchestration plugin for long-running development. Codex keeps planning, authorization, real tests, review integration, RAG writes, and final decisions. Opus/Claude performs primary coding through the primary-coder Custom Agent calling multi_model_coder_workspace_edit. Gemini provides test strategy and failure-log analysis through the tester Custom Agent calling multi_model_tester_plan. This release strengthens the Custom Agent prompts and startup workflow so visible role subagents cannot silently substitute their own Codex reasoning for the configured external model role.",
+    "shortDescription": "AI Agent Swarm V1.5.3: streaming model calls enabled by default for Opus/Claude and Gemini timeout resilience.",
+    "longDescription": "AI Agent Swarm V1.5.3 is a local Codex multi-model orchestration plugin for long-running development. Codex keeps planning, authorization, real tests, review integration, RAG writes, and final decisions. Opus/Claude performs primary coding through the primary-coder Custom Agent calling multi_model_coder_workspace_edit. Gemini provides test strategy and failure-log analysis through the tester Custom Agent calling multi_model_tester_plan. This release enables streaming model calls by default through the model layer, aggregating SSE responses before returning MCP tool results, and keeps MMA_MODEL_STREAMING=false as a fallback for gateways that do not support streaming.",
     "developerName": "Su94",
     "category": "Productivity",
     "capabilities": [

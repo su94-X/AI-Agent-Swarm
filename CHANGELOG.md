@@ -2,6 +2,19 @@
 
 All notable changes to AI Agent Swarm are documented here.
 
+## [1.5.3] - 2026-06-22
+
+### Changed
+
+- Enabled model-layer streaming by default with `MMA_MODEL_STREAMING=true`.
+- Kept MCP tool outputs unchanged: streamed provider responses are still aggregated inside the server before returning tool results.
+- Documented `MMA_MODEL_STREAMING=false` as the fallback for gateways that do not support SSE/stream endpoints.
+
+### Verified
+
+- Real large-context streaming probes passed locally for Opus/Claude coder and Gemini tester role calls.
+- Real `multi_model_tester_plan` streaming probe passed locally with large diff context.
+
 ## [1.5.2] - 2026-06-22
 
 ### Fixed

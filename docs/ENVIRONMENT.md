@@ -86,10 +86,12 @@ custom 角色可用于 OpenAI-compatible 网关、本地代理、LiteLLM、OpenR
 | `MMA_HTTP_TIMEOUT_MS` | `120000` | 外部模型调用超时时间，单位毫秒。 |
 | `MMA_HTTP_MAX_ATTEMPTS` | `3` | 外部模型 HTTP 调用最大尝试次数，范围 1-5。仅对 408、429、5xx、超时和短暂网络错误重试。 |
 | `MMA_HTTP_RETRY_BASE_DELAY_MS` | `500` | HTTP 重试基础延迟，单位毫秒，使用指数退避和少量 jitter。设为 `0` 时不等待。 |
-| `MMA_MODEL_STREAMING` | `false` | 设为 `true` 时，模型层会优先使用 provider 的 SSE/stream endpoint 并在 server 内聚合为完整文本返回。MCP 工具返回形态不变，不会边流边写文件。 |
+| `MMA_MODEL_STREAMING` | `true` | 默认使用 provider 的 SSE/stream endpoint，并在 server 内聚合为完整文本返回。MCP 工具返回形态不变，不会边流边写文件。若某个网关不支持 SSE，可设为 `false` 回退到非流式 JSON。 |
 | `MMA_MCP_PROGRESS_NOTIFICATIONS` | `true` | 控制 MCP server 是否发送客户端可见进度/日志通知。当前实现使用 MCP `notifications/message`，不是标准进度条 token。设为 `false` 可关闭工具开始、模型调用、流式片段、JSON 校验和完成/失败提示。 |
 
 HTML 响应、401/403、404、JSON 结构错误、SSE 解析错误和模型输出格式错误通常表示配置或模型返回问题，默认不会作为瞬时网络错误重试。流式响应只有在尚未收到有效文本前，才会对 408、429、5xx、超时和短暂网络错误重试。
+
+默认流式可以降低 Opus/Claude 或 Gemini 大上下文、长输出场景下的长时间无响应和网关空闲超时风险，但不等于取消上游排队、模型生成时间或 Codex/MCP 客户端外层超时。若网关的 SSE 实现不稳定，设置 `MMA_MODEL_STREAMING=false`。
 
 注意：HTTP retry 会提升临时网络错误下的稳定性，但如果上游模型已经处理请求而连接在返回阶段中断，重试可能造成重复调用和额外计费。成本敏感场景可设置 `MMA_HTTP_MAX_ATTEMPTS=1`。
 

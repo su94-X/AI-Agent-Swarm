@@ -80,6 +80,7 @@ const child = spawn(
       REPAIR_TEST_API_KEY: "test-key",
       MMA_CODER_BASE_URL: `http://127.0.0.1:${port}`,
       MMA_HTTP_MAX_ATTEMPTS: "1",
+      MMA_MODEL_STREAMING: "false",
       MMA_MCP_PROGRESS_NOTIFICATIONS: "true",
     },
     stdio: ["pipe", "pipe", "inherit"],
