@@ -1,7 +1,7 @@
 {
   "name": "multi-model-agents",
-  "version": "1.5.4",
-  "description": "AI Agent Swarm V1.5.4 returns verified workspace edit writeback content so Coder subagents can report applied Opus/Claude changes.",
+  "version": "1.5.5",
+  "description": "AI Agent Swarm V1.5.5 strengthens workspace edit repair for malformed Opus/Claude coder output.",
   "author": {
     "name": "Su94"
   },
@@ -23,8 +23,8 @@
   "skills": "./skills/",
   "interface": {
     "displayName": "AI Agent Swarm",
-    "shortDescription": "AI Agent Swarm V1.5.4: workspace edit now returns verified written file content for Coder subagent handoff.",
-    "longDescription": "AI Agent Swarm V1.5.4 is a local Codex multi-model orchestration plugin for long-running development. Codex keeps planning, authorization, real tests, review integration, RAG writes, and final decisions. Opus/Claude performs primary coding through the primary-coder Custom Agent calling multi_model_coder_workspace_edit. Gemini provides test strategy and failure-log analysis through the tester Custom Agent calling multi_model_tester_plan. This release makes workspace edit results easier for visible Coder subagents to hand back: successful writes now include readback-verified and redacted written_files content previews, while dry runs include proposed_files previews. Streaming model calls remain enabled by default with MMA_MODEL_STREAMING=false as a fallback.",
+    "shortDescription": "AI Agent Swarm V1.5.5: stronger workspace edit repair for malformed Opus/Claude coder output.",
+    "longDescription": "AI Agent Swarm V1.5.5 is a local Codex multi-model orchestration plugin for long-running development. Codex keeps planning, authorization, real tests, review integration, RAG writes, and final decisions. Opus/Claude performs primary coding through the primary-coder Custom Agent calling multi_model_coder_workspace_edit. Gemini provides test strategy and failure-log analysis through the tester Custom Agent calling multi_model_tester_plan. This release strengthens workspace edit repair when coder output is malformed markdown, prose, unified diff, partial JSON, or JSON-like output with unsupported fields. Successful writes still return readback-verified and redacted written_files content previews, while dry runs return proposed_files previews.",
     "developerName": "Su94",
     "category": "Productivity",
     "capabilities": [

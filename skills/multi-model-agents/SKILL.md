@@ -7,7 +7,7 @@ description: 当 Codex 需要编排多模型协作工作流时使用：Opus/Clau
 
 使用本 skill 通过 `multi-model-agents` MCP 工具协调外部模型角色。
 
-V1.5.4 是 AI Agent Swarm 的当前正式版本，用于把 Opus/Claude 主编码、Gemini 测试分析、Codex 内部审查、工程闸门、官方 Custom Agent 模板、MCP 可见进度/日志通知、workspace patch/edit 局部编辑模式和本地项目记忆库（轻量 RAG）纳入 Codex 主控的授权、审查和真实测试流程。本版增强 `multi_model_coder_workspace_edit` 的子智能体交接结果：实际写入后返回 readback 校验过、已脱敏的 `written_files` 内容预览，`dry_run` 返回 `proposed_files`。模型层 SSE/stream 聚合默认开启；如网关不支持 SSE，可设置 `MMA_MODEL_STREAMING=false` 回退。本版继续使用 `docs/INSTALL_PROMPT.md`、`docs/START_PROMPT.md` 和 `docs/RELEASE_PROMPT.md` 三个用户入口，并保留 Custom Agent 创建时的 MCP 调用合同。
+V1.5.5 是 AI Agent Swarm 的当前正式版本，用于把 Opus/Claude 主编码、Gemini 测试分析、Codex 内部审查、工程闸门、官方 Custom Agent 模板、MCP 可见进度/日志通知、workspace patch/edit 局部编辑模式和本地项目记忆库（轻量 RAG）纳入 Codex 主控的授权、审查和真实测试流程。本版增强 `multi_model_coder_workspace_edit` 的坏格式修复：当 Opus/Claude 首次返回 markdown、prose、unified diff、partial JSON 或字段不合规的 JSON-like 输出时，插件会触发一次 repair 调用，要求转换为标准 workspace edit JSON 后再校验和应用。实际写入后返回 readback 校验过、已脱敏的 `written_files` 内容预览，`dry_run` 返回 `proposed_files`。模型层 SSE/stream 聚合默认开启；如网关不支持 SSE，可设置 `MMA_MODEL_STREAMING=false` 回退。本版继续使用 `docs/INSTALL_PROMPT.md`、`docs/START_PROMPT.md` 和 `docs/RELEASE_PROMPT.md` 三个用户入口，并保留 Custom Agent 创建时的 MCP 调用合同。
 
 开发者：Su94。项目主页：https://github.com/su94-X/AI-Agent-Swarm。
 
