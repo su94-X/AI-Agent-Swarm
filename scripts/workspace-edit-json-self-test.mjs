@@ -103,11 +103,14 @@ try {
   if (!dryRunResult.diff.includes("-before") || !dryRunResult.diff.includes("+after")) {
     throw new Error("Dry-run edit did not return expected diff.");
   }
+  if (dryRunResult.written_files.length !== 0 || dryRunResult.proposed_files[0]?.content !== "after\n") {
+    throw new Error("Dry-run edit did not return proposed file content without written files.");
+  }
   if (readFileSync(join(workspaceRoot, "a.txt"), "utf8") !== "before\n") {
     throw new Error("Dry-run edit wrote to disk.");
   }
 
-  applyWorkspaceEditPlan(
+  const writeResult = applyWorkspaceEditPlan(
     { dry_run: false },
     context,
     {
@@ -119,6 +122,14 @@ try {
   );
   if (readFileSync(join(workspaceRoot, "a.txt"), "utf8") !== "after\n") {
     throw new Error("Workspace edit did not write expected content.");
+  }
+  if (
+    writeResult.proposed_files.length !== 0 ||
+    writeResult.written_files[0]?.content !== "after\n" ||
+    writeResult.written_files[0]?.write_verified !== true ||
+    writeResult.written_files[0]?.readback_sha256 !== writeResult.written_files[0]?.after_sha256
+  ) {
+    throw new Error("Workspace edit did not return verified written file content.");
   }
 
   const afterContext = workspaceContext({

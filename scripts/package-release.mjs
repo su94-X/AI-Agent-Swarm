@@ -170,6 +170,7 @@ function validateStage() {
     "scripts/model-secret-self-test.mjs",
     "scripts/custom-agents-self-test.mjs",
     "scripts/workspace-edit-json-self-test.mjs",
+    "scripts/workspace-edit-result-self-test.mjs",
     "scripts/workspace-edit-repair-self-test.mjs",
     "scripts/tester-prompt-self-test.mjs",
     "scripts/subagent-prompt-self-test.mjs",

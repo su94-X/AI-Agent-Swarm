@@ -1,7 +1,7 @@
 interface:
   display_name: "AI Agent Swarm"
-  short_description: "AI Agent Swarm V1.5.3：默认流式调用 Opus/Gemini，Codex 主控，工程闸门、官方 Custom Agents 和 MCP 调用合同。"
-  default_prompt: "使用 $multi-model-agents / AI Agent Swarm V1.5.3 协调 Opus 主编码、Gemini 测试分析、Codex 审查、工程闸门、本地项目记忆库（轻量 RAG）和官方 Custom Agent 模板。默认启用模型层流式调用以降低大上下文超时风险；日常使用 docs/START_PROMPT.md。"
+  short_description: "AI Agent Swarm V1.5.4：workspace edit 返回写入内容预览，Codex 主控，工程闸门、官方 Custom Agents 和 MCP 调用合同。"
+  default_prompt: "使用 $multi-model-agents / AI Agent Swarm V1.5.4 协调 Opus 主编码、Gemini 测试分析、Codex 审查、工程闸门、本地项目记忆库（轻量 RAG）和官方 Custom Agent 模板。workspace edit 会返回写入内容预览和 readback 校验，日常使用 docs/START_PROMPT.md。"
   icon_small: "./assets/ai-agent-swarm-icon.png"
   icon_large: "./assets/ai-agent-swarm-icon.png"
   brand_color: "#38BDF8"

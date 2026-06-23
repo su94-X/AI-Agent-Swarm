@@ -2,6 +2,14 @@
 
 All notable changes to AI Agent Swarm are documented here.
 
+## [1.5.4] - 2026-06-23
+
+### Fixed
+
+- `multi_model_coder_workspace_edit` now returns readback-verified, redacted `written_files` content previews after real writes so visible Coder Subagents can hand applied results back to the Main Orchestrator.
+- Dry runs now return `proposed_files` content previews instead of only diff/hash metadata.
+- Added `MMA_WORKSPACE_EDIT_RETURN_FILE_CHARS` to bound returned file content and `workspace-edit-result-self-test.mjs` to cover MCP-level writeback behavior.
+
 ## [1.5.3] - 2026-06-22
 
 ### Changed

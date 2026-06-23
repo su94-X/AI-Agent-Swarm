@@ -88,6 +88,7 @@ custom 角色可用于 OpenAI-compatible 网关、本地代理、LiteLLM、OpenR
 | `MMA_HTTP_RETRY_BASE_DELAY_MS` | `500` | HTTP 重试基础延迟，单位毫秒，使用指数退避和少量 jitter。设为 `0` 时不等待。 |
 | `MMA_MODEL_STREAMING` | `true` | 默认使用 provider 的 SSE/stream endpoint，并在 server 内聚合为完整文本返回。MCP 工具返回形态不变，不会边流边写文件。若某个网关不支持 SSE，可设为 `false` 回退到非流式 JSON。 |
 | `MMA_MCP_PROGRESS_NOTIFICATIONS` | `true` | 控制 MCP server 是否发送客户端可见进度/日志通知。当前实现使用 MCP `notifications/message`，不是标准进度条 token。设为 `false` 可关闭工具开始、模型调用、流式片段、JSON 校验和完成/失败提示。 |
+| `MMA_WORKSPACE_EDIT_RETURN_FILE_CHARS` | `6000` | `multi_model_coder_workspace_edit` 写入成功后返回每个变更文件的受限、脱敏内容预览，方便 Coder Subagent 把写入结果交回主控。设为 `0` 可只返回 hash/路径元数据。 |
 
 HTML 响应、401/403、404、JSON 结构错误、SSE 解析错误和模型输出格式错误通常表示配置或模型返回问题，默认不会作为瞬时网络错误重试。流式响应只有在尚未收到有效文本前，才会对 408、429、5xx、超时和短暂网络错误重试。
 
