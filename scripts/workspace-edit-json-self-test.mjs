@@ -13,6 +13,7 @@ import {
 const workspaceEditFlowText = readFileSync(new URL("../lib/workspace-edit-flow.mjs", import.meta.url), "utf8");
 for (const required of [
   "If the parse error says found 0 or found more than 1 match",
+  "If the malformed output is a unified diff",
   "widen find/anchor with enough surrounding stable context",
   "Do not use regex, ellipses, fuzzy matching, line numbers, or placeholders",
   "switch that path to a files entry with complete final file content",

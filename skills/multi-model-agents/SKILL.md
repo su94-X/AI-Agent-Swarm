@@ -16,6 +16,7 @@ Lite 版用户文档入口已经收敛为：
 
 V1.5.2-lite.1 起，Lite 默认启用模型层 SSE/stream 聚合，降低 Opus/Claude reviewer/scorer 大上下文、长输出场景下的长时间无响应和网关空闲超时风险；如网关不支持 SSE，可设置 `MMA_MODEL_STREAMING=false` 回退。Lite 也保留 `.codex/agents/*.toml` 官方 Custom Agent 模板的创建合同：`opus-reviewer` 是 Codex 可见壳子，必须调用 `multi_model_reviewer_score` 或 `multi_model_reviewer_findings` 让 Opus/Claude 完成外部审查评分，不能由 Codex 子智能体自己代替外部模型完成 reviewer/scorer 工作。这些模板需要位于当前项目 `.codex/agents/` 或用户级 `~/.codex/agents/` 才会被 Codex 加载。Skill 负责工作流，MCP 负责 Opus/Claude reviewer/scorer 与 RAG 工具，Plugin 负责打包分发。
 V1.5.3-lite.1 增强可选 coder workspace edit 兼容工具：实际写入后返回 readback 校验过、已脱敏的 `written_files` 内容预览，`dry_run` 返回 `proposed_files`，方便子智能体把工具结果交回主控。Lite 默认流程仍然是 Codex 自己实现，Opus/Claude 做外部审查和评分。
+V1.5.4-lite.1 增强可选 coder workspace edit 的坏格式修复：当外部 coder 首次返回 markdown、prose、unified diff、partial JSON 或字段不合规的 JSON-like 输出时，插件会触发一次 repair 调用，要求转换为标准 workspace edit JSON 后再校验和应用。
 
 Lite 版原则：
 

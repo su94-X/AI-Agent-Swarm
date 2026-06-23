@@ -10,7 +10,7 @@
 
 <p align="center">
   <img alt="Branch" src="https://img.shields.io/badge/branch-lite--opus--review-38BDF8">
-  <img alt="Version" src="https://img.shields.io/badge/version-1.5.3--lite.1-22C55E">
+  <img alt="Version" src="https://img.shields.io/badge/version-1.5.4--lite.1-22C55E">
   <a href="./LICENSE"><img alt="License" src="https://img.shields.io/badge/license-Apache--2.0-22C55E"></a>
   <img alt="Node" src="https://img.shields.io/badge/node-no%20npm%20deps-111827">
 </p>
@@ -31,7 +31,7 @@ Lite 版只保留三个核心：
 
 ## 工程闸门
 
-Lite 版从 `1.5.0-lite.1` 开始随包提供官方 Codex Custom Agent 模板，并继续默认启用工程闸门。`1.5.2-lite.1` 默认启用模型层流式调用，降低 Opus/Claude reviewer/scorer 大上下文、长输出场景下的长时间无响应和网关空闲超时风险；如果某个网关不支持 SSE，可设置 `MMA_MODEL_STREAMING=false` 回退。`1.5.3-lite.1` 为可选 coder workspace edit 兼容工具增加 readback 校验和脱敏写入内容预览返回，方便子智能体把工具结果交回主控。非简单任务在正式编码前必须先产出工程设计文档和开发计划，并调用 Opus/Claude 做 `plan-review`。只要返回 blocking findings、must-fix items、`approved_to_continue: false`，或计划分低于 80 且没有充分解释，Codex 必须先修正文档和计划，再次审查。
+Lite 版从 `1.5.0-lite.1` 开始随包提供官方 Codex Custom Agent 模板，并继续默认启用工程闸门。`1.5.2-lite.1` 默认启用模型层流式调用，降低 Opus/Claude reviewer/scorer 大上下文、长输出场景下的长时间无响应和网关空闲超时风险；如果某个网关不支持 SSE，可设置 `MMA_MODEL_STREAMING=false` 回退。`1.5.3-lite.1` 为可选 coder workspace edit 兼容工具增加 readback 校验和脱敏写入内容预览返回；`1.5.4-lite.1` 强化 markdown、prose、unified diff、partial JSON 等坏格式输出的 repair 路径。非简单任务在正式编码前必须先产出工程设计文档和开发计划，并调用 Opus/Claude 做 `plan-review`。只要返回 blocking findings、must-fix items、`approved_to_continue: false`，或计划分低于 80 且没有充分解释，Codex 必须先修正文档和计划，再次审查。
 
 进入开发后，Codex 按批准计划自动推进。重要实现步骤后做 diff 检查；高风险或非平凡改动调用 `diff-review`。真实测试完成后，把 command、exit code、stdout、stderr 和变更摘要交给 Opus/Claude 做 `test-review`。详见 [docs/ENGINEERING_GATE.md](./docs/ENGINEERING_GATE.md)。
 

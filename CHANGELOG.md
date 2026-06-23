@@ -2,6 +2,13 @@
 
 All notable changes to AI Agent Swarm and its Lite branch are documented here.
 
+## [1.5.4-lite.1] - 2026-06-23
+
+### Fixed
+
+- Strengthened optional `multi_model_coder_workspace_edit` repair instructions for malformed coder output, including markdown, prose, unified diffs, partial JSON, and JSON-like output with unsupported fields.
+- Added `workspace-edit-malformed-repair-self-test.mjs`, an MCP-level regression test that verifies malformed first output is repaired into valid workspace edit JSON, applied to disk, and returned through `written_files`.
+
 ## [1.5.3-lite.1] - 2026-06-23
 
 ### Fixed

@@ -166,6 +166,7 @@ function validateStage() {
     "scripts/reviewer-score-self-test.mjs",
     "scripts/sync-github-release.mjs",
     "scripts/workspace-edit-json-self-test.mjs",
+    "scripts/workspace-edit-malformed-repair-self-test.mjs",
     "scripts/workspace-edit-result-self-test.mjs",
     "scripts/workspace-edit-repair-self-test.mjs",
     "scripts/package-release.mjs",

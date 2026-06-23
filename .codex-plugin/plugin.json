@@ -1,7 +1,7 @@
 {
   "name": "multi-model-agents",
-  "version": "1.5.3-lite.1",
-  "description": "AI Agent Swarm Lite 1.5.3-lite.1 returns verified workspace edit writeback previews for the optional coder compatibility tool.",
+  "version": "1.5.4-lite.1",
+  "description": "AI Agent Swarm Lite 1.5.4-lite.1 strengthens workspace edit repair for malformed optional coder output.",
   "author": {
     "name": "Su94"
   },
@@ -24,8 +24,8 @@
   "skills": "./skills/",
   "interface": {
     "displayName": "AI Agent Swarm Lite",
-    "shortDescription": "AI Agent Swarm Lite 1.5.3-lite.1: optional workspace edit returns verified written file previews.",
-    "longDescription": "AI Agent Swarm Lite 1.5.3-lite.1 is the simplified branch of AI Agent Swarm. Codex keeps planning, authorization, real file changes, real command execution, local project memory, and final decisions. Opus/Claude acts as an external reviewer/scorer for plan-review, diff-review, test-review, and final-review through the opus-reviewer Custom Agent calling multi_model_reviewer_score or multi_model_reviewer_findings. The Gemini tester workflow is intentionally removed. This release keeps Lite's default reviewer/scorer flow unchanged and improves the optional coder compatibility tool: multi_model_coder_workspace_edit now returns readback-verified and redacted written_files previews after real writes, while dry runs return proposed_files previews.",
+    "shortDescription": "AI Agent Swarm Lite 1.5.4-lite.1: stronger optional workspace edit repair for malformed coder output.",
+    "longDescription": "AI Agent Swarm Lite 1.5.4-lite.1 is the simplified branch of AI Agent Swarm. Codex keeps planning, authorization, real file changes, real command execution, local project memory, and final decisions. Opus/Claude acts as an external reviewer/scorer for plan-review, diff-review, test-review, and final-review through the opus-reviewer Custom Agent calling multi_model_reviewer_score or multi_model_reviewer_findings. The Gemini tester workflow is intentionally removed. This release keeps Lite's default reviewer/scorer flow unchanged and strengthens the optional coder compatibility tool: multi_model_coder_workspace_edit now repairs malformed markdown, prose, unified diff, partial JSON, or JSON-like output before applying safe workspace edits.",
     "developerName": "Su94",
     "category": "Productivity",
     "capabilities": [
