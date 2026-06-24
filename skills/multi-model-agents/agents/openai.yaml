@@ -1,7 +1,7 @@
 interface:
-  display_name: "AI Agent Swarm Lite"
-  short_description: "AI Agent Swarm Lite 1.5.6-lite.1：工程模板、官方证据闸门、Progress Ledger，Codex 主控，无 Gemini tester。"
-  default_prompt: "使用 $multi-model-agents / AI Agent Swarm Lite 1.5.6-lite.1：优先查看 docs/START_PROMPT.md；Codex 主控，Opus/Claude 只做外部审查与评分，真实测试和最终决策由 Codex 完成。非简单任务使用工程模板、官方证据闸门和 Progress Ledger。"
+  display_name: "AI Agent Swarm Codex-only"
+  short_description: "Codex-only agent workflow with Custom Agents, engineering gates, and local RAG memory."
+  default_prompt: "Use $multi-model-agents / AI Agent Swarm Codex-only. Start from docs/START_PROMPT.md, keep Codex as the orchestrator, use Codex Custom Agents for non-trivial work, and use local RAG only for verified project memory."
   icon_small: "./assets/ai-agent-swarm-icon.png"
   icon_large: "./assets/ai-agent-swarm-icon.png"
   brand_color: "#38BDF8"
@@ -10,7 +10,7 @@ dependencies:
   tools:
     - type: "mcp"
       value: "multi-model-agents"
-      description: "用于调用外部模型角色、执行授权编码、检索和写入本地项目记忆库（轻量 RAG）的 MCP 工具。"
+      description: "Local Codex-only MCP tools for config status and local RAG memory."
       transport: "stdio"
 
 policy:

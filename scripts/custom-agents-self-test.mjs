@@ -9,35 +9,40 @@ const agentRoot = join(pluginRoot, ".codex", "agents");
 
 const requiredAgents = [
   {
-    file: "opus-reviewer.toml",
-    name: "opus-reviewer",
+    file: "codex-coder.toml",
+    name: "codex-coder",
+    sandbox: "workspace-write",
+    required: ["Implement only the approved plan", "Do not call external model tools", "Blocked Report", "close this subagent"],
+  },
+  {
+    file: "codex-reviewer.toml",
+    name: "codex-reviewer",
     sandbox: "read-only",
-    required: [
-      "必须调用 multi_model_reviewer_score",
-      "multi_model_reviewer_findings",
-      "不得自己直接审查评分",
-      "不得用 Codex 自己代替 Opus/Claude",
-      "reviewer/scorer MCP 工具不可见",
-      "approved_to_continue",
-      "关闭本子智能体",
-    ],
+    required: ["plan-review", "diff-review", "test-review", "final-review", "approved_to_continue", "close this subagent"],
+  },
+  {
+    file: "codex-tester.toml",
+    name: "codex-tester",
+    sandbox: "read-only",
+    required: ["recommended_commands", "verified commands", "Do not claim tests passed", "close this subagent"],
   },
   {
     file: "test-runner.toml",
     name: "test-runner",
-    required: ["command", "exit code", "stdout", "stderr", "关闭本子智能体"],
+    sandbox: "workspace-write",
+    required: ["command", "exit code", "stdout", "stderr", "close this subagent"],
   },
   {
     file: "rag-curator.toml",
     name: "rag-curator",
     sandbox: "read-only",
-    required: ["不调用 multi_model_rag_note", "候选条目", "confidence", "关闭本子智能体"],
+    required: ["multi_model_rag_note", "candidate memory", "confidence", "close this subagent"],
   },
   {
     file: "security-auditor.toml",
     name: "security-auditor",
     sandbox: "read-only",
-    required: ["不打开、读取、打印或转述真实 .env", "package-release", "prompt injection", "关闭本子智能体"],
+    required: ["read-only security review", "prompt-injection", "plugin.json ASCII-only", "close this subagent"],
   },
 ];
 
@@ -57,45 +62,28 @@ for (const agent of requiredAgents) {
   mustHave(fields.developer_instructions, `${agent.file} developer_instructions`);
   mustHave(fields.model, `${agent.file} model`);
   mustHave(fields.model_reasoning_effort, `${agent.file} model_reasoning_effort`);
-  mustHave(fields.sandbox_mode, `${agent.file} sandbox_mode`);
-  if (agent.sandbox) {
-    mustEqual(fields.sandbox_mode, agent.sandbox, `${agent.file} sandbox_mode`);
-  }
+  mustEqual(fields.sandbox_mode, agent.sandbox, `${agent.file} sandbox_mode`);
   for (const snippet of agent.required) {
-    if (!text.includes(snippet)) {
-      throw new Error(`${agent.file} missing required instruction snippet: ${snippet}`);
-    }
+    mustInclude(text, snippet, agent.file);
   }
+  mustNotInclude(text, ["multi", "model", "reviewer", "score"].join("_"), agent.file);
+  mustNotInclude(text, ["multi", "model", "tester", "plan"].join("_"), agent.file);
+  mustNotInclude(text, [["Op", "us"].join(""), ["Clau", "de"].join("")].join("/"), agent.file);
 }
 
 const docs = readFile("docs/CUSTOM_AGENTS.md");
 for (const snippet of [
   ".codex/agents/*.toml",
   "~/.codex/agents/*.toml",
-  "Skill",
-  "MCP",
-  "Plugin",
-  "Lite 版不包含 Gemini",
-  "spawn message",
-  "必须调用 `multi_model_reviewer_score`",
-  "不得自己直接审查评分",
-  "close_agent",
+  "codex-coder",
+  "codex-reviewer",
+  "codex-tester",
+  "test-runner",
+  "rag-curator",
+  "security-auditor",
+  "close",
 ]) {
-  if (!docs.includes(snippet)) {
-    throw new Error(`docs/CUSTOM_AGENTS.md missing required snippet: ${snippet}`);
-  }
-}
-
-const startPrompt = readFile("docs/START_PROMPT.md");
-for (const snippet of [
-  "创建 Opus Reviewer / Scorer 子智能体时，spawn message 必须明确写入",
-  "必须调用 `multi_model_reviewer_score`",
-  "不得自己直接审查评分",
-  "不得用 Codex 自己代替 Opus/Claude",
-]) {
-  if (!startPrompt.includes(snippet)) {
-    throw new Error(`docs/START_PROMPT.md missing required Lite reviewer spawn contract: ${snippet}`);
-  }
+  mustInclude(docs, snippet, "docs/CUSTOM_AGENTS.md");
 }
 
 console.log("custom agents self-test passed.");
@@ -127,5 +115,17 @@ function mustHave(value, label) {
 function mustEqual(actual, expected, label) {
   if (actual !== expected) {
     throw new Error(`${label} expected ${expected}, found ${actual || "<missing>"}.`);
+  }
+}
+
+function mustInclude(text, snippet, label) {
+  if (!text.includes(snippet)) {
+    throw new Error(`${label} missing required snippet: ${snippet}`);
+  }
+}
+
+function mustNotInclude(text, snippet, label) {
+  if (text.includes(snippet)) {
+    throw new Error(`${label} contains forbidden snippet: ${snippet}`);
   }
 }

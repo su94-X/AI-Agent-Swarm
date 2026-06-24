@@ -1,6 +1,6 @@
-AI Agent Swarm
+AI Agent Swarm Codex-only
 Copyright 2026 Su94
 
-This product includes software developed by Su94 for Codex multi-model orchestration workflows.
+This product includes integration files for Codex plugins, MCP servers, and Codex Custom Agents.
 
-AI Agent Swarm integrates with external model providers and compatible gateways configured by the user. Provider names such as OpenAI, Anthropic, Claude, Opus, Gemini, and Codex are trademarks or product names of their respective owners. This project is not affiliated with or endorsed by those providers unless explicitly stated by them.
+Codex and OpenAI are trademarks or product names of their respective owners. This project is not affiliated with or endorsed by those owners unless explicitly stated by them.

@@ -1,59 +1,63 @@
 ---
 name: multi-model-agents
-description: 当 Codex 需要使用 AI Agent Swarm Lite 精简工作流时使用：Codex 保持主控，负责规划、授权、真实测试和最终决策；Opus/Claude 通过 MCP 工具提供外部审查、风险判断和 0-100 评分；不使用 Gemini tester 工作环节。
+description: Use AI Agent Swarm Codex-only when Codex should orchestrate a visible Custom Agent workflow, keep local RAG memory, apply engineering gates, and avoid default external model dependencies.
 ---
 
-# AI Agent Swarm Lite
+# AI Agent Swarm Codex-only
 
-使用本 skill 通过 `multi-model-agents` MCP 工具运行精简多模型工作流。
+This skill is for the Codex-only branch of AI Agent Swarm.
 
-Lite 版用户文档入口已经收敛为：
+Codex remains the Main Orchestrator. Codex Custom Agents may handle implementation, review, test strategy, command execution, RAG curation, and security review. The MCP server exposes only local configuration status and RAG tools by default.
 
-- `docs/INSTALL_PROMPT.md`：首次安装或新线程检查。
-- `docs/START_PROMPT.md`：日常开发、新项目和已有项目接手统一入口。
-- `docs/RELEASE_PROMPT.md`：维护者发布入口。
-- `docs/README.md`：完整文档导航。
+## Principles
 
-V1.5.2-lite.1 起，Lite 默认启用模型层 SSE/stream 聚合，降低 Opus/Claude reviewer/scorer 大上下文、长输出场景下的长时间无响应和网关空闲超时风险；如网关不支持 SSE，可设置 `MMA_MODEL_STREAMING=false` 回退。Lite 也保留 `.codex/agents/*.toml` 官方 Custom Agent 模板的创建合同：`opus-reviewer` 是 Codex 可见壳子，必须调用 `multi_model_reviewer_score` 或 `multi_model_reviewer_findings` 让 Opus/Claude 完成外部审查评分，不能由 Codex 子智能体自己代替外部模型完成 reviewer/scorer 工作。这些模板需要位于当前项目 `.codex/agents/` 或用户级 `~/.codex/agents/` 才会被 Codex 加载。Skill 负责工作流，MCP 负责 Opus/Claude reviewer/scorer 与 RAG 工具，Plugin 负责打包分发。
-V1.5.3-lite.1 增强可选 coder workspace edit 兼容工具：实际写入后返回 readback 校验过、已脱敏的 `written_files` 内容预览，`dry_run` 返回 `proposed_files`，方便子智能体把工具结果交回主控。Lite 默认流程仍然是 Codex 自己实现，Opus/Claude 做外部审查和评分。
-V1.5.4-lite.1 增强可选 coder workspace edit 的坏格式修复：当外部 coder 首次返回 markdown、prose、unified diff、partial JSON 或字段不合规的 JSON-like 输出时，插件会触发一次 repair 调用，要求转换为标准 workspace edit JSON 后再校验和应用。
-V1.5.6-lite.1 对齐主体版 v1.5.6 的工程流程能力：新增 `templates/engineering-design.template.md`、`templates/development-plan.template.md`、`docs/OFFICIAL_DOCS_GATE.md`、Progress Ledger、Blocked Report、版本化设计规则和工程文档自测。Lite 边界不变：Codex 实现和决策，Opus/Claude 只审查评分，不引入 Gemini tester。
+1. Codex owns planning, authorization, real file changes, real command execution, RAG writes, and final decisions.
+2. Use visible Codex Custom Agents for non-trivial tasks when the current thread exposes subagent tools.
+3. Close every completed subagent after consuming its result.
+4. Use RAG as local project memory, not as an authority. Filter retrieved snippets before using them in plans, reviews, tests, or final decisions.
+5. Do not write secrets, private logs, production data, or unverified guesses to trusted RAG.
+6. For non-trivial tasks, use the engineering gate: design, development plan, Codex reviewer plan-review, implementation, diff-review when needed, real verification, final review.
+7. For simple tasks, use a small-task bypass and state the reason.
 
-Lite 版原则：
+## User Entry Points
 
-1. Codex 始终是主控，负责方案、授权、文件修改、命令执行、测试结果判断、RAG 写入和最终决策。
-2. Opus/Claude 是外部 reviewer/scorer，负责 plan-review、diff-review、test-review、final-review，只提供审查 findings、风险判断、评分、must-fix items 和建议动作。涉及这些阶段时，创建 Opus Reviewer 子智能体的 spawn message 必须写明：必须调用 `multi_model_reviewer_score` 或 `multi_model_reviewer_findings`，不得自己直接审查评分。
-3. 不使用 Gemini tester 环节；真实测试由 Codex 本地执行。
-4. 外部模型不直接写 RAG，不直接决定接受/拒绝。
-5. RAG 是 Codex 主控的本地项目记忆库；检索结果必须由 Codex 筛选后再进入上下文。
-6. 非简单任务若当前线程有可见子智能体工具，应优先使用 Lite Custom Agents；子智能体完成后必须关闭以释放并发槽位。`opus-reviewer` 工具、key 或输入证据不足时必须输出阻塞或降级报告，不能伪造外部审查。
-7. 长任务使用工程模板维护设计、计划、Progress Ledger、Verification Log 和 Opus Gate Log；涉及第三方行为或外部事实时执行 `docs/OFFICIAL_DOCS_GATE.md`。
+Most users only need:
 
-## 工具
+- `docs/INSTALL_PROMPT.md`
+- `docs/START_PROMPT.md`
+- `docs/RELEASE_PROMPT.md`
 
-- `multi_model_reviewer_findings`：让 Opus/Claude 审查方案、diff 或结果，返回证据绑定 findings。
-- `multi_model_reviewer_score`：让 Opus/Claude 对 `plan`、`diff`、`test` 或 `final` 闸门给出 0-100 总分、分项评分、阻塞问题、must-fix items、`approved_to_continue` 和 Codex 下一步动作。
-- `multi_model_coder_patch`：可选补丁建议，不直接写文件。
-- `multi_model_coder_workspace_edit`：保留受控 workspace edit 能力，但 Lite 默认不作为主流程。
-- `multi_model_role_call`：调用 custom 或指定外部模型角色。
-- `multi_model_config_status`：查看角色配置，不打印 API key。
-- `multi_model_rag_status` / `multi_model_rag_search` / `multi_model_rag_get` / `multi_model_rag_note` / `multi_model_rag_ingest`：本地项目记忆库工具。
+Supporting docs:
 
-## 默认流程
+- `docs/CUSTOM_AGENTS.md`
+- `docs/ENGINEERING_GATE.md`
+- `docs/OFFICIAL_DOCS_GATE.md`
+- `docs/RAG.md`
 
-1. 调用 `multi_model_config_status`，确认 reviewer/scorer 的 Opus/Claude 配置可用。
-2. 调用 `multi_model_rag_status`。非简单任务先用 `multi_model_rag_search` 检索项目记忆。
-3. 非简单任务正式编码前，Codex 必须产出工程设计和开发计划；长任务使用 `templates/engineering-design.template.md` 和 `templates/development-plan.template.md`，并维护 Progress Ledger。创建 Opus Reviewer 子智能体，并在 spawn message 中声明必须调用 `multi_model_reviewer_score` 做 `review_stage: "plan"` 审查。存在阻断项、must-fix items 或 `approved_to_continue: false` 时，必须先修计划并复审。
-4. Codex 按批准计划执行必要文件修改或命令；重要步骤后做 diff 检查，高风险或非平凡改动调用 `review_stage: "diff"`。
-5. 真实测试完成后，把 command、exit code、stdout、stderr 和变更摘要作为 `test_evidence` 传给 `review_stage: "test"`。
-6. Codex 根据评分、findings、must-fix items 和真实测试结果决定接受、继续修改或回退。
-7. 任务结束后，只把已验证结论写入 RAG。
+## MCP Tools
 
-## 边界
+- `multi_model_config_status`
+- `multi_model_rag_status`
+- `multi_model_rag_ingest`
+- `multi_model_rag_note`
+- `multi_model_rag_search`
+- `multi_model_rag_get`
 
-- 不要调用 `multi_model_tester_plan`；Lite 版不暴露 Gemini tester 工具。
-- 不要把 Opus/Claude 的评分当作最终结论。
-- 不要在工程闸门未通过时进入正式编码，除非用户明确批准降级为 Codex-only 审查。
-- 不要把未验证的外部模型输出写入 trusted RAG。
-- 不要向外部模型发送 `.env`、API key、生产数据或无关仓库内容。
-- 不要让已完成子智能体继续占用并发槽位。
+No external model execution tools are part of the default Codex-only MCP surface.
+
+## Default Custom Agents
+
+- `codex-coder`: implementation inside approved scope.
+- `codex-reviewer`: read-only plan, diff, test, and final review.
+- `codex-tester`: test strategy and log analysis from provided evidence.
+- `test-runner`: approved local command execution and command evidence capture.
+- `rag-curator`: candidate memory entry preparation.
+- `security-auditor`: read-only secret, path, release, and prompt-injection audit.
+
+## Default Startup
+
+1. Call `multi_model_config_status`.
+2. Call `multi_model_rag_status`.
+3. For non-trivial tasks, search RAG for relevant conventions, prior bugs, commands, decisions, and risks.
+4. Use `docs/START_PROMPT.md` as the task workflow.
+5. At the end, write only verified, reusable knowledge with `multi_model_rag_note` or ingest authorized docs with `multi_model_rag_ingest`.

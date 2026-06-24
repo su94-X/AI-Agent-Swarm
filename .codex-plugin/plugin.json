@@ -1,7 +1,7 @@
 {
   "name": "multi-model-agents",
-  "version": "1.5.6-lite.1",
-  "description": "AI Agent Swarm Lite 1.5.6-lite.1 adds engineering templates, official evidence gates, progress ledgers, and blocked reports.",
+  "version": "1.5.6-codex.1",
+  "description": "AI Agent Swarm Codex-only 1.5.6-codex.1 keeps Codex Custom Agents and local RAG while removing default external model workflows.",
   "author": {
     "name": "Su94"
   },
@@ -9,35 +9,31 @@
   "keywords": [
     "mcp",
     "agents",
-    "multi-model",
-    "code-review",
-    "review-scoring",
+    "codex",
+    "codex-only",
+    "custom-agents",
     "rag",
     "memory",
     "subagents",
     "ai-agent-swarm",
-    "swarm",
-    "opus",
-    "claude",
-    "lite"
+    "swarm"
   ],
   "skills": "./skills/",
   "interface": {
-    "displayName": "AI Agent Swarm Lite",
-    "shortDescription": "AI Agent Swarm Lite 1.5.6-lite.1: engineering templates, official evidence gates, ledgers, and Opus review scoring.",
-    "longDescription": "AI Agent Swarm Lite 1.5.6-lite.1 is the simplified branch of AI Agent Swarm. Codex keeps planning, authorization, real file changes, real command execution, local project memory, and final decisions. Opus/Claude acts as an external reviewer/scorer for plan-review, diff-review, test-review, and final-review through the opus-reviewer Custom Agent calling multi_model_reviewer_score or multi_model_reviewer_findings. The Gemini tester workflow is intentionally removed. This release aligns Lite with the main v1.5.6 engineering workflow by adding engineering design and development plan templates, an official documentation evidence gate, Progress Ledger, Blocked Report, and stronger documentation self-tests while preserving Lite's shorter Codex-led workflow.",
+    "displayName": "AI Agent Swarm Codex-only",
+    "shortDescription": "Codex-only agent workflow with Custom Agents, engineering gates, and local RAG memory.",
+    "longDescription": "AI Agent Swarm Codex-only is a Codex-led branch of AI Agent Swarm. Codex and Codex Custom Agents handle planning, implementation, review, test strategy, command execution, RAG curation, and final decisions. The MCP server exposes only local configuration status and RAG tools by default, with no external model tool surface or provider key requirement.",
     "developerName": "Su94",
     "category": "Productivity",
     "capabilities": [
       "MCP tools",
-      "engineering gate review",
-      "code review",
+      "Codex Custom Agents",
+      "engineering gates",
       "local project memory",
-      "visible subagent workflow",
-      "Codex Custom Agents"
+      "visible subagent workflow"
     ],
     "defaultPrompt": [
-      "Use AI Agent Swarm Lite for this task: Codex remains the orchestrator and final decision maker; Opus/Claude may be used for engineering gate review and scoring."
+      "Use AI Agent Swarm Codex-only for this task: Codex remains the orchestrator and may delegate to Codex Custom Agents while using local RAG memory."
     ],
     "brandColor": "#38BDF8",
     "composerIcon": "./assets/ai-agent-swarm-icon.png",

@@ -1,54 +1,54 @@
-# 官方 Custom Agents 模板（Lite）
+# Codex Custom Agents
 
-AI Agent Swarm Lite V1.5.0-lite.1 起随包提供官方 Codex Custom Agent 模板：
+Codex-only 版随包提供官方 Custom Agent 模板：
 
 ```text
 .codex/agents/
-  opus-reviewer.toml
+  codex-coder.toml
+  codex-reviewer.toml
+  codex-tester.toml
   test-runner.toml
   rag-curator.toml
   security-auditor.toml
 ```
 
-Lite 版不包含 Gemini tester 工作流，也不默认让 Opus/Claude 编码。Codex 仍是主控，Opus/Claude 主要做外部审查和评分。
+这些文件需要位于当前项目 `.codex/agents/` 或用户级 `~/.codex/agents/` 才会被 Codex 加载。
 
-V1.5.6-lite.1 起，非简单任务还应配合工程模板和官方证据闸门使用：`templates/engineering-design.template.md`、`templates/development-plan.template.md` 和 `docs/OFFICIAL_DOCS_GATE.md`。`opus-reviewer` 做 plan-review 时应检查这些文档是否包含 Progress Ledger、Verification Log、Opus Gate Log 和必要的外部证据。
+项目级模板路径可以写成 `.codex/agents/*.toml`，用户级模板路径可以写成 `~/.codex/agents/*.toml`。
 
-## 三层关系
+## 角色
 
-| 层 | 文件/入口 | 作用 |
+| Agent | 权限 | 用途 |
 | --- | --- | --- |
-| Custom Agent | `.codex/agents/*.toml` 或 `~/.codex/agents/*.toml` | 定义可被 Codex spawn 的可见子智能体角色。 |
-| Skill | `skills/multi-model-agents/SKILL.md` | 定义 Lite 工作流、工程闸门和角色边界。 |
-| MCP | `.mcp.json` + `scripts/multi-model-agents-mcp.mjs` | 提供 Opus/Claude reviewer/scorer、RAG、workspace 兼容工具。 |
-| Plugin | `.codex-plugin/plugin.json` | 打包分发 Skill、MCP、文档、脚本和模板。 |
+| `codex-coder` | workspace-write | 按批准计划实现代码或文档改动 |
+| `codex-reviewer` | read-only | plan-review、diff-review、test-review、final-review |
+| `codex-tester` | read-only | 设计测试策略、分析已提供日志 |
+| `test-runner` | workspace-write | 运行主控批准的真实命令并记录证据 |
+| `rag-curator` | read-only | 整理可写入 RAG 的候选知识 |
+| `security-auditor` | read-only | 检查密钥、路径、发布包和注入风险 |
 
-## 加载位置
+## 使用规则
 
-Codex 只会从当前受信项目或用户级配置读取 Custom Agent：
+- Main Orchestrator 负责创建、授权、汇总和最终决策。
+- 子智能体不得创建嵌套子智能体。
+- 子智能体完成后必须关闭，避免持续占用并发槽位。
+- 在支持对应能力的客户端里，主控应调用 `close_agent` 或等价能力释放槽位。
+- `rag-curator` 只整理候选条目，最终写入仍由 Main Orchestrator 调用 RAG 工具。
+- `test-runner` 只运行批准命令，不设计测试策略，不做最终验收。
+- `codex-reviewer` 只审查，不改代码，不运行测试，不做最终决定。
+
+## Spawn Message 建议
+
+创建子智能体时，主控应明确：
+
+- 任务目标。
+- 允许读取或修改的文件范围。
+- 禁止事项。
+- 预期输出格式。
+- 完成后必须提醒主控关闭该子智能体。
+
+示例：
 
 ```text
-项目级：<你的项目>/.codex/agents/*.toml
-用户级：~/.codex/agents/*.toml
-Windows 用户级：C:\Users\<你的用户名>\.codex\agents\*.toml
+请作为 codex-reviewer 做 diff-review。只读审查当前 diff，重点检查正确性、回归风险、安全边界、无关改动和缺失测试。不要改文件，不要运行命令。输出 verdict、blocking_findings、must_fix_items、recommended_codex_actions 和 residual_risks。完成后提醒我关闭本子智能体。
 ```
-
-插件安装后，模板会随发布包存在，但不应宣传为“自动全局创建子智能体”。如果你希望某个开发项目默认使用这些角色，请把本插件的 `.codex/agents/` 复制到该项目根目录，或复制到用户级 `~/.codex/agents/`。
-
-## Lite 角色
-
-| Agent | 权限建议 | 职责 |
-| --- | --- | --- |
-| `opus-reviewer` | `read-only` | Codex 可见壳子，必须调用 Opus/Claude reviewer/scorer MCP 工具做 plan-review、diff-review、test-review 和 final-review；不得自己直接审查评分。 |
-| `test-runner` | `workspace-write` | 只运行主控批准的本地命令，记录 command、exit code、stdout、stderr。 |
-| `rag-curator` | `read-only` | 整理可写入 RAG 的候选知识，最终写入由主控决定。 |
-| `security-auditor` | `read-only` | 审计密钥泄漏、路径边界、发布包和 prompt injection surface。 |
-
-所有子智能体完成后，Main Orchestrator 必须调用 `close_agent` 或等价能力关闭，释放并发槽位。
-
-## 创建时的执行合同
-
-`.codex/agents/*.toml` 是角色底座，但每次 `spawn_agent` 的任务消息仍然必须写清本次执行合同。Lite 版尤其要避免 `opus-reviewer` 被创建后直接用 Codex 自己做审查评分。
-
-- 创建 `opus-reviewer` 时，Main Orchestrator 必须在 spawn message 中写明：你是 Codex 可见壳子，不是 Opus/Claude 本体；必须调用 `multi_model_reviewer_score` 或 `multi_model_reviewer_findings`；不得自己直接审查评分；工具、key 或输入证据不足时输出阻塞或降级报告。
-- 子智能体完成任务并返回结果后，Main Orchestrator 必须调用 `close_agent` 或等价能力关闭它，释放并发槽位。

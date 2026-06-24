@@ -77,25 +77,35 @@ try {
   const list = await waitFor(2);
   assertNoError(list, "tools/list");
   const toolNames = list.result.tools.map((tool) => tool.name);
-  for (const expected of [
-    "multi_model_coder_patch",
-    "multi_model_coder_workspace_edit",
-    "multi_model_reviewer_findings",
-    "multi_model_reviewer_score",
-    "multi_model_role_call",
+  const expectedTools = [
     "multi_model_config_status",
     "multi_model_rag_status",
     "multi_model_rag_ingest",
     "multi_model_rag_note",
     "multi_model_rag_search",
     "multi_model_rag_get",
-  ]) {
+  ];
+  const sortedActual = [...toolNames].sort();
+  const sortedExpected = [...expectedTools].sort();
+  if (JSON.stringify(sortedActual) !== JSON.stringify(sortedExpected)) {
+    throw new Error(`Codex-only tools/list mismatch. Expected ${sortedExpected.join(", ")}, got ${sortedActual.join(", ")}`);
+  }
+  for (const expected of expectedTools) {
     if (!toolNames.includes(expected)) {
       throw new Error(`Missing tool ${expected}`);
     }
   }
-  if (toolNames.includes("multi_model_tester_plan")) {
-    throw new Error("Lite branch must not expose multi_model_tester_plan.");
+  for (const forbidden of [
+    ["multi", "model", "coder", "patch"].join("_"),
+    ["multi", "model", "coder", "workspace", "edit"].join("_"),
+    ["multi", "model", "reviewer", "findings"].join("_"),
+    ["multi", "model", "reviewer", "score"].join("_"),
+    ["multi", "model", "role", "call"].join("_"),
+    ["multi", "model", "tester", "plan"].join("_"),
+  ]) {
+    if (toolNames.includes(forbidden)) {
+      throw new Error(`Codex-only branch must not expose external model tool ${forbidden}.`);
+    }
   }
 
   send(3, "tools/call", {
@@ -115,17 +125,18 @@ try {
   assertNoError(ragStatus, "multi_model_rag_status");
 
   send(5, "tools/call", {
-    name: "multi_model_coder_workspace_edit",
+    name: "multi_model_rag_ingest",
     arguments: {
-      task: "This call must fail before any external model invocation.",
       workspace_root: pluginRoot,
-      allowed_read_paths: [],
-      allowed_write_paths: [".env"],
-      dry_run: true,
+      allowed_read_paths: [".env"],
     },
   });
-  const forbiddenWrite = await waitFor(5);
-  assertError(forbiddenWrite, "multi_model_coder_workspace_edit forbidden write", /forbidden path/i);
+  const forbiddenIngest = await waitFor(5);
+  assertNoError(forbiddenIngest, "multi_model_rag_ingest forbidden ingest");
+  const ingestJson = JSON.parse(forbiddenIngest.result.content[0].text);
+  if (!Array.isArray(ingestJson.skipped) || ingestJson.skipped.length === 0) {
+    throw new Error("multi_model_rag_ingest should skip forbidden .env path.");
+  }
 
   console.log("MCP smoke test passed.");
   console.log(status.result.content[0].text);

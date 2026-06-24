@@ -8,28 +8,66 @@ const pluginRoot = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const outputDir = resolve(process.argv[2] || join(pluginRoot, "..", "..", "outputs"));
 const manifest = readManifest();
 const version = manifest.version;
-const packageName = "ai-agent-swarm-lite";
-const releaseNotePath = `docs/releases/GITHUB_RELEASE_LITE_${version}.md`;
+const packageName = "ai-agent-swarm-codex";
+const releaseNotePath = `docs/releases/GITHUB_RELEASE_CODEX_${version}.md`;
 const zipPath = join(outputDir, `${packageName}-${version}.zip`);
 const stageRoot = join(outputDir, `.${packageName}-${version}-stage`);
 
-const includeRoots = [
-  ".codex-plugin",
-  ".codex/agents",
-  "assets",
-  "docs",
-  "lib",
-  "scripts",
-  "skills",
-  "templates",
+const releaseFiles = [
+  ".codex-plugin/plugin.json",
+  ".codex/agents/codex-coder.toml",
+  ".codex/agents/codex-reviewer.toml",
+  ".codex/agents/codex-tester.toml",
+  ".codex/agents/test-runner.toml",
+  ".codex/agents/rag-curator.toml",
+  ".codex/agents/security-auditor.toml",
   ".env.example",
   ".mcp.json",
+  "README.md",
   "CHANGELOG.md",
   "CONTRIBUTING.md",
   "LICENSE",
   "NOTICE",
-  "README.md",
   "SECURITY.md",
+  "assets/ai-agent-swarm-icon.png",
+  "docs/README.md",
+  "docs/CUSTOM_AGENTS.md",
+  "docs/ENGINEERING_GATE.md",
+  "docs/ENVIRONMENT.md",
+  "docs/INSTALL_PROMPT.md",
+  "docs/OFFICIAL_DOCS_GATE.md",
+  "docs/RAG.md",
+  "docs/RELEASE_PROMPT.md",
+  "docs/ROADMAP.md",
+  "docs/START_PROMPT.md",
+  "docs/SUBAGENT_WORKFLOW.md",
+  "docs/roles/CODER_SUBAGENT_PROMPT.md",
+  "docs/roles/REVIEWER_SUBAGENT_PROMPT.md",
+  "docs/roles/RAG_CURATOR_SUBAGENT_PROMPT.md",
+  releaseNotePath,
+  "lib/mcp.mjs",
+  "lib/rag-metadata.mjs",
+  "lib/rag.mjs",
+  "lib/rag-security.mjs",
+  "lib/rag-text.mjs",
+  "lib/redaction.mjs",
+  "lib/workspace.mjs",
+  "scripts/codex-only-self-test.mjs",
+  "scripts/custom-agents-self-test.mjs",
+  "scripts/engineering-gate-docs-self-test.mjs",
+  "scripts/mcp-smoke-test.mjs",
+  "scripts/multi-model-agents-mcp.mjs",
+  "scripts/package-release.mjs",
+  "scripts/rag-metadata-self-test.mjs",
+  "scripts/rag-security-self-test.mjs",
+  "scripts/rag-self-test.mjs",
+  "scripts/rag-text-self-test.mjs",
+  "scripts/sync-github-release.mjs",
+  "skills/multi-model-agents/SKILL.md",
+  "skills/multi-model-agents/agents/openai.yaml",
+  "skills/multi-model-agents/assets/ai-agent-swarm-icon.png",
+  "templates/engineering-design.template.md",
+  "templates/development-plan.template.md",
 ];
 
 const forbiddenEntries = [
@@ -64,12 +102,12 @@ function main() {
   rmSync(stageRoot, { recursive: true, force: true });
   mkdirSync(stageRoot, { recursive: true });
 
-  for (const entry of includeRoots) {
-    const source = join(pluginRoot, entry);
+  for (const entry of releaseFiles) {
+    const source = join(pluginRoot, ...entry.split("/"));
     if (!existsSync(source)) {
       throw new Error(`Required release entry missing: ${entry}`);
     }
-    copyIncluded(source, join(stageRoot, entry));
+    copyIncluded(source, join(stageRoot, ...entry.split("/")));
   }
 
   validateStage();
@@ -105,84 +143,19 @@ function validateSource() {
 
 function validateStage() {
   const files = listFiles(stageRoot);
+  const staged = files.map((file) => toPosix(relative(stageRoot, file))).sort();
+  const expected = [...releaseFiles].sort();
+  if (JSON.stringify(staged) !== JSON.stringify(expected)) {
+    const missing = expected.filter((item) => !staged.includes(item));
+    const extra = staged.filter((item) => !expected.includes(item));
+    throw new Error(`Release file list mismatch. Missing: ${missing.join(", ") || "none"}. Extra: ${extra.join(", ") || "none"}.`);
+  }
   for (const file of files) {
     const rel = toPosix(relative(stageRoot, file));
     assertSafeReleasePath(rel);
+    assertCodexOnlyContent(rel, readFileSync(file));
     if (rel === ".env") {
       throw new Error("Release package must not contain .env.");
-    }
-  }
-  const required = [
-    ".codex-plugin/plugin.json",
-    ".codex/agents/opus-reviewer.toml",
-    ".codex/agents/test-runner.toml",
-    ".codex/agents/rag-curator.toml",
-    ".codex/agents/security-auditor.toml",
-    ".mcp.json",
-    ".env.example",
-    "README.md",
-    "CHANGELOG.md",
-    "CONTRIBUTING.md",
-    "LICENSE",
-    "NOTICE",
-    "SECURITY.md",
-    "docs/README.md",
-    "docs/CUSTOM_AGENTS.md",
-    "docs/INSTALL_PROMPT.md",
-    "docs/START_PROMPT.md",
-    "docs/RELEASE_PROMPT.md",
-    "docs/ENGINEERING_GATE.md",
-    "docs/OFFICIAL_DOCS_GATE.md",
-    releaseNotePath,
-    "docs/RAG.md",
-    "docs/ROADMAP.md",
-    "docs/legacy/PACKAGE_INSTALL_PROMPT.md",
-    "docs/legacy/FIRST_INSTALL_PROMPT.md",
-    "docs/legacy/STARTUP_PROMPT.md",
-    "docs/legacy/PROJECT_START_PROMPT.md",
-    "docs/legacy/SUBAGENT_START_PROMPT.md",
-    "docs/legacy/EXISTING_PROJECT_HANDOFF_PROMPT.md",
-    "docs/legacy/NEW_PROJECT_BOOTSTRAP_PROMPT.md",
-    "docs/roles/CODER_SUBAGENT_PROMPT.md",
-    "docs/roles/REVIEWER_SUBAGENT_PROMPT.md",
-    "docs/roles/RAG_CURATOR_SUBAGENT_PROMPT.md",
-    "lib/mcp.mjs",
-    "lib/model.mjs",
-    "lib/rag-metadata.mjs",
-    "lib/rag.mjs",
-    "lib/rag-security.mjs",
-    "lib/rag-text.mjs",
-    "lib/redaction.mjs",
-    "lib/workspace-edit-flow.mjs",
-    "lib/workspace.mjs",
-    "scripts/multi-model-agents-mcp.mjs",
-    "scripts/mcp-smoke-test.mjs",
-    "scripts/rag-self-test.mjs",
-    "scripts/rag-metadata-self-test.mjs",
-    "scripts/rag-security-self-test.mjs",
-    "scripts/rag-text-self-test.mjs",
-    "scripts/http-retry-self-test.mjs",
-    "scripts/streaming-default-self-test.mjs",
-    "scripts/model-secret-self-test.mjs",
-    "scripts/custom-agents-self-test.mjs",
-    "scripts/engineering-gate-docs-self-test.mjs",
-    "scripts/reviewer-score-self-test.mjs",
-    "scripts/sync-github-release.mjs",
-    "scripts/workspace-edit-json-self-test.mjs",
-    "scripts/workspace-edit-malformed-repair-self-test.mjs",
-    "scripts/workspace-edit-result-self-test.mjs",
-    "scripts/workspace-edit-repair-self-test.mjs",
-    "scripts/package-release.mjs",
-    "skills/multi-model-agents/SKILL.md",
-    "skills/multi-model-agents/agents/openai.yaml",
-    "templates/engineering-design.template.md",
-    "templates/development-plan.template.md",
-    "assets/ai-agent-swarm-icon.png",
-    "skills/multi-model-agents/assets/ai-agent-swarm-icon.png",
-  ];
-  for (const rel of required) {
-    if (!existsSync(join(stageRoot, ...rel.split("/")))) {
-      throw new Error(`Release package missing required file: ${rel}`);
     }
   }
 }
@@ -197,6 +170,8 @@ function validateZip(path) {
       throw new Error(`Zip entry must use forward slashes, found: ${entry.name}`);
     }
     assertSafeReleasePath(toPosix(entry.name));
+    const data = extractZipStoredFile(zip, entry.name);
+    assertCodexOnlyContent(entry.name, data);
   }
   const manifestText = extractZipStoredFile(zip, ".codex-plugin/plugin.json").toString("utf8");
   const manifest = JSON.parse(manifestText);
@@ -302,6 +277,53 @@ function assertSafeReleaseContent(relPath, data) {
   if (/(^|\n)\s*"origin"\s*:\s*"codex_verified_note"/.test(text) && !relPath.startsWith("scripts/")) {
     throw new Error(`Release file appears to contain exported RAG data: ${relPath}`);
   }
+}
+
+function assertCodexOnlyContent(relPath, data) {
+  if (!shouldScanText(relPath, data)) {
+    return;
+  }
+  if (isAllowedCodexOnlyException(relPath)) {
+    return;
+  }
+  const text = data.toString("utf8");
+  const forbidden = [
+    ["AI Agent Swarm", ["Li", "te"].join("")].join(" "),
+    [["li", "te"].join(""), ["op", "us"].join(""), "review"].join("-"),
+    ["ai", "agent", "swarm", ["li", "te"].join("")].join("-"),
+    ["GITHUB", "RELEASE", ["LI", "TE"].join(""), ""].join("_"),
+    ["docs", "legacy"].join("/"),
+    ["opus", "reviewer"].join("-"),
+    [["Op", "us"].join(""), ["Clau", "de"].join("")].join("/"),
+    [["Gem", "ini"].join(""), "tester"].join(" "),
+    [["ANTH", "ROPIC"].join(""), "API", "KEY"].join("_"),
+    [["GEM", "INI"].join(""), "API", "KEY"].join("_"),
+    ["EXTERNAL", "MODEL", "API", "KEY"].join("_"),
+    ["multi", "model", "coder", "patch"].join("_"),
+    ["multi", "model", "coder", "workspace", "edit"].join("_"),
+    ["multi", "model", "reviewer", "findings"].join("_"),
+    ["multi", "model", "reviewer", "score"].join("_"),
+    ["multi", "model", "role", "call"].join("_"),
+    ["multi", "model", "tester", "plan"].join("_"),
+    ["workspace", "edit"].join("-"),
+    ["workspace", "edit", "compatibility"].join(" "),
+  ];
+  const found = forbidden.filter((snippet) => text.includes(snippet));
+  if (found.length) {
+    throw new Error(`Codex-only release file contains forbidden text (${found.join(", ")}): ${relPath}`);
+  }
+  if (new RegExp(`\\b(${[["Op", "us"].join(""), ["Clau", "de"].join(""), ["Gem", "ini"].join("")].join("|")})\\b`).test(text)) {
+    throw new Error(`Codex-only release file contains external model wording: ${relPath}`);
+  }
+}
+
+function isAllowedCodexOnlyException(relPath) {
+  return [
+    "scripts/package-release.mjs",
+    "scripts/codex-only-self-test.mjs",
+    "lib/redaction.mjs",
+    "lib/rag-security.mjs",
+  ].includes(toPosix(relPath));
 }
 
 function shouldScanText(relPath, data) {

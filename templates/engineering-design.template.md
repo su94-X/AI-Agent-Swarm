@@ -5,62 +5,46 @@ Slug:
 Version: v0.1
 Status: draft
 Last updated:
-Opus plan-review:
+Codex reviewer plan-review:
 
-> Use this template for `docs/engineering/<task-slug>-engineering-design.md`.
-> Keep the header fields current so Codex and Opus/Claude can resume work after context compaction.
-> Lite boundary: Codex implements and decides; Opus/Claude reviews and scores only.
+> Keep this header current so Codex can recover after context compaction.
 
-## Objective
+## Problem
 
-## Non-goals
+## Goals
 
-## Current System Findings
+## Non-Goals
 
-| Evidence | Path or source | Notes |
-| --- | --- | --- |
-| | | |
+## Current System
 
 ## Proposed Design
 
-## Data and Control Flow
+## Codex-only Role Boundary
 
-## Interfaces, Schemas, APIs, Config, and Migrations
+- Main Orchestrator:
+- codex-coder:
+- codex-reviewer:
+- codex-tester:
+- test-runner:
+- rag-curator:
+- security-auditor:
 
 ## External Evidence and Official Docs
 
-| Dependency/Surface | Version/Target | Claim or usage rule | Official source | Checked date | Applies to plan step | Stale trigger | Confidence |
+| Dependency/Surface | Version/Target | Claim | Official source | Checked date | Applies to step | Stale trigger | Confidence |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| | | | | | | | |
 
-## Lite Role Boundary
-
-- Codex Main Orchestrator:
-- Opus/Claude Reviewer & Scorer:
-- Codex-owned Test Runner:
-- Codex-owned RAG Curator:
-- Codex-owned Security Auditor:
-
-## Risks
-
-## Rollback Strategy
-
-## Observability
+## Security and Data Boundaries
 
 ## Test Strategy
 
-## Security, Secrets, Privacy, and Destructive Boundaries
+## Rollback Plan
 
-## Open Questions and Assumptions
+## Risks
 
-## Opus Suggestions
-
-### Accepted
-
-### Rejected
+## Reviewer Suggestions
 
 ## Version History
 
-| Date | Version | Summary | Opus result |
+| Date | Version | Summary | Reviewer result |
 | --- | --- | --- | --- |
-| | v0.1 | Initial draft | |

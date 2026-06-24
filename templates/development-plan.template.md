@@ -5,108 +5,75 @@ Slug:
 Version: v0.1
 Status: draft
 Last updated:
-Opus plan-review:
-
-> Use this template for `docs/engineering/<task-slug>-development-plan.md`.
-> Update it in place throughout implementation. It is the canonical progress source of truth.
-> Lite boundary: Codex implements and runs real tests; Opus/Claude reviews and scores plan, diff, test evidence, and final acceptance.
+Codex reviewer plan-review:
 
 ## Plan Rules
 
-- Each step must be small enough to preserve context detail and large enough to deliver visible progress.
-- Each step must include scope, expected files, acceptance criteria, verification, Opus gates, and external evidence.
-- Do not mark the task complete until all approved steps are done.
-- If scope, architecture, or acceptance criteria materially change, update the design, bump the version, and rerun Opus plan-review.
-- If a step is simple-task bypassed, record `small-task bypass: <reason>` and keep the diff small and reversible.
+- Keep steps small enough to review.
+- Update Progress Ledger after every important step.
+- Run Codex reviewer plan-review before coding.
+- Run diff-review for high-risk or non-trivial changes.
+- Record real command evidence before final acceptance.
+- If scope changes materially, update the design, bump the version, and rerun review.
 
 ## Steps
 
 ### Step 1
 
-Status: pending
-
 Scope:
-
-Expected files:
-
+Files:
 Acceptance:
-
 Verification:
-
-Opus gates:
-
+Reviewer gates:
 External evidence:
-
-Notes:
+Status: pending
 
 ### Step 2
 
-Status: pending
-
 Scope:
-
-Expected files:
-
+Files:
 Acceptance:
-
 Verification:
-
-Opus gates:
-
+Reviewer gates:
 External evidence:
-
-Notes:
+Status: pending
 
 ## Progress Ledger
 
-### Ledger Entry 1
-
+```text
 Step:
-
 Status: pending / in_progress / done / blocked
-
 Files:
-
 Acceptance:
-
 Verification:
-
-Opus gates:
-
+Reviewer gates:
 External evidence:
-
 Notes:
+```
 
 ## Verification Log
 
-| Command | Exit code | Result | Notes |
-| --- | --- | --- | --- |
-| | | | |
+| Command | Exit code | stdout | stderr | Notes |
+| --- | --- | --- | --- | --- |
 
-## Opus Gate Log
+## Reviewer Gate Log
 
-| Gate | Verdict | Required changes | Disposition |
-| --- | --- | --- | --- |
-| plan-review | | | |
+| Date | Gate | Result | Blocking items | Follow-up |
+| --- | --- | --- | --- | --- |
 
 ## Blocked Report
 
+```text
 Blocked reason:
-
 Evidence:
-
 Completed plan steps:
-
 Remaining plan steps:
-
 Options:
-
 Required human decision:
-
 estimated_resolution:
+```
 
 ## Version History
 
-| Date | Version | Summary | Opus result |
+| Date | Version | Summary | Reviewer result |
 | --- | --- | --- | --- |
-| | v0.1 | Initial draft | |

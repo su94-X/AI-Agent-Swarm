@@ -13,7 +13,7 @@ const files = {
   officialDocs: readText("docs/OFFICIAL_DOCS_GATE.md"),
   workflow: readText("docs/SUBAGENT_WORKFLOW.md"),
   reviewerPrompt: readText("docs/roles/REVIEWER_SUBAGENT_PROMPT.md"),
-  opusReviewerAgent: readText(".codex/agents/opus-reviewer.toml"),
+  reviewerAgent: readText(".codex/agents/codex-reviewer.toml"),
   designTemplate: readText("templates/engineering-design.template.md"),
   planTemplate: readText("templates/development-plan.template.md"),
 };
@@ -22,8 +22,8 @@ const manifest = JSON.parse(files.manifest);
 const mcp = JSON.parse(files.mcp);
 const nonAscii = [...files.manifest].filter((char) => char.charCodeAt(0) > 127).length;
 
-if (manifest.version !== "1.5.6-lite.1") {
-  throw new Error(`Expected Lite version 1.5.6-lite.1, found ${manifest.version}`);
+if (manifest.version !== "1.5.6-codex.1") {
+  throw new Error(`Expected Codex-only version 1.5.6-codex.1, found ${manifest.version}`);
 }
 if (nonAscii !== 0) {
   throw new Error(`plugin.json must be ASCII-only, found ${nonAscii} non-ASCII characters.`);
@@ -38,12 +38,9 @@ mustInclude(files.designTemplate, [
   "Slug:",
   "Version: v0.1",
   "Status: draft",
-  "Opus plan-review:",
+  "Codex reviewer plan-review:",
   "## External Evidence and Official Docs",
-  "## Lite Role Boundary",
-  "Codex-owned Test Runner",
-  "Codex-owned RAG Curator",
-  "Codex-owned Security Auditor",
+  "## Codex-only Role Boundary",
   "## Version History",
 ]);
 
@@ -52,26 +49,23 @@ mustInclude(files.planTemplate, [
   "Slug:",
   "Version: v0.1",
   "Status: draft",
-  "Opus plan-review:",
+  "Codex reviewer plan-review:",
   "## Plan Rules",
   "## Progress Ledger",
-  "Status: pending / in_progress / done / blocked",
+  "Reviewer gates:",
   "## Verification Log",
-  "## Opus Gate Log",
+  "## Reviewer Gate Log",
   "Blocked reason:",
   "Required human decision:",
   "estimated_resolution:",
-  "## Version History",
 ]);
 
 mustInclude(files.officialDocs, [
   "何时必须运行",
-  "何时允许跳过",
-  "证据记录格式",
+  "何时可以跳过",
+  "证据表格",
   "Dependency/Surface",
-  "查询路由",
-  "Lite 审查要求",
-  "禁止事项",
+  "Reviewer 检查",
 ]);
 
 mustInclude(files.gate, [
@@ -79,17 +73,13 @@ mustInclude(files.gate, [
   "docs/engineering/<task-slug>-development-plan.md",
   "templates/engineering-design.template.md",
   "templates/development-plan.template.md",
-  "小任务绕过标准",
   "small-task bypass: <reason>",
-  "Official Docs Evidence Gate",
+  "Official Docs",
   "Version Rules",
   "Progress Ledger",
   "Blocked Report",
-  "Blocked reason:",
   "Required human decision:",
   "estimated_resolution:",
-  "docs/OFFICIAL_DOCS_GATE.md",
-  "Lite 不使用 Gemini tester 工作流",
 ]);
 
 mustInclude(files.start, [
@@ -99,64 +89,25 @@ mustInclude(files.start, [
   "templates/engineering-design.template.md",
   "templates/development-plan.template.md",
   "docs/OFFICIAL_DOCS_GATE.md",
+  "codex-reviewer",
   "Progress Ledger",
-  "Blocked Report 格式",
-  "必须调用 `multi_model_reviewer_score`",
-  "不得自己直接审查评分",
-]);
-
-mustInclude(files.workflow, [
-  "Progress Ledger",
-  "如果上下文被压缩或线程恢复",
   "Blocked Report",
-  "Blocked reason:",
-  "Required human decision:",
-  "estimated_resolution:",
 ]);
 
-mustInclude(files.reviewerPrompt, [
-  "Progress Ledger",
-  "docs/OFFICIAL_DOCS_GATE.md",
-  "Blocked reason",
-  "Required human decision",
-  "estimated_resolution",
-  "不得自己直接审查评分",
-]);
+mustInclude(files.workflow, ["Progress Ledger", "Blocked Report", "codex-reviewer", "close"]);
+mustInclude(files.reviewerPrompt, ["verdict: pass / block", "approved_to_continue", "Blocked Report"]);
+mustInclude(files.reviewerAgent, ["plan-review", "diff-review", "test-review", "final-review", "approved_to_continue"]);
+mustInclude(files.docsReadme, ["OFFICIAL_DOCS_GATE.md", "templates/", "engineering-design.template.md", "development-plan.template.md"]);
+mustInclude(files.docsReadme, ["SUBAGENT_WORKFLOW.md"]);
+mustInclude(files.rootReadme, ["templates/engineering-design.template.md", "templates/development-plan.template.md", "1.5.6-codex.1"]);
+mustInclude(files.packageRelease, ["releaseFiles", "docs/OFFICIAL_DOCS_GATE.md", "scripts/engineering-gate-docs-self-test.mjs"]);
 
-mustInclude(files.opusReviewerAgent, [
-  "Progress Ledger",
-  "docs/OFFICIAL_DOCS_GATE.md",
-  "Blocked Report",
-  "Required human decision",
-  "estimated_resolution",
-  "不得自己直接审查评分",
-]);
-
-mustInclude(files.docsReadme, [
-  "OFFICIAL_DOCS_GATE.md",
-  "templates/",
-  "engineering-design.template.md",
-  "development-plan.template.md",
-]);
-
-mustInclude(files.rootReadme, [
-  "templates/engineering-design.template.md",
-  "templates/development-plan.template.md",
-  "docs/OFFICIAL_DOCS_GATE.md",
-  "1.5.6-lite.1",
-]);
-
-mustInclude(files.packageRelease, [
-  "\"templates\"",
-  "\"docs/OFFICIAL_DOCS_GATE.md\"",
-  "\"scripts/engineering-gate-docs-self-test.mjs\"",
-  "\"templates/engineering-design.template.md\"",
-  "\"templates/development-plan.template.md\"",
-]);
-
-mustNotInclude(files.designTemplate, ["multi_model_tester_plan", "Gemini tester", "primary coder"]);
-mustNotInclude(files.planTemplate, ["multi_model_tester_plan", "Gemini tester", "primary coder"]);
-mustNotInclude(files.officialDocs, ["multi_model_tester_plan", "Gemini tester", "primary coder"]);
+for (const [label, text] of Object.entries(files)) {
+  mustNotInclude(text, ["multi", "model", "tester", "plan"].join("_"), label);
+  mustNotInclude(text, ["multi", "model", "reviewer", "score"].join("_"), label);
+  mustNotInclude(text, [["Op", "us"].join(""), ["Clau", "de"].join("")].join("/"), label);
+  mustNotInclude(text, [["Gem", "ini"].join(""), "tester"].join(" "), label);
+}
 
 console.log("engineering gate docs self-test passed.");
 
@@ -172,10 +123,8 @@ function mustInclude(text, required) {
   }
 }
 
-function mustNotInclude(text, forbidden) {
-  for (const snippet of forbidden) {
-    if (text.includes(snippet)) {
-      throw new Error(`Found prohibited Lite engineering gate text: ${snippet}`);
-    }
+function mustNotInclude(text, snippet, label) {
+  if (text.includes(snippet)) {
+    throw new Error(`${label} contains prohibited engineering gate text: ${snippet}`);
   }
 }

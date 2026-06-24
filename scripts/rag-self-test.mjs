@@ -30,7 +30,7 @@ writeFileSync(
 );
 const fakeOpenAiKey = ["sk", "should-not-ingest-1234567890"].join("-");
 const fakeGitHubToken = ["ghp", "abcdefghijklmnopqrstuvwxyz123456"].join("_");
-writeFileSync(join(workspaceRoot, ".env"), `ANTHROPIC_API_KEY=${fakeOpenAiKey}\n`, "utf8");
+writeFileSync(join(workspaceRoot, ".env"), `LOCAL_TEST_SECRET=${fakeOpenAiKey}\n`, "utf8");
 writeFileSync(join(workspaceRoot, "secret.md"), `token = ${fakeGitHubToken}\n`, "utf8");
 
 const child = spawn(
