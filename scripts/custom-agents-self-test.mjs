@@ -20,6 +20,9 @@ const requiredAgents = [
       "allowed_read_paths",
       "allowed_write_paths",
       "plan-review",
+      "Progress Ledger",
+      "Required human decision:",
+      "estimated_resolution:",
     ],
   },
   {
@@ -112,6 +115,8 @@ for (const snippet of [
   "不得自己直接实现代码",
   "不得自己直接生成测试策略",
   "close_agent",
+  "Progress Ledger",
+  "estimated_resolution:",
 ]) {
   if (!workflow.includes(snippet)) {
     throw new Error(`docs/CUSTOM_AGENTS.md missing required snippet: ${snippet}`);

@@ -26,6 +26,9 @@ node scripts/rag-text-self-test.mjs
 node scripts/workspace-edit-json-self-test.mjs
 node scripts/workspace-edit-repair-self-test.mjs
 node scripts/tester-prompt-self-test.mjs
+node scripts/subagent-prompt-self-test.mjs
+node scripts/custom-agents-self-test.mjs
+node scripts/engineering-gate-docs-self-test.mjs
 node scripts/package-release.mjs C:\path\to\outputs
 ```
 

@@ -120,11 +120,12 @@ node scripts/http-retry-self-test.mjs
 node scripts/model-secret-self-test.mjs
 node scripts/workspace-edit-repair-self-test.mjs
 node scripts/subagent-prompt-self-test.mjs
+node scripts/engineering-gate-docs-self-test.mjs
 node scripts/api-smoke-test.mjs
 node scripts/rag-self-test.mjs
 ```
 
-`mcp-smoke-test.mjs`、`http-retry-self-test.mjs`、`model-secret-self-test.mjs`、`workspace-edit-repair-self-test.mjs`、`subagent-prompt-self-test.mjs` 和 `rag-self-test.mjs` 不调用外部模型。`http-retry-self-test.mjs` 和 `workspace-edit-repair-self-test.mjs` 只启动本地临时 HTTP server 验证重试或修复逻辑。`api-smoke-test.mjs` 会调用已配置的 coder、tester 和 custom 角色，只应在本地 key 配好后运行。
+`mcp-smoke-test.mjs`、`http-retry-self-test.mjs`、`model-secret-self-test.mjs`、`workspace-edit-repair-self-test.mjs`、`subagent-prompt-self-test.mjs`、`engineering-gate-docs-self-test.mjs` 和 `rag-self-test.mjs` 不调用外部模型。`http-retry-self-test.mjs` 和 `workspace-edit-repair-self-test.mjs` 只启动本地临时 HTTP server 验证重试或修复逻辑。`api-smoke-test.mjs` 会调用已配置的 coder、tester 和 custom 角色，只应在本地 key 配好后运行。
 
 ## GitHub Release Token
 
@@ -203,6 +204,7 @@ Set-Content -NoNewline -Path "$env:USERPROFILE\.codex\multi-model-agents\github-
 - `scripts/http-retry-self-test.mjs`
 - `scripts/model-secret-self-test.mjs`
 - `scripts/custom-agents-self-test.mjs`
+- `scripts/engineering-gate-docs-self-test.mjs`
 - `scripts/rag-self-test.mjs`
 - `scripts/rag-metadata-self-test.mjs`
 - `scripts/rag-security-self-test.mjs`

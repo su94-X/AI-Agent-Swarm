@@ -1,7 +1,7 @@
 interface:
   display_name: "AI Agent Swarm"
-  short_description: "AI Agent Swarm V1.5.5：workspace edit 坏格式修复增强，Codex 主控，工程闸门、官方 Custom Agents 和 MCP 调用合同。"
-  default_prompt: "使用 $multi-model-agents / AI Agent Swarm V1.5.5 协调 Opus 主编码、Gemini 测试分析、Codex 审查、工程闸门、本地项目记忆库（轻量 RAG）和官方 Custom Agent 模板。workspace edit 可修复 markdown/prose/diff/partial JSON 坏格式并返回写入内容预览，日常使用 docs/START_PROMPT.md。"
+  short_description: "AI Agent Swarm V1.5.6：工程模板、官方文档证据闸门、Progress Ledger、标准阻塞报告和 Custom Agents。"
+  default_prompt: "使用 $multi-model-agents / AI Agent Swarm V1.5.6 协调 Opus 主编码、Gemini 测试分析、Codex 审查、工程闸门、本地项目记忆库（轻量 RAG）和官方 Custom Agent 模板。非简单任务使用工程设计/开发计划模板、Official Docs Evidence Gate、Progress Ledger 和标准 Blocked Report，日常使用 docs/START_PROMPT.md。"
   icon_small: "./assets/ai-agent-swarm-icon.png"
   icon_large: "./assets/ai-agent-swarm-icon.png"
   brand_color: "#38BDF8"

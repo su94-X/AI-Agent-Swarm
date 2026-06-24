@@ -25,6 +25,11 @@ mustInclude(files.start, [
   "不得自己直接生成测试策略",
   "close_agent",
   "当前线程没有可见子智能体工具，降级为 Main Orchestrator 直接调用 MCP 工具",
+  "small-task bypass: <reason>",
+  "docs/OFFICIAL_DOCS_GATE.md",
+  "docs/engineering/<task-slug>-engineering-design.md",
+  "docs/engineering/<task-slug>-development-plan.md",
+  "estimated_resolution:",
 ]);
 
 mustInclude(files.skill, [
@@ -48,6 +53,10 @@ mustInclude(files.workflow, [
   "close_agent",
   "不得静默降级",
   "不得由 Main Orchestrator 静默独自完成非简单任务",
+  "Progress Ledger",
+  "Blocked Report",
+  "Required human decision:",
+  "estimated_resolution:",
 ]);
 
 mustInclude(files.install, [
@@ -69,6 +78,8 @@ mustInclude(readText("README.md"), [
   "不得自己直接实现代码",
   "不得自己直接生成测试策略",
   "close_agent",
+  "templates/engineering-design.template.md",
+  "docs/OFFICIAL_DOCS_GATE.md",
 ]);
 
 console.log("subagent prompt self-test passed.");

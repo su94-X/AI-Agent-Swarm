@@ -73,3 +73,32 @@ docs/START_PROMPT.md
 - 创建 `primary-coder` 时，Main Orchestrator 必须在 spawn message 中写明：你是 Codex 可见壳子，不是 Opus/Claude 本体；必须调用 `multi_model_coder_workspace_edit`；不得自己直接实现代码；工具、key 或授权边界不可用时输出阻塞报告。
 - 创建 `tester` 时，Main Orchestrator 必须在 spawn message 中写明：你是 Codex 可见壳子，不是 Gemini 本体；必须调用 `multi_model_tester_plan`；不得自己直接生成测试策略或失败分析；工具、key 或输入证据不足时输出阻塞或降级报告。
 - 子智能体完成任务并返回结果后，Main Orchestrator 必须调用 `close_agent` 或等价能力关闭它，释放并发槽位。
+
+## Progress Ledger 和阻塞报告
+
+`primary-coder` 执行非简单任务时，需要配合 Main Orchestrator 维护开发计划中的 Progress Ledger。每个重要步骤完成后，至少记录：
+
+```text
+Step:
+Status:
+Files:
+Acceptance:
+Verification:
+Opus gates:
+External evidence:
+Notes:
+```
+
+如果 development plan 文件不在 `allowed_write_paths` 内，`primary-coder` 不要扩大写入范围，而是把应更新的 Ledger 条目返回给 Main Orchestrator。
+
+当工具、key、授权边界或外部服务状态导致无法安全继续时，Custom Agent 应输出标准阻塞报告：
+
+```text
+Blocked reason:
+Evidence:
+Completed plan steps:
+Remaining plan steps:
+Options:
+Required human decision:
+estimated_resolution:
+```

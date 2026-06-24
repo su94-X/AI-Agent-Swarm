@@ -1,7 +1,7 @@
 {
   "name": "multi-model-agents",
-  "version": "1.5.5",
-  "description": "AI Agent Swarm V1.5.5 strengthens workspace edit repair for malformed Opus/Claude coder output.",
+  "version": "1.5.6",
+  "description": "AI Agent Swarm V1.5.6 adds engineering document templates, official-docs evidence gates, progress ledgers, and standardized blocked reports.",
   "author": {
     "name": "Su94"
   },
@@ -23,8 +23,8 @@
   "skills": "./skills/",
   "interface": {
     "displayName": "AI Agent Swarm",
-    "shortDescription": "AI Agent Swarm V1.5.5: stronger workspace edit repair for malformed Opus/Claude coder output.",
-    "longDescription": "AI Agent Swarm V1.5.5 is a local Codex multi-model orchestration plugin for long-running development. Codex keeps planning, authorization, real tests, review integration, RAG writes, and final decisions. Opus/Claude performs primary coding through the primary-coder Custom Agent calling multi_model_coder_workspace_edit. Gemini provides test strategy and failure-log analysis through the tester Custom Agent calling multi_model_tester_plan. This release strengthens workspace edit repair when coder output is malformed markdown, prose, unified diff, partial JSON, or JSON-like output with unsupported fields. Successful writes still return readback-verified and redacted written_files content previews, while dry runs return proposed_files previews.",
+    "shortDescription": "AI Agent Swarm V1.5.6: engineering templates, official-docs gates, Progress Ledger, and standardized blocked reports.",
+    "longDescription": "AI Agent Swarm V1.5.6 is a local Codex multi-model orchestration plugin for long-running development. Codex keeps planning, authorization, real tests, review integration, RAG writes, and final decisions. Opus/Claude performs primary coding through the primary-coder Custom Agent calling multi_model_coder_workspace_edit. Gemini provides test strategy and failure-log analysis through the tester Custom Agent calling multi_model_tester_plan. This release absorbs the core engineering-loop workflow: standardized engineering design and development plan templates, official documentation evidence gates, Progress Ledger recovery for long tasks and context compaction, versioned design rules, explicit small-task bypass rules, and standardized blocked reports.",
     "developerName": "Su94",
     "category": "Productivity",
     "capabilities": [

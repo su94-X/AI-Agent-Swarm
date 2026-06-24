@@ -16,6 +16,23 @@
 - 只读审查且用户明确不要求修改。
 - 不触碰文件的轻量文案建议。
 
+### 小任务绕过标准
+
+只有以下条件全部满足时，才允许绕过正式工程闸门：
+
+- 变更只落在一个小文件，或只是紧凑的文档、注释、提示词文字修订。
+- 不改变架构、API、schema、config、workflow、dependency、build、deployment、auth、security、persistence 或发布行为。
+- 不需要多步开发计划。
+- 预期 diff 很小、容易回退，且不需要复杂测试策略。
+
+绕过时，Codex 必须明确记录：
+
+```text
+small-task bypass: <reason>
+```
+
+如果拿不准是否属于小任务，默认按非简单任务处理。
+
 ## 设计闸门
 
 ### Gate 0：预检
@@ -36,6 +53,18 @@
 
 ### 设计文档要求
 
+非简单任务必须先创建这两个规范文档，作为唯一的工程源信息：
+
+- `docs/engineering/<task-slug>-engineering-design.md`
+- `docs/engineering/<task-slug>-development-plan.md`
+
+推荐直接从以下模板复制：
+
+- `templates/engineering-design.template.md`
+- `templates/development-plan.template.md`
+
+`<task-slug>` 建议使用 3 到 6 个词的小写短横线命名，整个任务生命周期保持不变。
+
 正式编码前，Codex 必须先产出工程设计文档或等价的任务设计段落，至少包含：
 
 - design_version：从 `v1` 开始；每次按 plan-review 修改后递增。
@@ -51,8 +80,12 @@
 - 实现方案和备选方案。
 - 风险、回退策略和验证方法。
 - 开发计划，拆分为大小适中的步骤，每步都有可验证结果。
+- External Evidence and Official Docs 表格。
+- Version History。
 
 Codex 随后必须调用 Opus/Claude 做 `plan-review`。主体版可通过 `multi_model_coder_patch` 或 `multi_model_role_call(role=custom/reviewer)` 获取外部第二意见；如果配置了外部 reviewer，也可使用 `multi_model_reviewer_findings`。plan-review 只审查设计和计划，不代表允许 Opus 立即开始编码。
+
+如果任务依赖第三方框架、插件、SDK、CLI、API、云服务或当前外部事实，必须先通过 `docs/OFFICIAL_DOCS_GATE.md` 中定义的证据闸门，并把证据记录进设计文档。
 
 如果 Opus/Claude 返回阻断问题、must-fix items 或明确要求修改，Codex 必须先修改设计文档和开发计划，再次提交 `plan-review`。只有满足以下条件后才能进入正式编码：
 
@@ -81,6 +114,15 @@ gate_exit_checklist 必须包含：
 - 退避建议为 2 秒、4 秒、8 秒。
 - 3 次失败后输出阻塞报告；不要自动跳过闸门。
 
+### Version Rules
+
+- 两个规范文档一律从 `v0.1` 开始。
+- 编码前，如果设计或计划发生实质性变化，递增 minor 版本，例如 `v0.1 -> v0.2`。
+- 只有当 Opus plan-review 不再有阻断项或必须修改项，且 Codex 也确认可执行时，才能把设计文档和开发计划提升到 `v1.0`。
+- 编码过程中，仅做说明性澄清、不改变 scope 的调整，递增 patch 版本，例如 `v1.0 -> v1.0.1`。
+- 如果 scope、架构、验收标准或 step 顺序在批准后发生实质变化，生成新的 minor 版本，例如 `v1.0 -> v1.1`，并重新跑 Opus plan-review。
+- 如果任务方向被替换，旧文档标记为 `superseded`，不要直接覆盖历史。
+
 ## 开发执行
 
 进入开发后，Codex 必须按批准计划自动推进，直到计划完成或遇到明确阻塞条件。未完成开发计划 100% 前，不得声明完成，不得跳过剩余步骤。
@@ -103,6 +145,23 @@ diff-review 自动触发条件：
 - Codex 判断回归风险不低。
 
 如果用户在执行中缩小或改变范围，Codex 必须生成 amended plan，递增 design_version，并说明未完成步骤是被用户批准移出范围。100% 完成要求适用于当前已批准的 amended plan。
+
+### Progress Ledger
+
+开发计划中必须维护一个 Progress Ledger。每个重要步骤完成后都要更新，至少包含：
+
+```text
+Step:
+Status: pending / in_progress / done / blocked
+Files:
+Acceptance:
+Verification:
+Opus gates:
+External evidence:
+Notes:
+```
+
+如果上下文被压缩、线程恢复或子智能体重开，必须从 Progress Ledger 恢复，不要凭记忆重新猜测上一步。
 
 ## 测试闸门
 
@@ -135,11 +194,16 @@ Codex 最终接受前必须同时满足：
 - 存在破坏性操作风险，需要用户明确授权。
 - 同一类格式修复、测试失败或模型调用失败连续出现 3 次仍无法自愈。某一操作类型成功完成后，该类型失败计数重置为 0。
 
-阻塞报告必须包含：
+阻塞报告必须使用以下格式：
 
-- 已完成步骤。
-- 当前阻塞点。
-- 已尝试的恢复动作。
-- 需要用户确认或提供的内容。
-- 建议的下一步。
-- estimated_resolution：具体什么动作能解除阻塞，以及大致工作量。
+```text
+Blocked reason:
+Evidence:
+Completed plan steps:
+Remaining plan steps:
+Options:
+Required human decision:
+estimated_resolution:
+```
+
+`estimated_resolution` 应说明具体什么动作能解除阻塞，以及大致工作量。

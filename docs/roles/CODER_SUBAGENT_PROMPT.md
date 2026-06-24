@@ -19,4 +19,15 @@
 11. 返回 Opus/Claude 产生的 changed_files、diff、tests、risks，并说明是否准备进入 review。
 12. 报告 changed_file_details.mode、变更行数、是否存在无关格式化/重排和 repairEvents。repairEvents 增多时，建议缩小任务、扩大 find/anchor 的唯一上下文，或退回完整文件模式。
 13. 完成任务并返回结果后，提醒 Main Orchestrator 关闭本子智能体以释放并发槽位。
+14. 如果 development plan 文件在 allowed_write_paths 内，每个重要实现步骤后同步更新 Progress Ledger，至少写 Step、Status、Files、Acceptance、Verification、Opus gates、External evidence 和 Notes。
+15. 如果 development plan 文件不在允许写入范围内，仍要把应写入的 Progress Ledger 条目明确返回给 Main Orchestrator。
+16. 如果上下文被压缩或线程恢复，先根据 Progress Ledger 恢复当前步骤，不要凭记忆重启整个实现。
+17. 只有在无法安全继续时才输出阻塞报告，格式必须为：
+    Blocked reason:
+    Evidence:
+    Completed plan steps:
+    Remaining plan steps:
+    Options:
+    Required human decision:
+    estimated_resolution:
 ```

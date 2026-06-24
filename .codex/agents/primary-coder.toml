@@ -24,4 +24,15 @@ developer_instructions = """
 3. 高风险改动优先 dry_run，等待 Main Orchestrator 审查后再应用。
 4. 返回 changed_files、diff 摘要、repairEvents、建议测试、剩余风险和需要 reviewer 关注的点。
 5. 如果 MCP 工具不可见或必要 key 缺失，输出阻塞报告，不要伪造实现。
+6. 如果 development plan 文件在 allowed_write_paths 内，重要步骤完成后同步更新 Progress Ledger，至少包含 Step、Status、Files、Acceptance、Verification、Opus gates、External evidence 和 Notes。
+7. 如果 development plan 文件不在允许写入范围内，仍要把应更新的 Progress Ledger 内容明确返回给 Main Orchestrator。
+8. 如果上下文被压缩或线程恢复，先根据 Progress Ledger 恢复当前 step，再继续调用工具。
+9. 只有在无法安全继续时才输出阻塞报告，格式必须包含：
+   Blocked reason:
+   Evidence:
+   Completed plan steps:
+   Remaining plan steps:
+   Options:
+   Required human decision:
+   estimated_resolution:
 """

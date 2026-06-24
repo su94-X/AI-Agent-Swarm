@@ -2,6 +2,22 @@
 
 All notable changes to AI Agent Swarm are documented here.
 
+## [1.5.6] - 2026-06-24
+
+### Added
+
+- Added standardized engineering document templates:
+  - `templates/engineering-design.template.md`
+  - `templates/development-plan.template.md`
+- Added `docs/OFFICIAL_DOCS_GATE.md` for official documentation and external evidence checks.
+- Added `scripts/engineering-gate-docs-self-test.mjs` to prevent regressions in templates, engineering gate docs, Progress Ledger rules, and blocked report format.
+
+### Changed
+
+- Extended `docs/ENGINEERING_GATE.md`, `docs/START_PROMPT.md`, `docs/SUBAGENT_WORKFLOW.md`, `docs/CUSTOM_AGENTS.md`, `docs/roles/CODER_SUBAGENT_PROMPT.md`, and `.codex/agents/primary-coder.toml` with Progress Ledger recovery, versioned design rules, explicit small-task bypass rules, and standardized blocked reports.
+- Updated README, environment docs, contribution docs, skill metadata, and release packaging validation for the new engineering-loop artifacts.
+- Updated `scripts/package-release.mjs` to package the new templates and official-docs gate, and to resolve release notes correctly when local build metadata is present in a manifest version.
+
 ## [1.5.5] - 2026-06-23
 
 ### Fixed

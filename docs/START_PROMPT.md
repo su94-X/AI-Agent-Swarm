@@ -32,13 +32,33 @@
 - 多文件、发布、MCP、RAG、安全、权限、测试或架构相关任务：启用工程闸门。
 - 如果不确定任务是否简单，先问一个简短澄清；如果用户要求直接推进，就按非简单任务处理。
 
+小任务绕过规则：
+- 只有单小文件、紧凑文档/注释编辑、无架构/API/schema/config/workflow/dependency/build/deployment/auth/security/persistence 行为变化、无多步计划、预期 diff 小且可逆时，才允许绕过正式工程闸门。
+- 绕过时必须明确记录：small-task bypass: <reason>
+- 只要对是否属于小任务存在不确定性，就按非简单任务处理。
+
 工程闸门：
-1. 正式编码前，Codex 先写工程设计和开发计划，包含目标、非目标、相关文件、读写边界、data flow、prompt injection surface、credential handling、external network scope、风险、回退和验证路径。
-2. 将设计和计划交给 Opus/Claude 做 plan-review。只要有 blocking findings 或 must-fix items，先修计划并复审，不得进入编码。
-3. plan-review 通过后，创建 Coder / primary-coder Subagent，并在 spawn message 中再次声明必须调用 multi_model_coder_workspace_edit，让 Opus/Claude 在授权范围内实现；Coder 不得自己直接写代码。
-4. 高风险或非平凡 diff 必须做 diff-review。默认用 Codex 内部 reviewer；需要外部第二意见时再调用外部 reviewer/role_call。
-5. 真实测试由 Codex/Test Runner 本地执行，必须记录 command、exit code、stdout、stderr。测试证据交给 Gemini 做 test-review 或失败日志分析。
-6. 未完成当前批准计划 100% 前，不得声明完成；需求变更时先更新 amended plan。
+1. 正式编码前，Codex 先创建或更新两个规范文档：docs/engineering/<task-slug>-engineering-design.md 和 docs/engineering/<task-slug>-development-plan.md。优先从 templates/engineering-design.template.md 和 templates/development-plan.template.md 开始。
+2. 工程设计必须包含目标、非目标、相关文件、读写边界、data flow、prompt injection surface、credential handling、external network scope、风险、回退、验证路径、External Evidence and Official Docs、Version History。
+3. 如果任务依赖第三方框架、插件、SDK、CLI、API、云服务或当前外部事实，先通过 docs/OFFICIAL_DOCS_GATE.md，并把证据写进设计文档。
+4. 将设计和计划交给 Opus/Claude 做 plan-review。只要有 blocking findings 或 must-fix items，先修计划并复审，不得进入编码。
+5. 开发计划必须维护 Progress Ledger。每个重要步骤后都要更新 Step、Status、Files、Acceptance、Verification、Opus gates、External evidence 和 Notes；如果上下文被压缩或线程恢复，从这个 Ledger 恢复。
+6. 计划通过后，两个文档从 draft / opus-review 演进到 approved；如 scope 或架构发生实质变化，先升级版本并重新 plan-review。
+7. plan-review 通过后，创建 Coder / primary-coder Subagent，并在 spawn message 中再次声明必须调用 multi_model_coder_workspace_edit，让 Opus/Claude 在授权范围内实现；Coder 不得自己直接写代码。
+8. 高风险或非平凡 diff 必须做 diff-review。默认用 Codex 内部 reviewer；需要外部第二意见时再调用外部 reviewer/role_call。
+9. 真实测试由 Codex/Test Runner 本地执行，必须记录 command、exit code、stdout、stderr。测试证据交给 Gemini 做 test-review 或失败日志分析。
+10. 未完成当前批准计划 100% 前，不得声明完成；需求变更时先更新 amended plan。
+
+阻塞规则：
+- 只有缺少密钥、权限不足、破坏性操作风险、需求冲突、外部服务不可用或连续失败无法自愈时，才允许停止自动推进。
+- 停止时必须输出标准阻塞报告，包含：
+  - Blocked reason:
+  - Evidence:
+  - Completed plan steps:
+  - Remaining plan steps:
+  - Options:
+  - Required human decision:
+  - estimated_resolution:
 
 默认角色：
 - Main Orchestrator：Codex 主控，负责规划、授权、审查、真实测试、RAG 写入和最终决策。
@@ -63,6 +83,7 @@
 需要更细的内部规则时再看：
 
 - `docs/ENGINEERING_GATE.md`
+- `docs/OFFICIAL_DOCS_GATE.md`
 - `docs/CUSTOM_AGENTS.md`
 - `docs/SUBAGENT_WORKFLOW.md`
 - `docs/RAG.md`

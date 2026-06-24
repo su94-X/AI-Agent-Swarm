@@ -8,7 +8,7 @@ const pluginRoot = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const outputDir = resolve(process.argv[2] || join(pluginRoot, "..", "..", "outputs"));
 const manifest = readManifest();
 const version = manifest.version;
-const releaseNotePath = `docs/releases/GITHUB_RELEASE_V${version}.md`;
+const releaseNotePath = resolveReleaseNotePath(version);
 const zipPath = join(outputDir, `ai-agent-swarm-${version}.zip`);
 const stageRoot = join(outputDir, `.ai-agent-swarm-${version}-stage`);
 
@@ -20,6 +20,8 @@ const includeRoots = [
   "lib",
   "scripts",
   "skills",
+  "templates/engineering-design.template.md",
+  "templates/development-plan.template.md",
   ".env.example",
   ".mcp.json",
   "CHANGELOG.md",
@@ -140,6 +142,7 @@ function validateStage() {
     "docs/CUSTOM_AGENTS.md",
     "docs/ENGINEERING_GATE.md",
     "docs/ENGINEERING_GATE_IMPLEMENTATION_PLAN.md",
+    "docs/OFFICIAL_DOCS_GATE.md",
     releaseNotePath,
     "docs/RAG.md",
     "docs/ROADMAP.md",
@@ -169,6 +172,7 @@ function validateStage() {
     "scripts/streaming-default-self-test.mjs",
     "scripts/model-secret-self-test.mjs",
     "scripts/custom-agents-self-test.mjs",
+    "scripts/engineering-gate-docs-self-test.mjs",
     "scripts/workspace-edit-json-self-test.mjs",
     "scripts/workspace-edit-malformed-repair-self-test.mjs",
     "scripts/workspace-edit-result-self-test.mjs",
@@ -179,6 +183,8 @@ function validateStage() {
     "scripts/package-release.mjs",
     "skills/multi-model-agents/SKILL.md",
     "skills/multi-model-agents/agents/openai.yaml",
+    "templates/engineering-design.template.md",
+    "templates/development-plan.template.md",
     "assets/ai-agent-swarm-icon.png",
     "skills/multi-model-agents/assets/ai-agent-swarm-icon.png",
   ];
@@ -499,6 +505,19 @@ function extractZipStoredFile(zip, relPath) {
 
 function readManifest() {
   return JSON.parse(readText(join(pluginRoot, ".codex-plugin", "plugin.json")));
+}
+
+function resolveReleaseNotePath(manifestVersion) {
+  const exact = `docs/releases/GITHUB_RELEASE_V${manifestVersion}.md`;
+  if (existsSync(join(pluginRoot, ...exact.split("/")))) {
+    return exact;
+  }
+  const publicVersion = String(manifestVersion).split("+")[0];
+  const fallback = `docs/releases/GITHUB_RELEASE_V${publicVersion}.md`;
+  if (publicVersion !== manifestVersion && existsSync(join(pluginRoot, ...fallback.split("/")))) {
+    return fallback;
+  }
+  return exact;
 }
 
 function readText(path) {
