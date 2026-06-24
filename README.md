@@ -10,7 +10,7 @@
 
 <p align="center">
   <img alt="Branch" src="https://img.shields.io/badge/branch-lite--opus--review-38BDF8">
-  <img alt="Version" src="https://img.shields.io/badge/version-1.5.4--lite.1-22C55E">
+  <img alt="Version" src="https://img.shields.io/badge/version-1.5.6--lite.1-22C55E">
   <a href="./LICENSE"><img alt="License" src="https://img.shields.io/badge/license-Apache--2.0-22C55E"></a>
   <img alt="Node" src="https://img.shields.io/badge/node-no%20npm%20deps-111827">
 </p>
@@ -31,7 +31,7 @@ Lite 版只保留三个核心：
 
 ## 工程闸门
 
-Lite 版从 `1.5.0-lite.1` 开始随包提供官方 Codex Custom Agent 模板，并继续默认启用工程闸门。`1.5.2-lite.1` 默认启用模型层流式调用，降低 Opus/Claude reviewer/scorer 大上下文、长输出场景下的长时间无响应和网关空闲超时风险；如果某个网关不支持 SSE，可设置 `MMA_MODEL_STREAMING=false` 回退。`1.5.3-lite.1` 为可选 coder workspace edit 兼容工具增加 readback 校验和脱敏写入内容预览返回；`1.5.4-lite.1` 强化 markdown、prose、unified diff、partial JSON 等坏格式输出的 repair 路径。非简单任务在正式编码前必须先产出工程设计文档和开发计划，并调用 Opus/Claude 做 `plan-review`。只要返回 blocking findings、must-fix items、`approved_to_continue: false`，或计划分低于 80 且没有充分解释，Codex 必须先修正文档和计划，再次审查。
+Lite 版从 `1.5.0-lite.1` 开始随包提供官方 Codex Custom Agent 模板，并继续默认启用工程闸门。`1.5.2-lite.1` 默认启用模型层流式调用，降低 Opus/Claude reviewer/scorer 大上下文、长输出场景下的长时间无响应和网关空闲超时风险；如果某个网关不支持 SSE，可设置 `MMA_MODEL_STREAMING=false` 回退。`1.5.6-lite.1` 对齐主体版 `v1.5.6` 的工程流程能力，新增工程设计/开发计划模板、官方文档证据闸门、Progress Ledger、Blocked Report 和文档自测。非简单任务在正式编码前必须先产出工程设计文档和开发计划，并调用 Opus/Claude 做 `plan-review`。只要返回 blocking findings、must-fix items、`approved_to_continue: false`，或计划分低于 80 且没有充分解释，Codex 必须先修正文档和计划，再次审查。
 
 进入开发后，Codex 按批准计划自动推进。重要实现步骤后做 diff 检查；高风险或非平凡改动调用 `diff-review`。真实测试完成后，把 command、exit code、stdout、stderr 和变更摘要交给 Opus/Claude 做 `test-review`。详见 [docs/ENGINEERING_GATE.md](./docs/ENGINEERING_GATE.md)。
 
@@ -46,6 +46,13 @@ Lite 版从 `1.5.0-lite.1` 开始随包提供官方 Codex Custom Agent 模板，
 | 维护者打包和同步 GitHub Release | [docs/RELEASE_PROMPT.md](./docs/RELEASE_PROMPT.md) |
 
 完整导航见 [docs/README.md](./docs/README.md)。旧版拆分提示词已移动到 [docs/legacy/](./docs/legacy/)，历史 release note 已移动到 [docs/releases/](./docs/releases/)；普通用户不需要再从这些归档文件里选择。
+
+长任务、发布任务或容易跨线程的任务可以直接使用工程模板：
+
+- [templates/engineering-design.template.md](./templates/engineering-design.template.md)
+- [templates/development-plan.template.md](./templates/development-plan.template.md)
+
+涉及第三方 API、SDK、CLI、平台、配置键、迁移步骤或外部事实时，按 [docs/OFFICIAL_DOCS_GATE.md](./docs/OFFICIAL_DOCS_GATE.md) 记录官方证据。
 
 ## 为什么做 Lite 版
 
@@ -162,6 +169,7 @@ node scripts/workspace-edit-json-self-test.mjs
 node scripts/workspace-edit-repair-self-test.mjs
 node scripts/reviewer-score-self-test.mjs
 node scripts/custom-agents-self-test.mjs
+node scripts/engineering-gate-docs-self-test.mjs
 ```
 
 真实外部模型连通性测试：

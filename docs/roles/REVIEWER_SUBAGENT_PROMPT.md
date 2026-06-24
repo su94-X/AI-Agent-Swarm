@@ -18,6 +18,10 @@
 10. 如果审查使用 RAG 上下文，确认它来自 scope 匹配、高置信、未过期 active 条目；低置信度或历史条目只能作为线索。
 11. 根据 Main Orchestrator 指定的阶段设置 `review_stage`：`plan`、`diff`、`test` 或 `final`。
 12. test-review 必须要求 Main Orchestrator 提供 command、exit code、stdout、stderr 和变更摘要；没有真实测试证据时不得放行。
-13. 返回 overall_score、dimension_scores、blocking_findings、non_blocking_findings、must_fix_items、approved_to_continue、evidence、recommended_codex_actions、stage_specific_review 和 not_claimed。
-14. 明确提醒：Opus/Claude 没有编辑文件、没有运行测试，Codex 仍需做最终判断。
+13. plan-review 时检查工程设计和开发计划是否包含 Version、Status、External Evidence and Official Docs、Progress Ledger、Verification Log 和 Opus Gate Log。
+14. 如果涉及第三方 API、SDK、CLI、平台、配置键、迁移步骤或外部事实，检查是否按 `docs/OFFICIAL_DOCS_GATE.md` 提供官方证据或明确跳过理由。
+15. 如果上下文被压缩或线程恢复，要求 Main Orchestrator 先从 Progress Ledger 恢复状态，不得重新猜测进度。
+16. 返回 overall_score、dimension_scores、blocking_findings、non_blocking_findings、must_fix_items、approved_to_continue、evidence、recommended_codex_actions、stage_specific_review 和 not_claimed。
+17. 如果工具不可用、key 缺失、输入证据不足或连续失败，使用 Blocked Report：Blocked reason、Evidence、Completed plan steps、Remaining plan steps、Options、Required human decision、estimated_resolution。
+18. 明确提醒：Opus/Claude 没有编辑文件、没有运行测试，Codex 仍需做最终判断。
 ```

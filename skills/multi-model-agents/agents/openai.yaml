@@ -1,7 +1,7 @@
 interface:
   display_name: "AI Agent Swarm Lite"
-  short_description: "AI Agent Swarm Lite 1.5.4-lite.1：workspace edit 坏格式修复增强，Codex 主控，官方 Custom Agents，无 Gemini tester。"
-  default_prompt: "使用 $multi-model-agents / AI Agent Swarm Lite 1.5.4-lite.1：优先查看 docs/START_PROMPT.md；Codex 主控，Opus/Claude 只做外部审查与评分，真实测试和最终决策由 Codex 完成。可选 workspace edit 可修复 markdown/prose/diff/partial JSON 坏格式。"
+  short_description: "AI Agent Swarm Lite 1.5.6-lite.1：工程模板、官方证据闸门、Progress Ledger，Codex 主控，无 Gemini tester。"
+  default_prompt: "使用 $multi-model-agents / AI Agent Swarm Lite 1.5.6-lite.1：优先查看 docs/START_PROMPT.md；Codex 主控，Opus/Claude 只做外部审查与评分，真实测试和最终决策由 Codex 完成。非简单任务使用工程模板、官方证据闸门和 Progress Ledger。"
   icon_small: "./assets/ai-agent-swarm-icon.png"
   icon_large: "./assets/ai-agent-swarm-icon.png"
   brand_color: "#38BDF8"

@@ -17,6 +17,7 @@ Lite 版用户文档入口已经收敛为：
 V1.5.2-lite.1 起，Lite 默认启用模型层 SSE/stream 聚合，降低 Opus/Claude reviewer/scorer 大上下文、长输出场景下的长时间无响应和网关空闲超时风险；如网关不支持 SSE，可设置 `MMA_MODEL_STREAMING=false` 回退。Lite 也保留 `.codex/agents/*.toml` 官方 Custom Agent 模板的创建合同：`opus-reviewer` 是 Codex 可见壳子，必须调用 `multi_model_reviewer_score` 或 `multi_model_reviewer_findings` 让 Opus/Claude 完成外部审查评分，不能由 Codex 子智能体自己代替外部模型完成 reviewer/scorer 工作。这些模板需要位于当前项目 `.codex/agents/` 或用户级 `~/.codex/agents/` 才会被 Codex 加载。Skill 负责工作流，MCP 负责 Opus/Claude reviewer/scorer 与 RAG 工具，Plugin 负责打包分发。
 V1.5.3-lite.1 增强可选 coder workspace edit 兼容工具：实际写入后返回 readback 校验过、已脱敏的 `written_files` 内容预览，`dry_run` 返回 `proposed_files`，方便子智能体把工具结果交回主控。Lite 默认流程仍然是 Codex 自己实现，Opus/Claude 做外部审查和评分。
 V1.5.4-lite.1 增强可选 coder workspace edit 的坏格式修复：当外部 coder 首次返回 markdown、prose、unified diff、partial JSON 或字段不合规的 JSON-like 输出时，插件会触发一次 repair 调用，要求转换为标准 workspace edit JSON 后再校验和应用。
+V1.5.6-lite.1 对齐主体版 v1.5.6 的工程流程能力：新增 `templates/engineering-design.template.md`、`templates/development-plan.template.md`、`docs/OFFICIAL_DOCS_GATE.md`、Progress Ledger、Blocked Report、版本化设计规则和工程文档自测。Lite 边界不变：Codex 实现和决策，Opus/Claude 只审查评分，不引入 Gemini tester。
 
 Lite 版原则：
 
@@ -26,6 +27,7 @@ Lite 版原则：
 4. 外部模型不直接写 RAG，不直接决定接受/拒绝。
 5. RAG 是 Codex 主控的本地项目记忆库；检索结果必须由 Codex 筛选后再进入上下文。
 6. 非简单任务若当前线程有可见子智能体工具，应优先使用 Lite Custom Agents；子智能体完成后必须关闭以释放并发槽位。`opus-reviewer` 工具、key 或输入证据不足时必须输出阻塞或降级报告，不能伪造外部审查。
+7. 长任务使用工程模板维护设计、计划、Progress Ledger、Verification Log 和 Opus Gate Log；涉及第三方行为或外部事实时执行 `docs/OFFICIAL_DOCS_GATE.md`。
 
 ## 工具
 
@@ -41,7 +43,7 @@ Lite 版原则：
 
 1. 调用 `multi_model_config_status`，确认 reviewer/scorer 的 Opus/Claude 配置可用。
 2. 调用 `multi_model_rag_status`。非简单任务先用 `multi_model_rag_search` 检索项目记忆。
-3. 非简单任务正式编码前，Codex 必须产出工程设计和开发计划，创建 Opus Reviewer 子智能体，并在 spawn message 中声明必须调用 `multi_model_reviewer_score` 做 `review_stage: "plan"` 审查。存在阻断项、must-fix items 或 `approved_to_continue: false` 时，必须先修计划并复审。
+3. 非简单任务正式编码前，Codex 必须产出工程设计和开发计划；长任务使用 `templates/engineering-design.template.md` 和 `templates/development-plan.template.md`，并维护 Progress Ledger。创建 Opus Reviewer 子智能体，并在 spawn message 中声明必须调用 `multi_model_reviewer_score` 做 `review_stage: "plan"` 审查。存在阻断项、must-fix items 或 `approved_to_continue: false` 时，必须先修计划并复审。
 4. Codex 按批准计划执行必要文件修改或命令；重要步骤后做 diff 检查，高风险或非平凡改动调用 `review_stage: "diff"`。
 5. 真实测试完成后，把 command、exit code、stdout、stderr 和变更摘要作为 `test_evidence` 传给 `review_stage: "test"`。
 6. Codex 根据评分、findings、must-fix items 和真实测试结果决定接受、继续修改或回退。

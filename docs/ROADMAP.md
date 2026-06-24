@@ -6,6 +6,18 @@
 
 `1.5.0-lite.1` 已新增 Lite 官方 Codex Custom Agent 模板 `.codex/agents/*.toml`，包括 `opus-reviewer`、`test-runner`、`rag-curator` 和 `security-auditor`。该版本明确区分 Custom Agent、Skill、MCP 和 Plugin：Custom Agent 负责可见子智能体角色配置，Skill 负责 Lite 工作流，MCP 负责 Opus/Claude reviewer/scorer、RAG 和 workspace 兼容工具，Plugin 负责打包分发。子智能体完成后必须关闭以释放并发槽位。
 
+## 工程模板与官方证据闸门
+
+`1.5.6-lite.1` 已对齐主体版 `v1.5.6` 的工程流程能力：
+
+- `templates/engineering-design.template.md`
+- `templates/development-plan.template.md`
+- `docs/OFFICIAL_DOCS_GATE.md`
+- Progress Ledger、Verification Log、Opus Gate Log、Blocked Report 和版本化设计规则
+- `scripts/engineering-gate-docs-self-test.mjs`
+
+这些能力不改变 Lite 角色边界：Codex 仍负责实现和最终决策，Opus/Claude 仍只做外部审查与评分。
+
 ## MCP server 模块拆分
 
 当前 MCP server 已完成多段拆分：外部模型 provider、HTTP JSON client、重试逻辑和 API key 状态已移动到 `lib/model.mjs`；workspace path validation、symlink 防逃逸、授权读写、JSON edit 校验、checksum、diff 生成和 patch/edit 应用已移动到 `lib/workspace.mjs`；workspace edit prompt、JSON repair 和 apply repair flow 已移动到 `lib/workspace-edit-flow.mjs`；本地项目记忆库工具编排和 JSONL 存储保留在 `lib/rag.mjs`，RAG 元数据/过滤、secret scan、分块和词法评分分别移动到 `lib/rag-metadata.mjs`、`lib/rag-security.mjs`、`lib/rag-text.mjs`；JSON-RPC stdio 协议、tool schema helper、`.env` loader 和 MCP progress/log notification 出口已移动到 `lib/mcp.mjs`。主入口 `scripts/multi-model-agents-mcp.mjs` 主要负责工具定义、路由和跨角色编排。

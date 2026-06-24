@@ -25,15 +25,49 @@ V1.5.0-lite.1 起，Lite 随包提供官方 Custom Agent 模板：`.codex/agents
 
 1. Main Orchestrator 调用 `multi_model_config_status`。
 2. Main Orchestrator 调用 `multi_model_rag_status`，必要时调用 `multi_model_rag_search`。
-3. Codex 制定工程设计和开发计划。
-4. 创建 Reviewer / Scorer 子智能体时把“必须调用 `multi_model_reviewer_score`、不得自己直接审查评分”的执行合同写进 spawn message，然后由 Reviewer / Scorer 调用 `multi_model_reviewer_score`，设置 `review_stage: "plan"`，做 plan-review。
-5. 只有没有 blocking findings、must-fix items 且 Codex 确认计划可执行后，才进入文件修改或命令执行。
-6. 高风险或非平凡 diff 调用 `review_stage: "diff"`。
-7. 真实测试完成后调用 `review_stage: "test"`，传入 command、exit code、stdout、stderr 和变更摘要。
-8. Codex 根据真实测试和外部评分做最终决定。
-9. 需要时由 RAG Curator 整理候选知识，由 Security Auditor 做只读安全审计。
-10. Main Orchestrator 收集结果后关闭已完成子智能体。
-11. 已验证的 bug、命令、决策或风险由 Codex 写入 RAG。
+3. 如果任务满足小任务绕过标准，记录 `small-task bypass: <reason>`，保持 diff 小且可逆。
+4. 非简单任务先用 `templates/engineering-design.template.md` 和 `templates/development-plan.template.md` 建立工程设计和开发计划。
+5. 如果任务涉及第三方 API、SDK、CLI、平台、配置键、迁移步骤或外部事实，执行 `docs/OFFICIAL_DOCS_GATE.md`，把证据写入 `External Evidence and Official Docs` 表格。
+6. 创建 Reviewer / Scorer 子智能体时把“必须调用 `multi_model_reviewer_score`、不得自己直接审查评分”的执行合同写进 spawn message，然后由 Reviewer / Scorer 调用 `multi_model_reviewer_score`，设置 `review_stage: "plan"`，做 plan-review。
+7. 只有没有 blocking findings、must-fix items 且 Codex 确认计划可执行后，才进入文件修改或命令执行。
+8. 开发中维护 Progress Ledger；如果上下文被压缩或线程恢复，先从 Ledger、Verification Log 和 Opus Gate Log 恢复。
+9. 高风险或非平凡 diff 调用 `review_stage: "diff"`。
+10. 真实测试完成后调用 `review_stage: "test"`，传入 command、exit code、stdout、stderr 和变更摘要。
+11. Codex 根据真实测试和外部评分做最终决定。
+12. 需要时由 RAG Curator 整理候选知识，由 Security Auditor 做只读安全审计。
+13. Main Orchestrator 收集结果后关闭已完成子智能体。
+14. 已验证的 bug、命令、决策或风险由 Codex 写入 RAG。
+
+## Progress Ledger
+
+每个重要步骤完成后，开发计划中应更新一条 Ledger：
+
+```text
+Step:
+Status: pending / in_progress / done / blocked
+Files:
+Acceptance:
+Verification:
+Opus gates:
+External evidence:
+Notes:
+```
+
+如果上下文被压缩或线程恢复，Main Orchestrator 和相关子智能体必须先读取 Ledger，不得重新猜测进度。
+
+## Blocked Report
+
+遇到缺少 key、权限不足、工具不可见、破坏性操作风险、需求冲突、外部服务不可用或连续失败无法自愈时，使用标准阻塞报告：
+
+```text
+Blocked reason:
+Evidence:
+Completed plan steps:
+Remaining plan steps:
+Options:
+Required human decision:
+estimated_resolution:
+```
 
 ## Reviewer / Scorer 输出要求
 

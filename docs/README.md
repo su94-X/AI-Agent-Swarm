@@ -13,12 +13,22 @@
 | 文档 | 用途 |
 | --- | --- |
 | [ENGINEERING_GATE.md](./ENGINEERING_GATE.md) | 非简单任务的 plan-review、diff-review、test-review 和阻塞报告规则。 |
+| [OFFICIAL_DOCS_GATE.md](./OFFICIAL_DOCS_GATE.md) | 第三方 API、SDK、CLI、平台、配置键和外部事实的官方证据闸门。 |
 | [CUSTOM_AGENTS.md](./CUSTOM_AGENTS.md) | Lite 官方 Custom Agent 模板说明：`.codex/agents/*.toml`、Skill、MCP 和 Plugin 的区别。 |
 | [ENVIRONMENT.md](./ENVIRONMENT.md) | `.env`、外部模型、RAG、HTTP、GitHub Release token 配置说明。 |
 | [RAG.md](./RAG.md) | 本地项目记忆库使用规则和安全边界。 |
 | [SUBAGENT_WORKFLOW.md](./SUBAGENT_WORKFLOW.md) | 可见子智能体角色流程说明。 |
 | [ROADMAP.md](./ROADMAP.md) | 后续路线图。 |
 | [roles/](./roles/) | 角色子智能体的详细提示词。 |
+
+## 工程模板
+
+长任务、发布任务或容易跨线程的任务建议使用仓库根目录下的 `templates/`：
+
+| 模板 | 用途 |
+| --- | --- |
+| [../templates/engineering-design.template.md](../templates/engineering-design.template.md) | 工程设计文档，记录目标、非目标、边界、风险、测试策略和官方证据。 |
+| [../templates/development-plan.template.md](../templates/development-plan.template.md) | 开发计划和 Progress Ledger，记录每步状态、验证命令、Opus gate 和阻塞报告。 |
 
 ## 归档文档
 

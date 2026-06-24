@@ -2,6 +2,28 @@
 
 All notable changes to AI Agent Swarm and its Lite branch are documented here.
 
+## [1.5.6-lite.1] - 2026-06-24
+
+### Added
+
+- Added Lite engineering templates:
+  - `templates/engineering-design.template.md`
+  - `templates/development-plan.template.md`
+- Added `docs/OFFICIAL_DOCS_GATE.md` for official documentation and external evidence checks.
+- Added Progress Ledger, Verification Log, Opus Gate Log, Blocked Report, and versioned design rules to the Lite engineering workflow.
+- Added `scripts/engineering-gate-docs-self-test.mjs` to verify Lite engineering docs, templates, plugin manifest constraints, release packaging requirements, and role-boundary wording.
+
+### Changed
+
+- Updated `docs/START_PROMPT.md`, `docs/ENGINEERING_GATE.md`, `docs/SUBAGENT_WORKFLOW.md`, `docs/CUSTOM_AGENTS.md`, role prompts, README, docs navigation, skill metadata, and release prompts for the stricter Lite engineering workflow.
+- Updated package validation so Lite release bundles include `templates/`, `docs/OFFICIAL_DOCS_GATE.md`, and the new engineering docs self-test.
+- Clarified that MCP progress is a visible log notification, not a standard progress-token progress bar.
+
+### Notes
+
+- No `1.5.5-lite.1` release was published. Lite intentionally jumps from `1.5.4-lite.1` to `1.5.6-lite.1` to align with the main `v1.5.6` engineering-gate feature set.
+- Lite role boundaries remain unchanged: Codex implements, tests, writes RAG, and decides; Opus/Claude reviews and scores; Gemini tester workflow remains removed.
+
 ## [1.5.4-lite.1] - 2026-06-23
 
 ### Fixed

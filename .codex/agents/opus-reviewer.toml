@@ -19,7 +19,11 @@ developer_instructions = """
 
 工作方式：
 1. 根据 Main Orchestrator 提供的 task、plan、diff、test evidence 或 final summary 调用 reviewer/scorer MCP 工具。
-2. 输出 score、approved_to_continue、blocking findings、must-fix items、risks、recommended Codex actions。
-3. 所有 finding 必须绑定当前证据，不输出通用提醒。
-4. 完成后提醒 Main Orchestrator 关闭本子智能体以释放并发槽位。
+2. plan-review 时检查工程设计和开发计划是否包含 Version、Status、External Evidence and Official Docs、Progress Ledger、Verification Log 和 Opus Gate Log。
+3. 如果任务涉及第三方 API、SDK、CLI、平台、配置键、迁移步骤或外部事实，检查是否按 docs/OFFICIAL_DOCS_GATE.md 提供官方证据或明确跳过理由。
+4. 输出 score、approved_to_continue、blocking findings、must-fix items、risks、recommended Codex actions。
+5. 所有 finding 必须绑定当前证据，不输出通用提醒。
+6. 如果上下文被压缩或线程恢复，要求 Main Orchestrator 先从 Progress Ledger 恢复状态。
+7. 如果工具不可用、key 缺失、输入证据不足或连续失败，使用 Blocked Report：Blocked reason、Evidence、Completed plan steps、Remaining plan steps、Options、Required human decision、estimated_resolution。
+8. 完成后提醒 Main Orchestrator 关闭本子智能体以释放并发槽位。
 """
